@@ -37,6 +37,7 @@ input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
 .msg { min-height: 24px; margin-top: 12px; font-size: 15px; color: var(--coral); }
 .steps { margin: 18px 0 0; padding: 0 0 0 20px; color: var(--muted); font-size: 15px; display: grid; gap: 4px; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.gets{margin:0 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
 </style>
 </head>
 <body>
@@ -44,8 +45,13 @@ input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
   <a class="back" href="index.html">← Accueil</a>
   <main class="card">
     <h1>Simulations illimitées</h1>
-    <p class="lead">Dis-moi où envoyer ton code, puis tu passes au paiement.</p>
-    <div class="price"><span>Modifier tes réponses et refaire des simulations, pour toujours</span><b id="price">1 €</b></div>
+    <p class="lead">Un paiement unique de 1 €, et ton code t'est envoyé par mail dès réception du paiement.</p>
+    <div class="price"><span>Affiner ton résultat et refaire des simulations, pour toujours</span><b id="price">1 €</b></div>
+    <ul class="gets">
+      <li>Ton patrimoine détaillé (immobilier, placements, dettes) pour un IFI ou un ISF au plus juste</li>
+      <li>Tes vraies dépenses, ton APL, ta taxe d'habitation, ta situation familiale et ton métier</li>
+      <li>Autant de simulations que tu veux : augmentation, naissance, déménagement, retraite</li>
+    </ul>
 
     <form id="form" novalidate>
       <label for="nom">Prénom et nom</label>
@@ -72,7 +78,7 @@ input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
     <ol class="steps">
       <li>Tu remplis ce formulaire.</li>
       <li>Tu paies sur la page sécurisée de Mollie.</li>
-      <li>Une fois le paiement reçu, ton code t'est envoyé par mail. Tu le tapes dans le champ « J'ai déjà un code » du simulateur.</li>
+      <li>Dès réception du paiement, ton code t'est envoyé par mail. Tu le tapes dans le champ « J'ai déjà un code » du simulateur.</li>
     </ol>
   </main>
   <p style="text-align:center;font-size:13px;margin-top:16px"><a href="legal.html" style="color:inherit;opacity:.7">Mentions légales, CGV, confidentialité</a></p>

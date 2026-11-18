@@ -9,7 +9,8 @@
 <meta property="og:url" content="https://wggaming.github.io/vote2027/">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:description" content="Le simulateur qui chiffre l'impact des programmes présidentiels 2027 sur ton budget.">
-<title>Le test · Ce que coûte mon vote</title>
+<title>Le test · Ce que coûte mon vote : impôts, SMIC, retraite, IFI selon les programmes 2027</title>
+<link rel="canonical" href="https://wggaming.github.io/vote2027/simulateur.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -138,6 +139,10 @@ body{margin:0}
 [hidden]{display:none!important}
 .topnav{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
 .topnav a{color:var(--muted);font-weight:600;text-decoration:none}
+.teaser{display:flex;align-items:center;justify-content:space-between;gap:16px;border:2px dashed var(--accent)}
+.teaser>div{display:flex;flex-direction:column;gap:4px}
+.teaser .btn{flex:none}
+@media (max-width:600px){.teaser{flex-direction:column;align-items:stretch}}
 .lockcard{display:flex;flex-direction:column;gap:14px;border:2px solid var(--accent)}
 .lockcard .price{display:flex;justify-content:space-between;align-items:baseline;gap:12px;background:var(--soft);border-radius:10px;padding:12px 16px}
 .lockcard .price b{font:600 26px var(--f-num)}
@@ -176,6 +181,7 @@ footer a{color:inherit}
       <button class="btn primary" id="dl" type="button">Télécharger ma page A4 (PDF)</button>
       <button class="btn" id="refine" type="button">Affiner mon résultat</button>
       <button class="btn" id="restart" type="button">Modifier mes réponses</button>
+      <button class="btn" id="share" type="button">Partager le test</button>
       <span class="status" id="dlstatus"></span>
     </div>
     <div class="card lockcard" id="lock" hidden>
@@ -186,7 +192,7 @@ footer a{color:inherit}
       <ul class="upsell" id="upsell"></ul>
       <div class="price"><span>Affinage et simulations illimitées, pour toujours</span><b class="js-price">1 €</b></div>
       <a class="btn primary" id="pay" href="acheter.html">Débloquer pour 1 €</a>
-      <p class="qhelp" id="mailline">Tu indiques ton nom et ton mail, tu paies, puis ton code t'est envoyé par mail.</p>
+      <p class="qhelp" id="mailline">Tu indiques ton nom et ton mail, tu paies, et ton code t'est envoyé par mail dès réception du paiement.</p>
       <div class="codebox">
         <input id="code" type="text" placeholder="J'ai déjà un code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de déblocage">
         <button class="btn" id="codeOk" type="button">Valider</button>
@@ -200,6 +206,7 @@ footer a{color:inherit}
     </div>
     <div class="summary" id="tiles"></div>
     <div class="card chart" id="chart"></div>
+    <div class="card teaser" id="teaser" hidden><div><b id="teasertxt">Ton résultat repose en partie sur des moyennes nationales.</b><span class="qhelp">Précise ta situation (patrimoine, dépenses, famille, métier) pour un chiffrage au plus juste, et refais autant de simulations que tu veux.</span></div><button class="btn primary" id="teaserbtn" type="button">Affiner pour 1 €</button></div>
     <div id="parties" style="display:flex;flex-direction:column;gap:16px"></div>
     <div class="card method">
       <h3 style="color:var(--ink)">Comment on calcule</h3>
@@ -354,7 +361,8 @@ function renderQ(){
   document.getElementById("prev").disabled=step===0;
   document.getElementById("next").textContent=step===vs.length-1?"Voir mon résultat":"Suivant";
 }
-function next(){const vs=visible(); if(step<vs.length-1){step++;renderQ();} else showResults();}
+let started=false;
+function next(){if(!started&&step===0){started=true;if(window.track)track("vote-debut-test");} const vs=visible(); if(step<vs.length-1){step++;renderQ();} else showResults();}
 document.getElementById("next").onclick=next;
 document.getElementById("prev").onclick=()=>{if(step>0){step--;renderQ();}};
 const PITCH={patd:"Le détail de ton patrimoine (résidence principale, autre immobilier, placements, dettes, biens professionnels) : IFI, ISF et impôt sur la fortune financière calculés au plus juste",
@@ -383,6 +391,13 @@ document.getElementById("refine").onclick=()=>{ if(!unlocked){showLock("affinage
 function openQuiz(fine){document.getElementById("lock").hidden=true;document.getElementById("results").hidden=true;document.getElementById("quiz").hidden=false;step=0;
   if(fine===true){const vs=visible(); const i=vs.findIndex(q=>q.fine); step=i>=0?i:0;}
   renderQ();document.getElementById("quiz").scrollIntoView({behavior:"smooth"});}
+document.getElementById("teaserbtn").onclick=()=>showLock("encart");
+document.getElementById("pay").addEventListener("click",()=>{if(window.track)track("vote-clic-achat");});
+document.getElementById("share").onclick=async()=>{
+  const url="https://wggaming.github.io/vote2027/", text="J'ai fait le test : voilà ce que les programmes de la présidentielle changeraient pour mon budget. Et toi, combien ça te coûte ?";
+  if(window.track)track("vote-partage-resultat");
+  try{ if(navigator.share){await navigator.share({title:"Ce que coûte mon vote",text,url});return;} await navigator.clipboard.writeText(text+" "+url); document.getElementById("dlstatus").textContent="Lien copié, tu peux le coller où tu veux."; }catch(e){}
+};
 document.getElementById("restart").onclick=()=>{ if(unlocked||!done){openQuiz();return;} showLock("modif"); };
 function tryUnlock(raw){ const c=String(raw||"").trim().toUpperCase(); if(c&&isValidCode(c)){unlocked=true;sv("vo-unlock",true);refreshAccess();return true;} return false; }
 function refreshAccess(){
@@ -390,7 +405,7 @@ function refreshAccess(){
   document.getElementById("refine").textContent=unlocked?"Affiner mon résultat":"Affiner mon résultat ("+PRICE_LABEL+")";
   if(unlocked) document.getElementById("lock").hidden=true;
   const pay=document.getElementById("pay");
-  if(PAYMENT_URL){pay.href="acheter.html";pay.textContent="Débloquer pour "+PRICE_LABEL;document.getElementById("mailline").textContent="Tu indiques ton nom et ton mail, tu paies, puis ton code t'est envoyé par mail.";}
+  if(PAYMENT_URL){pay.href="acheter.html";pay.textContent="Débloquer pour "+PRICE_LABEL;document.getElementById("mailline").textContent="Tu indiques ton nom et ton mail, tu paies, et ton code t'est envoyé par mail dès réception du paiement.";}
   else{pay.href="mailto:"+CONTACT_EMAIL+"?subject="+encodeURIComponent("Ce que coûte mon vote - demande de code");pay.textContent="Demander mon code";document.getElementById("mailline").textContent="Écris à "+CONTACT_EMAIL+" et je t'envoie un code.";}
   document.querySelectorAll(".js-price").forEach(e=>e.textContent=PRICE_LABEL);
   document.querySelectorAll(".js-mail").forEach(a=>{a.href="mailto:"+CONTACT_EMAIL;a.textContent=CONTACT_EMAIL;});
@@ -584,6 +599,8 @@ function showResults(fromLoad){
     const lines=r.lines.map(l=>`<div class="line${l.k===0?" excluded":""}"><span class="m">${esc(l.m)}${chip(l.k)}</span><span class="amt ${l.k?cls(l.v*l.k):"zero"}">${l.k===0?fmt(l.v):fmt(l.v*l.k)}</span><span class="note">${esc(l.n)}${l.k===.5?" Montant plein : "+fmt(l.v)+".":""}</span></div>`).join("");
     const her=r.herit?`<dt>Droits sur ton héritage</dt><dd>${fmtPlain(r.herit.then)} (aujourd'hui ${fmtPlain(r.herit.now)}). ${esc(r.herit.hyp)}</dd>`:"";
     return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.</p>'}</div><dl class="facts"><dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}${r.perso?" <b>"+esc(r.perso)+"</b>":""}</dd>${her}</dl></article>`}).join("");
+  const nh=PARTIES.reduce((t,p)=>t+(res[p.k].hyp||0),0), T=document.getElementById("teaser");
+  T.hidden=unlocked; if(!unlocked) document.getElementById("teasertxt").textContent=nh>0?nh+" montant"+(nh>1?"s":"")+" de ton résultat "+(nh>1?"reposent":"repose")+" sur des moyennes nationales ou des estimations.":"Ton résultat repose en partie sur des moyennes nationales.";
   document.getElementById("dlstatus").textContent="";
   if(!fromLoad) R.scrollIntoView({behavior:"smooth",block:"start"});
 }
