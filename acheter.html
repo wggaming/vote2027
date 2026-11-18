@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulations illimitées</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root { --bg:#f3f5f8; --card:#ffffff; --ink:#18202e; --muted:#5b6577; --violet:#2b4bd6; --coral:#2b4bd6; --mint:#13804a; --line:#d9dee7; --key:#e8ecf3; --warn:#fff3c4; --warnink:#5a4300; --display:"Archivo","Helvetica Neue",Arial,sans-serif; --body:"Inter",system-ui,sans-serif; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg:#10141c; --card:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --violet:#7d95ff; --coral:#7d95ff; --mint:#45c483; --line:#2a3242; --key:#222a38; --warn:#4a3d0a; --warnink:#ffe9a0; color-scheme:dark; }
+}
+:root[data-theme="dark"] { --bg:#10141c; --card:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --violet:#7d95ff; --coral:#7d95ff; --mint:#45c483; --line:#2a3242; --key:#222a38; --warn:#4a3d0a; --warnink:#ffe9a0; color-scheme:dark; }
+* { box-sizing: border-box; touch-action: manipulation; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-weight: 500; font-size: 17px; line-height: 1.5;
+  padding-block: 20px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 480px; margin: 0 auto; }
+.back { display: inline-block; color: var(--muted); font-weight: 800; font-size: 15px; text-decoration: none; padding: 6px 0 12px; }
+.card { background: var(--card); border-radius: 14px; padding: 24px; border: 1px solid var(--line); }
+h1 { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1.1; margin: 0 0 6px; text-wrap: balance; }
+.lead { color: var(--muted); margin: 0 0 20px; }
+.price { display: flex; justify-content: space-between; align-items: baseline; background: var(--key); border-radius: 14px; padding: 12px 16px; margin-bottom: 20px; }
+.price b { font-family: var(--display); font-size: 28px; white-space: nowrap; }
+label { display: block; font-weight: 800; margin-bottom: 4px; }
+input[type="text"], input[type="email"] { width: 100%; font: inherit; font-weight: 700; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); margin-bottom: 14px; }
+input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 600; color: var(--muted); margin: 4px 0 18px; }
+.check input { width: 22px; height: 22px; flex: none; margin-top: 2px; accent-color: var(--violet); }
+.btn { width: 100%; border: 0; cursor: pointer; background: var(--coral); color: var(--card); font-family: var(--body); font-weight: 700; font-size: 18px; padding: 14px; border-radius: 10px; }
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.2); }
+.btn:disabled { opacity: .6; }
+.msg { min-height: 24px; margin-top: 12px; font-size: 15px; color: var(--coral); }
+.steps { margin: 18px 0 0; padding: 0 0 0 20px; color: var(--muted); font-size: 15px; display: grid; gap: 4px; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Accueil</a>
+  <main class="card">
+    <h1>Simulations illimitées</h1>
+    <p class="lead">Dis-moi où envoyer ton code, puis tu passes au paiement.</p>
+    <div class="price"><span>Modifier tes réponses et refaire des simulations, pour toujours</span><b id="price">1 €</b></div>
+
+    <form id="form" novalidate>
+      <label for="nom">Prénom et nom</label>
+      <input id="nom" name="nom" type="text" autocomplete="name" required placeholder="Marie Dupont">
+
+      <label for="mail">Adresse mail</label>
+      <input id="mail" name="mail" type="email" autocomplete="email" inputmode="email" required placeholder="marie@exemple.fr">
+
+      <input class="hp" type="text" id="botcheck" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+      <label class="check" for="ok" style="font-weight:600">
+        <input id="ok" type="checkbox" required>
+        <span>J'accepte que mon nom et mon adresse mail servent uniquement à m'envoyer mon code de déblocage (<a href="legal.html#confidentialite" target="_blank" rel="noopener">confidentialité</a>).</span>
+      </label>
+      <label class="check" for="ok2" style="font-weight:600">
+        <input id="ok2" type="checkbox" required>
+        <span>J'ai lu les <a href="legal.html#cgv" target="_blank" rel="noopener">conditions de vente</a>. Je demande l'accès immédiat à mon code et je renonce à mon droit de rétractation de 14 jours.</span>
+      </label>
+
+      <button class="btn" id="go" type="submit">Continuer vers le paiement</button>
+      <div class="msg" id="msg" role="status"></div>
+    </form>
+
+    <ol class="steps">
+      <li>Tu remplis ce formulaire.</li>
+      <li>Tu paies sur la page sécurisée de Mollie.</li>
+      <li>Une fois le paiement reçu, ton code t'est envoyé par mail. Tu le tapes dans le champ « J'ai déjà un code » du simulateur.</li>
+    </ol>
+  </main>
+  <p style="text-align:center;font-size:13px;margin-top:16px"><a href="legal.html" style="color:inherit;opacity:.7">Mentions légales, CGV, confidentialité</a></p>
+</div>
+
+<script>
+/* À régler avant la mise en ligne */
+var PAYMENT_URL = '';   // lien de paiement Mollie à 1 €, à coller entre les guillemets
+var PRICE_LABEL = '1 €';
+var CONTACT_EMAIL = 'wagramconseil15@gmail.com';
+var FORM_KEY = '77a148e4-eed9-4a7d-8f58-e513b927e632';   // clé publique Web3Forms (web3forms.com), à coller entre les guillemets
+
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  $('price').textContent = PRICE_LABEL;
+  var busy = false;
+
+  $('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (busy) return;
+    var nom = $('nom').value.trim(), mail = $('mail').value.trim();
+    var msg = $('msg');
+    msg.style.color = '';
+    if (nom.length < 3) { msg.textContent = 'Indique ton prénom et ton nom.'; $('nom').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) { msg.textContent = 'Cette adresse mail ne semble pas valide. Vérifie-la.'; $('mail').focus(); return; }
+    if (!$('ok').checked || !$('ok2').checked) { msg.textContent = 'Coche les deux cases pour continuer.'; return; }
+    if ($('botcheck').value) return;
+    if (!PAYMENT_URL) { msg.textContent = 'Le paiement n\'est pas encore ouvert. Écris-moi à ' + CONTACT_EMAIL + ' pour recevoir un code.'; return; }
+    if (!FORM_KEY) { msg.textContent = 'Le formulaire n\'est pas encore configuré. Écris-moi à ' + CONTACT_EMAIL + '.'; return; }
+
+    busy = true; $('go').disabled = true; $('go').textContent = 'Un instant…'; msg.textContent = '';
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: FORM_KEY,
+        subject: 'Ce que coûte mon vote : nouvelle demande de code',
+        from_name: 'Ce que coûte mon vote',
+        name: nom,
+        email: mail,
+        message: 'Nouvelle demande de code Ce que coûte mon vote.\nNom : ' + nom + '\nMail : ' + mail + '\nConditions de vente et renonciation à la rétractation acceptées le ' + new Date().toLocaleString('fr-FR') + '.\nÀ envoyer dès réception du paiement de ' + PRICE_LABEL + '.',
+        botcheck: ''
+      })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.success) throw new Error('fail');
+      if (window.track) track('vote-formulaire-envoye');
+      $('go').textContent = 'Redirection vers le paiement…';
+      window.location.href = PAYMENT_URL;
+    }).catch(function () {
+      busy = false; $('go').disabled = false; $('go').textContent = 'Continuer vers le paiement';
+      msg.textContent = 'Ton adresse n\'a pas pu être enregistrée. Réessaie, ou écris-moi à ' + CONTACT_EMAIL + '.';
+    });
+  });
+})();
+</script>
+<script src="stats.js"></script>
+</body>
+</html>

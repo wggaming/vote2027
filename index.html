@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Combien te coûteraient les programmes économiques du RN, de LFI, du PS et de Renaissance ? Réponds à 12 questions et télécharge ton résultat en page A4.">
+<meta property="og:title" content="Ce que coûte mon vote">
+<meta property="og:description" content="Le simulateur qui chiffre l'impact des programmes présidentiels 2027 sur ton budget.">
+<title>Ce que coûte mon vote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout : une colonne façon "bulletin" — le test en fiches successives, puis un relevé chiffré par parti. */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#18202e; --muted:#5b6577; --line:#d9dee7;
+  --accent:#2b4bd6; --accent-ink:#ffffff; --gain:#13804a; --loss:#c23a2b; --warn:#a86a00;
+  --rn:#1d3a8a; --lfi:#c8283c; --ps:#d4508f; --ctr:#e0a100;
+  --soft:#e8ecf3;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10141c; --surface:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --line:#2a3242;
+  --accent:#7d95ff; --accent-ink:#0d1220; --gain:#45c483; --loss:#ff7a68; --warn:#f0b43c;
+  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --soft:#222a38; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141c; --surface:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --line:#2a3242;
+  --accent:#7d95ff; --accent-ink:#0d1220; --gain:#45c483; --loss:#ff7a68; --warn:#f0b43c;
+  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --soft:#222a38; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,6vw,48px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:700}
+h3{font-size:18px;font-weight:700}
+p{margin:0}
+.eyebrow{font-family:var(--f-num);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:62ch}
+header{display:flex;flex-direction:column;gap:12px}
+.stripe{display:flex;height:6px;border-radius:3px;overflow:hidden;width:160px}
+.stripe i{flex:1}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px}
+/* Quiz */
+.progress{display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.qnum{font-family:var(--f-num);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
+.question{display:flex;flex-direction:column;gap:18px;margin-top:20px}
+.qhelp{color:var(--muted);font-size:14px}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.opt{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-weight:500;cursor:pointer;text-align:left}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft)}
+.opt:focus-visible,.btn:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.numrow{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.numrow input[type=range]{flex:1;min-width:180px;accent-color:var(--accent)}
+.numbox{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface)}
+.numbox input{width:110px;border:0;background:transparent;color:var(--ink);font:600 20px var(--f-num);text-align:right}
+.numbox span{color:var(--muted);font-size:14px}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{font:600 15px var(--f-body);padding:12px 20px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+/* Results */
+#results{display:flex;flex-direction:column;gap:24px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;border-top:5px solid var(--pc)}
+.tile .pname{font-family:var(--f-display);font-weight:700;font-size:15px}
+.tile .big{font:600 26px var(--f-num);font-variant-numeric:tabular-nums}
+.tile .per{font-size:13px;color:var(--muted)}
+.pos{color:var(--gain)} .neg{color:var(--loss)} .zero{color:var(--muted)}
+.chart{display:flex;flex-direction:column;gap:10px}
+.crow{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center}
+.crow .lbl{font-weight:600;font-size:14px}
+.track{position:relative;height:26px;background:var(--soft);border-radius:6px}
+.track .mid{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--muted);opacity:.5}
+.track .fill{position:absolute;top:3px;bottom:3px;border-radius:4px;background:var(--pc)}
+.track .val{position:absolute;top:50%;transform:translateY(-50%);font:600 12px var(--f-num);white-space:nowrap;color:var(--ink)}
+.axis{display:flex;justify-content:space-between;font:500 11px var(--f-num);color:var(--muted);margin-left:132px}
+.party{display:flex;flex-direction:column;gap:14px;border-left:5px solid var(--pc)}
+.phead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.phead .tot{font:600 22px var(--f-num);font-variant-numeric:tabular-nums}
+.lines{display:flex;flex-direction:column}
+.line{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:10px 0;border-top:1px solid var(--line)}
+.line .m{font-weight:600;font-size:15px;min-width:0}
+.line .amt{font:600 15px var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
+.line .note{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.chip{display:inline-block;font:600 11px var(--f-num);letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:2px;border:1px solid currentColor}
+.chip.t1{color:var(--gain)} .chip.t05{color:var(--warn)} .chip.t0{color:var(--loss)}
+.line.excluded .m,.line.excluded .amt{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:14px}
+.facts dt{color:var(--muted)} .facts dd{margin:0;font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.status{font-size:14px;color:var(--muted)}
+.method{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:10px}
+.method a{color:var(--accent)}
+.method ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+@media (max-width:560px){.crow{grid-template-columns:76px 1fr}.axis{margin-left:88px}.facts{grid-template-columns:1fr}.card{padding:18px}}
+@media (prefers-reduced-motion:reduce){.bar span{transition:none}}
+/* Page A4 (rendue hors écran pour le PDF) : look imprimé fixe, couleurs explicites */
+#a4{position:fixed;left:-12000px;top:0;width:794px;height:1123px;background:#ffffff;color:#18202e;font-family:var(--f-body);padding:44px 48px;display:flex;flex-direction:column;gap:18px;overflow:hidden}
+#a4 .a4top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #18202e;padding-bottom:12px}
+#a4 h1{font-size:34px;color:#18202e}
+#a4 .sub{font-size:12px;color:#5b6577}
+#a4 .prof{font-size:12px;color:#18202e;background:#eef1f6;border-radius:8px;padding:10px 14px;line-height:1.5}
+#a4 .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+#a4 .pbox{border:1px solid #d9dee7;border-top:6px solid var(--pc);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+#a4 .pbox .h{display:flex;justify-content:space-between;align-items:baseline}
+#a4 .pbox .n{font:700 15px var(--f-display)}
+#a4 .pbox .v{font:600 20px var(--f-num)}
+#a4 .pbox .mo{font-size:11px;color:#5b6577}
+#a4 .pbox ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
+#a4 .pbox li{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#18202e}
+#a4 .pbox li b{font:600 11px var(--f-num);white-space:nowrap}
+#a4 .pbox .ret{font-size:11px;color:#5b6577;border-top:1px solid #eef1f6;padding-top:5px}
+#a4 .pos{color:#13804a} #a4 .neg{color:#c23a2b} #a4 .zero{color:#5b6577}
+#a4 .chartA4 .crow{grid-template-columns:150px 1fr}
+#a4 .chartA4 .track{background:#eef1f6;height:22px}
+#a4 .chartA4 .val{color:#18202e}
+#a4 .chartA4 .mid{background:#5b6577}
+#a4 .foot{margin-top:auto;font-size:10px;color:#5b6577;line-height:1.45;border-top:1px solid #d9dee7;padding-top:10px}
+#a4 .herit{font-size:12px;color:#18202e}
+
+body{margin:0}
+[hidden]{display:none!important}
+.topnav{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
+.topnav a{color:var(--muted);font-weight:600;text-decoration:none}
+.lockcard{display:flex;flex-direction:column;gap:14px;border:2px solid var(--accent)}
+.lockcard .price{display:flex;justify-content:space-between;align-items:baseline;gap:12px;background:var(--soft);border-radius:10px;padding:12px 16px}
+.lockcard .price b{font:600 26px var(--f-num)}
+.codebox{display:flex;gap:8px;flex-wrap:wrap}
+.codebox input{flex:1;min-width:0;font:600 16px var(--f-num);text-transform:uppercase;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.codemsg{min-height:20px;font-size:14px;color:var(--loss)}
+a.btn{display:inline-block;text-decoration:none;text-align:center}
+footer{font-size:13px;color:var(--muted);text-align:center}
+footer a{color:inherit}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="topnav"><a href="index.html">Ce que coûte mon vote</a><a href="legal.html">Mentions légales</a></nav>
+  <header>
+    <div class="stripe" aria-hidden="true"><i style="background:var(--lfi)"></i><i style="background:var(--ps)"></i><i style="background:var(--ctr)"></i><i style="background:var(--rn)"></i></div>
+    <span class="eyebrow">Présidentielle 2027 · simulateur personnel</span>
+    <h1>Ce que coûte mon vote</h1>
+    <p class="lede">Réponds à une douzaine de questions sur ta situation. On calcule ce que les programmes économiques du RN, de LFI, du PS et de Renaissance changeraient pour ton budget, par an, en ne comptant que les promesses jugées tenables. Ta première simulation est gratuite. Tes réponses restent dans ton navigateur.</p>
+  </header>
+
+  <section class="card" id="quiz" aria-live="polite">
+    <div class="progress"><div class="bar"><span id="pbar"></span></div><span class="qnum" id="qnum">1 / 12</span></div>
+    <div class="question" id="qbox"></div>
+    <div class="nav">
+      <button class="btn" id="prev" type="button">Précédent</button>
+      <button class="btn primary" id="next" type="button">Suivant</button>
+    </div>
+  </section>
+
+  <section id="results" hidden>
+    <div class="actions">
+      <button class="btn primary" id="dl" type="button">Télécharger ma page A4 (PDF)</button>
+      <button class="btn" id="restart" type="button">Modifier mes réponses</button>
+      <span class="status" id="dlstatus"></span>
+    </div>
+    <div class="card lockcard" id="lock" hidden>
+      <h3>Modifier tes réponses ou refaire une simulation</h3>
+      <p class="qhelp">Ta première simulation est offerte. Pour changer tes réponses et tester d'autres situations (salaire, couple, enfants…) autant de fois que tu veux, l'accès illimité coûte <span class="js-price">1 €</span>, une seule fois.</p>
+      <div class="price"><span>Simulations illimitées, pour toujours</span><b class="js-price">1 €</b></div>
+      <a class="btn primary" id="pay" href="acheter.html">Débloquer pour 1 €</a>
+      <p class="qhelp" id="mailline">Tu indiques ton nom et ton mail, tu paies, puis ton code t'est envoyé par mail.</p>
+      <div class="codebox">
+        <input id="code" type="text" placeholder="J'ai déjà un code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de déblocage">
+        <button class="btn" id="codeOk" type="button">Valider</button>
+      </div>
+      <div class="codemsg" id="codemsg" role="status"></div>
+    </div>
+    <div>
+      <span class="eyebrow">Ton résultat</span>
+      <h2 style="margin-top:6px">Impact net sur ton budget, par an</h2>
+      <p class="lede" style="margin-top:6px">Positif : tu gagnes. Négatif : ça te coûte. Comparé aux règles en vigueur fin 2026.</p>
+    </div>
+    <div class="summary" id="tiles"></div>
+    <div class="card chart" id="chart"></div>
+    <div id="parties" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="card method">
+      <h3 style="color:var(--ink)">Comment on calcule</h3>
+      <ul>
+        <li><b>Tenable (×1)</b> : la mesure est légale, chiffrable et finançable dans un quinquennat. Comptée en entier.</li>
+        <li><b>À moitié (×0,5)</b> : faisable mais très coûteuse, contestable juridiquement ou dépendante d'autres acteurs. Comptée pour moitié.</li>
+        <li><b>Non tenable (×0)</b> : contraire au droit européen ou à la Constitution, facultative, ou sans financement crédible. Affichée barrée, non comptée.</li>
+        <li>Impôt sur le revenu : barème 2026, abattement de 10 %, quotient familial plafonné, décote. Un conjoint salarié est traité comme un salarié du privé.</li>
+        <li>Quand un programme ne publie pas ses chiffres (barème LFI à 14 tranches, droits de succession), on applique une hypothèse signalée dans la ligne concernée.</li>
+        <li>Ne sont pas comptés : les effets indirects (inflation, emploi, dette, baisse des services publics) et les mesures non chiffrables.</li>
+      </ul>
+      <p>Sources des programmes (consultées en novembre 2026) : <a href="https://votons-2027.fr/candidats/bardella/programme/economie" target="_blank" rel="noopener">RN</a>, <a href="https://votons-2027.fr/candidats/melenchon/programme/economie" target="_blank" rel="noopener">LFI</a>, <a href="https://votons-2027.fr/candidats/faure/programme/economie" target="_blank" rel="noopener">PS</a>, <a href="https://selectra.info/finance/actualites/marche/csg-progressive-2027-salaire-net-smic" target="_blank" rel="noopener">CSG progressive du PS</a>, <a href="https://votons-2027.fr/candidats/attal/programme/economie" target="_blank" rel="noopener">Renaissance</a>. Simulation indicative et non partisane.</p>
+    </div>
+  </section>
+  <footer><p>Ce que coûte mon vote · <a class="js-mail" href="#">Nous contacter</a> · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p></footer>
+</div>
+
+<div id="a4" aria-hidden="true"></div>
+
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------- accès payant : à régler ici ---------- */
+var PAYMENT_URL = '';              // lien de paiement Mollie à 1 € (Payment Link), à coller entre les guillemets
+var CONTACT_EMAIL = 'wagramconseil15@gmail.com';
+var PRICE_LABEL = '1 €';
+var SECRET = '22JLN654R8P7NVPJXE9Q';
+var REVOKED = [];                  // codes désactivés, ex. 'VO-0007-ABCDE'
+var ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function cyrb53(str, seed) {
+  var h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (var i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+}
+function checkPart(serial){ var n = cyrb53(SECRET + ':' + serial, 7) % 33554432, s = ''; for (var i = 0; i < 5; i++) { s = ALPHA.charAt(n % 32) + s; n = Math.floor(n / 32); } return s; }
+function isValidCode(raw){
+  var c = String(raw).toUpperCase().replace(/[\s\-_.]/g, '');
+  var m = /^VO(\d{4})([A-Z0-9]{5})$/.exec(c);
+  if (!m) return false;
+  if (REVOKED.indexOf('VO-' + m[1] + '-' + m[2]) > -1) return false;
+  return m[2] === checkPart(m[1]);
+}
+function ld(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var unlocked = ld('vo-unlock', false) === true;
+var done = ld('vo-done', false) === true;
+const SMIC = 1478; // SMIC net mensuel temps plein, 2026
+const fmt = n => (n>0?"+":n<0?"−":"") + Math.abs(Math.round(n/10)*10).toLocaleString("fr-FR") + " €";
+const fmtPlain = n => Math.round(n).toLocaleString("fr-FR") + " €";
+const cls = n => n>5?"pos":n<-5?"neg":"zero";
+
+/* ---------- Questions ---------- */
+const Q = [
+ {id:"sit", t:"Quelle est ta situation principale ?", type:"choice", opts:[
+   ["prive","Salarié du privé"],["fonct","Fonctionnaire"],["indep","Indépendant"],
+   ["chom","Demandeur d'emploi indemnisé"],["retr","Retraité"],["etud","Étudiant ou sans activité"]]},
+ {id:"age", t:"Quel âge as-tu ?", type:"choice", opts:[["u30","Moins de 30 ans"],["a30","30 à 49 ans"],["a50","50 à 61 ans"],["a62","62 ans et plus"]]},
+ {id:"rev", t:"Ton revenu net mensuel", help:"Salaire, pension ou allocation, avant prélèvement à la source.", type:"num", min:0, max:12000, step:50, unit:"€ / mois"},
+ {id:"couple", t:"Vis-tu en couple (marié ou pacsé) ?", type:"choice", opts:[["non","Non, seul"],["oui","Oui, en couple"]]},
+ {id:"revc", t:"Revenu net mensuel de ton conjoint", help:"Mets 0 s'il ou elle n'a pas de revenu.", type:"num", min:0, max:12000, step:50, unit:"€ / mois", when:a=>a.couple==="oui"},
+ {id:"sitc", t:"Ton conjoint est plutôt…", type:"choice", opts:[["sal","Salarié ou fonctionnaire"],["retr","Retraité"],["autre","Indépendant, sans activité ou autre"]], when:a=>a.couple==="oui"&&+a.revc>0},
+ {id:"enf", t:"Combien d'enfants à charge ?", type:"choice", opts:[["0","Aucun"],["1","1"],["2","2"],["3","3 ou plus"]]},
+ {id:"log", t:"Ton logement", type:"choice", opts:[["loc","Locataire sans APL"],["apl","Locataire avec APL"],["prop","Propriétaire"]]},
+ {id:"ener", t:"Électricité et gaz du logement", help:"Montant moyen des factures du foyer.", type:"num", min:0, max:600, step:10, unit:"€ / mois"},
+ {id:"carb", t:"Carburant (essence, gazole)", help:"Dépense moyenne du foyer.", type:"num", min:0, max:600, step:10, unit:"€ / mois"},
+ {id:"cap", t:"Revenus de ton épargne et placements par an", help:"Dividendes, intérêts, plus-values. Hors Livret A, LDDS et LEP.", type:"choice", opts:[["0","Aucun ou presque"],["500","Environ 500 €"],["3000","Environ 3 000 €"],["15000","Environ 15 000 €"],["60000","Plus de 40 000 €"]]},
+ {id:"pat", t:"Patrimoine net total du foyer", help:"Immobilier compris, moins les crédits restant dus.", type:"choice", opts:[["0","Moins de 1,3 M€"],["2000000","1,3 à 3 M€"],["5000000","3 à 10 M€"],["25000000","10 à 100 M€"],["200000000","Plus de 100 M€"]]},
+ {id:"her", t:"Héritage ou donation attendu de tes parents d'ici 10 ans", help:"Ta part personnelle, à peu près.", type:"choice", opts:[["0","Rien de prévu"],["75000","Moins de 100 000 €"],["150000","100 000 à 200 000 €"],["300000","200 000 à 500 000 €"],["700000","500 000 € à 1 M€"],["2000000","Plus de 1 M€"]]}
+];
+const A = {sit:"prive",age:"a30",rev:2200,couple:"oui",revc:1800,sitc:"sal",enf:"1",log:"loc",ener:120,carb:120,cap:"0",pat:"0",her:"0"};
+try{const s=JSON.parse(localStorage.getItem("vo-answers")||"null"); if(s) Object.assign(A,s);}catch(e){}
+const save=()=>{try{localStorage.setItem("vo-answers",JSON.stringify(A))}catch(e){}};
+
+let step=0;
+const visible=()=>Q.filter(q=>!q.when||q.when(A));
+function renderQ(){
+  const vs=visible(); if(step>=vs.length) step=vs.length-1;
+  const q=vs[step];
+  document.getElementById("qnum").textContent=(step+1)+" / "+vs.length;
+  document.getElementById("pbar").style.width=((step+1)/vs.length*100)+"%";
+  const box=document.getElementById("qbox"); box.innerHTML="";
+  const h=document.createElement("h2"); h.textContent=q.t; box.appendChild(h);
+  if(q.help){const p=document.createElement("p");p.className="qhelp";p.textContent=q.help;box.appendChild(p);}
+  if(q.type==="choice"){
+    const o=document.createElement("div");o.className="options";
+    q.opts.forEach(([v,l])=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=l;
+      b.setAttribute("aria-pressed",String(String(A[q.id])===v));
+      b.onclick=()=>{A[q.id]=v;save();renderQ();setTimeout(next,140);};o.appendChild(b);});
+    box.appendChild(o);
+  } else {
+    const r=document.createElement("div");r.className="numrow";
+    const rg=document.createElement("input");rg.type="range";rg.min=q.min;rg.max=q.max;rg.step=q.step;rg.value=A[q.id];rg.id="r_"+q.id;rg.setAttribute("aria-label",q.t);
+    const nb=document.createElement("label");nb.className="numbox";
+    const ni=document.createElement("input");ni.type="number";ni.min=q.min;ni.max=q.max*3;ni.step=q.step;ni.value=A[q.id];ni.id="n_"+q.id;ni.inputMode="numeric";
+    const u=document.createElement("span");u.textContent=q.unit;nb.append(ni,u);
+    rg.oninput=()=>{A[q.id]=+rg.value;ni.value=rg.value;save();};
+    ni.oninput=()=>{const v=Math.max(0,+ni.value||0);A[q.id]=v;rg.value=Math.min(v,q.max);save();};
+    ni.onkeydown=e=>{if(e.key==="Enter")next();};
+    r.append(rg,nb);box.appendChild(r);
+  }
+  document.getElementById("prev").disabled=step===0;
+  document.getElementById("next").textContent=step===vs.length-1?"Voir mon résultat":"Suivant";
+}
+function next(){const vs=visible(); if(step<vs.length-1){step++;renderQ();} else showResults();}
+document.getElementById("next").onclick=next;
+document.getElementById("prev").onclick=()=>{if(step>0){step--;renderQ();}};
+function openQuiz(){document.getElementById("lock").hidden=true;document.getElementById("results").hidden=true;document.getElementById("quiz").hidden=false;step=0;renderQ();document.getElementById("quiz").scrollIntoView({behavior:"smooth"});}
+document.getElementById("restart").onclick=()=>{ if(unlocked||!done){openQuiz();return;} const l=document.getElementById("lock"); l.hidden=false; if(window.track)track("vote-demande-modif"); l.scrollIntoView({behavior:"smooth",block:"center"}); };
+function tryUnlock(raw){ const c=String(raw||"").trim().toUpperCase(); if(c&&isValidCode(c)){unlocked=true;sv("vo-unlock",true);refreshAccess();return true;} return false; }
+function refreshAccess(){
+  document.getElementById("restart").textContent=unlocked||!done?"Modifier mes réponses":"Modifier mes réponses ("+PRICE_LABEL+")";
+  if(unlocked) document.getElementById("lock").hidden=true;
+  const pay=document.getElementById("pay");
+  if(PAYMENT_URL){pay.href="acheter.html";pay.textContent="Débloquer pour "+PRICE_LABEL;document.getElementById("mailline").textContent="Tu indiques ton nom et ton mail, tu paies, puis ton code t'est envoyé par mail.";}
+  else{pay.href="mailto:"+CONTACT_EMAIL+"?subject="+encodeURIComponent("Ce que coûte mon vote - demande de code");pay.textContent="Demander mon code";document.getElementById("mailline").textContent="Écris à "+CONTACT_EMAIL+" et je t'envoie un code.";}
+  document.querySelectorAll(".js-price").forEach(e=>e.textContent=PRICE_LABEL);
+  document.querySelectorAll(".js-mail").forEach(a=>{a.href="mailto:"+CONTACT_EMAIL;a.textContent=CONTACT_EMAIL;});
+}
+document.getElementById("codeOk").onclick=()=>{ const m=document.getElementById("codemsg"); if(tryUnlock(document.getElementById("code").value)){m.style.color="var(--gain)";m.textContent="Accès illimité activé. Tu peux modifier tes réponses.";if(window.track)track("vote-code-ok");setTimeout(openQuiz,900);} else {m.style.color="";m.textContent="Ce code ne fonctionne pas. Vérifie-le et réessaie.";} };
+document.getElementById("code").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("codeOk").click();});
+
+/* ---------- Fiscalité ---------- */
+const BAREME=[[11600,0],[29579,.11],[84577,.30],[181917,.41],[Infinity,.45]];
+function taxPerPart(q){let t=0,prev=0;for(const [lim,r] of BAREME){if(q>prev)t+=(Math.min(q,lim)-prev)*r;prev=lim;}return t;}
+function tmi(R,parts){const q=R/parts;let prev=0;for(const [lim,r] of BAREME){if(q<=lim)return r;prev=lim;}return .45;}
+function IR(R,parts,couple){
+  const base=couple?2:1; const tBase=taxPerPart(R/base)*base; let t=taxPerPart(R/parts)*parts;
+  const maxAdv=1807*Math.round((parts-base)*2); if(tBase-t>maxAdv) t=tBase-maxAdv;
+  const seuil=couple?3277:1982, dec=couple?1483:897; if(t<seuil) t=Math.max(0,t-(dec-.4525*t));
+  return Math.max(0,t);
+}
+function kidParts(n,full2){ if(n<=0)return 0; if(n===1)return .5; if(n===2)return full2?1.5:1; return (full2?1.5:1)+(n-2); }
+const SUCC=[[8072,.05],[12109,.10],[15932,.15],[552324,.20],[902838,.30],[1805677,.40],[Infinity,.45]];
+function droits(H,abatt){const b=Math.max(0,H-abatt);let t=0,prev=0;for(const [lim,r] of SUCC){if(b>prev)t+=(Math.min(b,lim)-prev)*r;prev=lim;}return t;}
+const ISFB=[[800000,0],[1300000,.005],[2570000,.007],[5000000,.01],[10000000,.0125],[Infinity,.015]];
+function isf(P){if(P<1300000)return 0;let t=0,prev=0;for(const [lim,r] of ISFB){if(P>prev)t+=(Math.min(P,lim)-prev)*r;prev=lim;}return t;}
+function smicGain(s,target){ // gain mensuel
+  if(s<=0)return 0; if(s<SMIC) return s*(target/SMIC-1);
+  if(s<target) return target-s;
+  const band=.3*target; if(s<target+band) return (target-SMIC)*.3*(1-(s-target)/band);
+  return 0;
+}
+function csgPS(s){ // gain mensuel CSG progressive (chiffrage PS)
+  if(s<=0)return 0; if(s<=SMIC) return 130*s/SMIC;
+  if(s<=2000) return 130-(13*(s-SMIC)/(2000-SMIC));
+  if(s<=2700) return 117*(1-(s-2000)/700);
+  return 0;
+}
+function attal(s){ if(s<=0)return 0; if(s<=2200) return 250*s/2200; if(s<4400) return 250*(1-(s-2200)/2200); return 0; }
+
+/* ---------- Programmes ---------- */
+const PARTIES=[
+ {k:"rn",name:"Rassemblement national",short:"RN",c:"--rn"},
+ {k:"lfi",name:"La France insoumise",short:"LFI",c:"--lfi"},
+ {k:"ps",name:"Parti socialiste",short:"PS",c:"--ps"},
+ {k:"ctr",name:"Renaissance (centre)",short:"Renaissance",c:"--ctr"}
+];
+function compute(a){
+  const me=+a.rev||0, couple=a.couple==="oui", cj=couple?(+a.revc||0):0, cjw=couple&&a.sitc!=="retr"&&a.sitc!=="autre"?cj:0, nk=+a.enf, sit=a.sit;
+  const actif=["prive","fonct","indep"].includes(sit), worker=actif;
+  const R=(me+cj)*12*.9, parts=(couple?2:1)+kidParts(nk,false);
+  const ir=IR(R,parts,couple), t=tmi(R,parts);
+  const persons=(couple?2:1)+nk, uc=1+(couple?.5:0)+.3*nk, ndv=(me+cj)/uc;
+  const cap=+a.cap, P=+a.pat, H=+a.her;
+  const L=(m,v,k,n)=>({m,v,k,n});
+  const res={};
+
+  /* RN */
+  const rn=[];
+  if(a.ener>0) rn.push(L("TVA à 5,5 % sur l'électricité et le gaz",a.ener*12*(1-1.055/1.2),1,"Autorisé par la directive TVA européenne de 2022."));
+  if(a.carb>0) rn.push(L("TVA à 5,5 % sur les carburants",a.carb*12*(1-1.055/1.2),0,"Le droit européen interdit un taux réduit sur l'essence et le gazole. Non retenue."));
+  rn.push(L("TVA à 0 % sur les produits de première nécessité",persons*45,.5,"Liste non publiée. Hypothèse : 45 € par personne et par an. Coûteux pour l'État."));
+  if(a.age==="u30"&&actif&&ir>0) rn.push(L("Pas d'impôt sur le revenu avant 30 ans",ir*(me/((me+cj)||1)),.5,"Risque de censure pour rupture d'égalité devant l'impôt."));
+  if(nk>=2){const g=ir-IR(R,(couple?2:1)+kidParts(nk,true),couple); if(g>1) rn.push(L("Une part fiscale entière dès le 2e enfant",g,1,"Simple modification du quotient familial."));}
+  if(sit==="prive"&&me<=3*SMIC) rn.push(L("Hausse de 10 % des salaires exonérée de cotisations",me*.10*12,0,"Facultative pour l'employeur : rien n'est garanti. Non retenue."));
+  res.rn={lines:rn,retraite:"64 ans maintenu, départ à 60 ans si début de carrière avant 20 ans et 40 annuités.",
+    herit:H>0?{now:droits(H,100000),then:H<=300000?0:droits(H,100000),hyp:"Hypothèse : exonération jusqu'à 300 000 € par enfant (« classes moyennes »)."}:null};
+
+  /* LFI */
+  const lfi=[];
+  const sm=(sit==="prive"?smicGain(me,1700):0)+smicGain(cjw,1700);
+  if(sm>1) lfi.push(L("SMIC à 1 700 € net",sm*12,.5,"Faisable par décret, mais +15 % d'un coup pèse sur l'emploi dans les petites entreprises."));
+  if(sit==="fonct") lfi.push(L("Point d'indice +10 %",me*.10*.8*12,.5,"Environ 80 % du salaire indexé. Coût de l'ordre de 20 Md€ par an."));
+  let base=ir;
+  if(couple){const sp=1+kidParts(nk,false)/2; const sep=IR(me*12*.9,sp,false)+IR(cj*12*.9,sp,false); const d=ir-sep; base=sep;
+    if(Math.abs(d)>1) lfi.push(L("Fin du quotient conjugal (imposition individuelle)",d,1,"Chaque conjoint déclare seul. Pénalise les couples aux revenus inégaux."));}
+  const perPart=(me+cj)/parts; const f=perPart<4000?-.10:perPart<8000?.15:.40;
+  if(base>0) lfi.push(L("Impôt sur le revenu à 14 tranches",-base*f,1,"Barème non publié. Hypothèse : −10 % sous 4 000 € net par part, +15 % jusqu'à 8 000 €, +40 % au-delà."));
+  if(cap>0){const d=cap*(.30-(t+.172)); lfi.push(L("Fin de la flat tax : placements imposés au barème",d,1,"Tranche marginale "+Math.round(t*100)+" % + 17,2 % de prélèvements sociaux, contre 30 % aujourd'hui."));}
+  if(P>=1300000){lfi.push(L("Retour de l'ISF (à la place de l'IFI)",-(isf(P)-isf(P*.5)),1,"Ancien barème de l'ISF. Hypothèse : moitié du patrimoine en immobilier, déjà soumis à l'IFI."));
+    if(P>100000000) lfi.push(L("Taxe Zucman (2 % au-delà de 100 M€)",-Math.max(0,.02*P-isf(P)),.5,"Risque constitutionnel et d'exil fiscal."));}
+  if(ndv>2750) lfi.push(L("Retour d'une taxe d'habitation pour les 20 % les plus aisés",-800,1,"Hypothèse : 800 € par an en moyenne. 80 % des ménages exonérés."));
+  if(a.log==="apl") lfi.push(L("APL +10 %",300,1,"Sur une APL moyenne d'environ 250 € par mois."));
+  if(sit==="etud"&&me<1337) lfi.push(L("Garantie d'autonomie à 1 337 € par mois",(1337-me)*12,0,"Très coûteuse, financement non détaillé. Non retenue."));
+  if(sit==="retr"&&me<1700) lfi.push(L("Pension minimale au niveau du SMIC",(1700-me)*12,0,"Pour une carrière complète. Coût très élevé. Non retenue."));
+  res.lfi={lines:lfi,retraite:"Retour à 60 ans avec 40 annuités (peu tenable). Un retour à 62 ans est plus réaliste.",
+    herit:H>0?{now:droits(H,100000),then:H<150000?0:droits(H,100000),hyp:"Exonération sous 150 000 €. Au-delà, barème non publié : hypothèse du barème actuel (plafond à 12 M€)."}:null};
+
+  /* PS */
+  const ps=[];
+  const csgMe=["prive","fonct","indep"].includes(sit)?csgPS(me):0, csgCj=csgPS(cjw);
+  if(csgMe+csgCj>1) ps.push(L("CSG progressive jusqu'à 2 700 € net",(csgMe+csgCj)*12,1,"Chiffrage du PS : environ 130 € par mois au SMIC, 0 € au-delà de 2 700 €."));
+  const smps=(sit==="prive"?Math.max(0,smicGain(me+csgMe,1690)):0)+Math.max(0,(cjw?smicGain(cjw+csgCj,1690):0));
+  if(smps>1) ps.push(L("SMIC à 1 690 € net (en plus de la CSG)",smps*12,.5,"Faisable par décret, mais hausse rapide du coût du travail."));
+  if(sit==="fonct"&&me<2700) ps.push(L("Point d'indice revalorisé (catégories B et C)",me*.03*.8*12,1,"Montant non publié. Hypothèse : +3 %."));
+  if(cap>0){const d=cap*(.30-(t+.172)); ps.push(L("Fin de la flat tax : revenus financiers à l'impôt",d,1,"Tranche marginale "+Math.round(t*100)+" % + 17,2 % de prélèvements sociaux, contre 30 % aujourd'hui."));}
+  if(P>100000000) ps.push(L("Taxe Zucman (2 % au-delà de 100 M€)",-.015*P,.5,"Hypothèse : 0,5 % déjà payé en impôts. Risque constitutionnel et d'exil fiscal."));
+  res.ps={lines:ps,retraite:"Retour à 62 ans avec 43 annuités, pénibilité élargie.",
+    herit:H>0?{now:droits(H,100000),then:droits(H,200000),hyp:"Abattement unique de 200 000 € sur la vie. Au-delà, hypothèse du barème actuel."}:null};
+
+  /* Renaissance */
+  const ctr=[];
+  const at=(["prive","fonct"].includes(sit)?attal(me):0)+attal(cjw);
+  if(at>1) ctr.push(L("+250 € net par mois au salaire médian (baisse de cotisations)",at*12,.5,"Coûteux, à financer par 150 Md€ d'économies non détaillées. Hypothèse : gain dégressif au-delà de 2 200 €, nul à partir de 4 400 € net."));
+  if(sit==="chom") ctr.push(L("Nouvelle réforme de l'assurance chômage",-me*.12*12,1,"5 Md€ d'économies visées, soit environ 12 % des allocations."));
+  ctr.push(L("Aucune hausse d'impôt pendant le quinquennat",0,1,"Pas de changement direct. Les 150 Md€ d'économies peuvent toucher les services publics."));
+  res.ctr={lines:ctr,retraite:"64 ans maintenu, vers un système universel avec une part de capitalisation.",
+    herit:H>0?{now:droits(H,100000),then:droits(H,100000),hyp:"Pas de hausse des droits de succession."}:null};
+
+  for(const p of PARTIES){const r=res[p.k]; r.total=r.lines.reduce((s,l)=>s+l.v*l.k,0);}
+  return res;
+}
+
+/* ---------- Affichage ---------- */
+const chip=k=>k===1?'<span class="chip t1">Tenable</span>':k===.5?'<span class="chip t05">À moitié</span>':'<span class="chip t0">Non tenable</span>';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let last=null;
+function chartHTML(res){
+  const max=Math.max(200,...PARTIES.map(p=>Math.abs(res[p.k].total)));
+  const nice=Math.ceil(max*1.3/500)*500;
+  let h="";
+  for(const p of PARTIES){const v=res[p.k].total, w=Math.abs(v)/nice*50;
+    const left=v>=0?50:50-w;
+    const valPos=v>=0?`left:calc(${50+w}% + 6px)`:`right:calc(${50+w}% + 6px)`;
+    h+=`<div class="crow" style="--pc:var(${p.c})"><span class="lbl">${p.short}</span><div class="track"><span class="mid"></span><span class="fill" style="left:${left}%;width:${w}%"></span><span class="val" style="${valPos}">${fmt(v)}</span></div></div>`;}
+  h+=`<div class="axis"><span>−${nice.toLocaleString("fr-FR")} €</span><span>0</span><span>+${nice.toLocaleString("fr-FR")} €</span></div>`;
+  return h;
+}
+function showResults(fromLoad){
+  const res=compute(A); last=res;
+  if(!fromLoad&&window.track) track(done?"vote-simulation-payante":"vote-simulation-gratuite");
+  done=true; sv("vo-done",true); refreshAccess();
+  document.getElementById("quiz").hidden=true; const R=document.getElementById("results"); R.hidden=false;
+  document.getElementById("tiles").innerHTML=PARTIES.map(p=>{const v=res[p.k].total;
+    return `<div class="tile" style="--pc:var(${p.c})"><span class="pname">${p.name}</span><span class="big ${cls(v)}">${fmt(v)}</span><span class="per">soit ${fmt(v/12)} par mois</span></div>`}).join("");
+  document.getElementById("chart").innerHTML=`<h3>Comparaison</h3>`+chartHTML(res);
+  document.getElementById("parties").innerHTML=PARTIES.map(p=>{const r=res[p.k];
+    const lines=r.lines.map(l=>`<div class="line${l.k===0?" excluded":""}"><span class="m">${esc(l.m)}${chip(l.k)}</span><span class="amt ${l.k?cls(l.v*l.k):"zero"}">${l.k===0?fmt(l.v):fmt(l.v*l.k)}</span><span class="note">${esc(l.n)}${l.k===.5?" Montant plein : "+fmt(l.v)+".":""}</span></div>`).join("");
+    const her=r.herit?`<dt>Droits sur ton héritage</dt><dd>${fmtPlain(r.herit.then)} (aujourd'hui ${fmtPlain(r.herit.now)}). ${esc(r.herit.hyp)}</dd>`:"";
+    return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.</p>'}</div><dl class="facts"><dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}</dd>${her}</dl></article>`}).join("");
+  document.getElementById("dlstatus").textContent="";
+  if(!fromLoad) R.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ---------- Page A4 ---------- */
+const LBL={sit:{prive:"salarié du privé",fonct:"fonctionnaire",indep:"indépendant",chom:"demandeur d'emploi",retr:"retraité",etud:"étudiant ou sans activité"},
+  age:{u30:"moins de 30 ans",a30:"30-49 ans",a50:"50-61 ans",a62:"62 ans et plus"},log:{loc:"locataire",apl:"locataire avec APL",prop:"propriétaire"}};
+function buildA4(res){
+  const a=A, enf=+a.enf;
+  const prof=`${LBL.sit[a.sit]}, ${LBL.age[a.age]}, ${fmtPlain(+a.rev)} net/mois${a.couple==="oui"?", en couple (conjoint : "+fmtPlain(+a.revc)+")":", seul"}, ${enf?enf+(enf>=3?"+":"")+" enfant"+(enf>1?"s":""):"sans enfant"}, ${LBL.log[a.log]}. Énergie ${fmtPlain(+a.ener)}/mois, carburant ${fmtPlain(+a.carb)}/mois.`;
+  const boxes=PARTIES.map(p=>{const r=res[p.k];
+    const ls=r.lines.filter(l=>l.k>0&&Math.abs(l.v)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,5)
+      .map(l=>`<li><span>${esc(l.m)}${l.k===.5?" (½)":""}</span><b class="${cls(l.v*l.k)}">${fmt(l.v*l.k)}</b></li>`).join("")||`<li><span>Aucune mesure chiffrable pour ton profil</span><b class="zero">0 €</b></li>`;
+    const her=r.herit?`<div class="ret">Héritage : ${fmtPlain(r.herit.then)} de droits (aujourd'hui ${fmtPlain(r.herit.now)})</div>`:"";
+    return `<div class="pbox" style="--pc:var(${p.c})"><div class="h"><span class="n">${p.name}</span><span class="v ${cls(r.total)}">${fmt(r.total)}</span></div><span class="mo">par an, soit ${fmt(r.total/12)} par mois</span><ul>${ls}</ul><div class="ret">Retraite : ${esc(r.retraite)}</div>${her}</div>`}).join("");
+  const d=new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
+  document.getElementById("a4").innerHTML=`
+   <div class="a4top"><div><div class="eyebrow" style="color:#5b6577">Présidentielle 2027 · simulation personnelle</div><h1>Ce que coûte mon vote</h1></div><div class="sub">Édité le ${d}</div></div>
+   <div class="prof"><b>Mon profil :</b> ${esc(prof)}</div>
+   <div><div style="font:700 15px var(--f-display);margin-bottom:8px">Impact net sur mon budget, par an</div><div class="chart chartA4">${chartHTML(res)}</div></div>
+   <div class="grid">${boxes}</div>
+   <div class="foot">Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance). Simulation indicative et non partisane.</div>`;
+}
+async function download(){
+  const st=document.getElementById("dlstatus"), b=document.getElementById("dl");
+  if(!last) return;
+  if(!window.html2canvas||!window.jspdf){st.textContent="Le générateur de PDF n'a pas pu se charger. Recharge la page.";return;}
+  b.disabled=true; st.textContent="Préparation de ta page A4…";
+  try{
+    buildA4(last); if(document.fonts&&document.fonts.ready) await document.fonts.ready;
+    const node=document.getElementById("a4");
+    const canvas=await html2canvas(node,{scale:2,backgroundColor:"#ffffff",width:794,height:1123,windowWidth:794,x:0,y:0,scrollX:0,scrollY:0,
+      onclone:doc=>{const n=doc.getElementById("a4");n.style.left="0";}});
+    const pdf=new window.jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+    pdf.addImage(canvas.toDataURL("image/jpeg",.92),"JPEG",0,0,210,297);
+    pdf.save("ce-que-coute-mon-vote.pdf");
+    if(window.track) track("vote-pdf");
+    st.textContent="PDF téléchargé.";
+  }catch(e){ st.textContent="Le PDF n'a pas pu être créé. Réessaie."; }
+  finally{b.disabled=false;}
+}
+document.getElementById("dl").onclick=download;
+(function(){const m=location.search.match(/[?&]code=([^&]+)/); if(m){tryUnlock(decodeURIComponent(m[1])); history.replaceState(null,"",location.pathname);}})();
+refreshAccess();
+if(done){ showResults(true); }
+renderQ();
+})();
+</script>
+<script src="stats.js"></script>
+
+</body>
+</html>
