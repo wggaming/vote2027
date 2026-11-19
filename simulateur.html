@@ -382,7 +382,7 @@ document.getElementById("share").onclick=async()=>{
   try{ if(navigator.share){await navigator.share({title:"Ce que coûte mon vote",text,url});return;} await navigator.clipboard.writeText(text+" "+url); document.getElementById("dlstatus").textContent="Lien copié, tu peux le coller où tu veux."; }catch(e){}
 };
 document.getElementById("restart").onclick=()=>{ if(unlocked||!done){openQuiz();return;} showLock("modif"); };
-function tryUnlock(raw){ return window.checkCode(raw).then(ok=>{ if(ok){unlocked=true;sv("vo-unlock",true);refreshAccess();} return ok; }); }
+function tryUnlock(raw,via){ return window.checkCode(raw).then(ok=>{ if(ok){unlocked=true;sv("vo-unlock",true);refreshAccess();if(window.track)track("vote-code-"+(window.lastCodeId||"inconnu")+"-"+(via||"champ"));} return ok; }); }
 function refreshAccess(){
   document.getElementById("restart").textContent=unlocked||!done?"Modifier mes réponses":"Modifier mes réponses ("+PRICE_LABEL+")";
   document.getElementById("refine").textContent=unlocked?"Affiner mon résultat":"Affiner mon résultat ("+PRICE_LABEL+")";
@@ -627,7 +627,7 @@ async function download(){
   finally{b.disabled=false;}
 }
 document.getElementById("dl").onclick=download;
-(function(){const m=location.search.match(/[?&]code=([^&]+)/); if(m){tryUnlock(decodeURIComponent(m[1])); history.replaceState(null,"",location.pathname);}})();
+(function(){const m=location.search.match(/[?&]code=([^&]+)/); if(m){tryUnlock(decodeURIComponent(m[1]),"lien"); history.replaceState(null,"",location.pathname);}})();
 refreshAccess();
 if(done){ showResults(true); }
 renderQ();
