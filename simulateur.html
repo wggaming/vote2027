@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Combien te coûteraient les programmes économiques du RN, de LFI, du PS, de Renaissance, de LR et des Écologistes ? Réponds à 12 questions et télécharge ton résultat en page A4.">
 <meta property="og:title" content="Ce que coûte mon vote">
-<meta property="og:image" content="https://wggaming.github.io/vote2027/og.png">
-<meta property="og:url" content="https://wggaming.github.io/vote2027/">
+<meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
+<meta property="og:url" content="https://vote.wagramconseil.fr/">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:description" content="Le simulateur qui chiffre l'impact des programmes présidentiels 2027 sur ton budget.">
 <title>Le test · Ce que coûte mon vote : impôts, SMIC, retraite, IFI selon les programmes 2027</title>
-<link rel="canonical" href="https://wggaming.github.io/vote2027/simulateur.html">
+<link rel="canonical" href="https://vote.wagramconseil.fr/simulateur.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
@@ -377,7 +377,7 @@ function openQuiz(fine){document.getElementById("lock").hidden=true;document.get
 document.getElementById("teaserbtn").onclick=()=>showLock("encart");
 document.getElementById("pay").addEventListener("click",()=>{if(window.track)track("vote-clic-achat");});
 document.getElementById("share").onclick=async()=>{
-  const url="https://wggaming.github.io/vote2027/", text="J'ai fait le test : voilà ce que les programmes de la présidentielle changeraient pour mon budget. Et toi, combien ça te coûte ?";
+  const url="https://vote.wagramconseil.fr/", text="J'ai fait le test : voilà ce que les programmes de la présidentielle changeraient pour mon budget. Et toi, combien ça te coûte ?";
   if(window.track)track("vote-partage-resultat");
   try{ if(navigator.share){await navigator.share({title:"Ce que coûte mon vote",text,url});return;} await navigator.clipboard.writeText(text+" "+url); document.getElementById("dlstatus").textContent="Lien copié, tu peux le coller où tu veux."; }catch(e){}
 };
@@ -605,7 +605,7 @@ function buildA4(res){
    <div class="prof"><b>Mon profil :</b> ${esc(prof)}</div>
    <div><div style="font:700 15px var(--f-display);margin-bottom:8px">Impact net sur mon budget, par an</div><div class="chart chartA4">${chartHTML(res)}</div></div>
    <div class="grid">${boxes}</div>
-   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, combien ça te coûte ? Test gratuit sur <span style="color:#2b4bd6">wggaming.github.io/vote2027</span></b><br>Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance, LR, Écologistes). Simulation indicative et non partisane.</div>`;
+   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, combien ça te coûte ? Test gratuit sur <span style="color:#2b4bd6">vote.wagramconseil.fr</span></b><br>Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance, LR, Écologistes). Simulation indicative et non partisane.</div>`;
 }
 async function download(){
   const st=document.getElementById("dlstatus"), b=document.getElementById("dl");
