@@ -229,6 +229,7 @@ footer a{color:inherit}
 
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
+<script src="codes.js"></script>
 <script>
 (function(){
 "use strict";
@@ -236,24 +237,6 @@ footer a{color:inherit}
 var PAYMENT_URL = 'https://payment-links.mollie.com/payment/mQCBpcFSWbAwfDTjG9wah';  // lien de paiement Mollie à 1 €
 var CONTACT_EMAIL = 'wagramconseil15@gmail.com';
 var PRICE_LABEL = '1 €';
-var SECRET = '22JLN654R8P7NVPJXE9Q';
-var REVOKED = [];                  // codes désactivés, ex. 'VO-0007-ABCDE'
-var ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-function cyrb53(str, seed) {
-  var h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-  for (var i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
-function checkPart(serial){ var n = cyrb53(SECRET + ':' + serial, 7) % 33554432, s = ''; for (var i = 0; i < 5; i++) { s = ALPHA.charAt(n % 32) + s; n = Math.floor(n / 32); } return s; }
-function isValidCode(raw){
-  var c = String(raw).toUpperCase().replace(/[\s\-_.]/g, '');
-  var m = /^VO(\d{4})([A-Z0-9]{5})$/.exec(c);
-  if (!m) return false;
-  if (REVOKED.indexOf('VO-' + m[1] + '-' + m[2]) > -1) return false;
-  return m[2] === checkPart(m[1]);
-}
 function ld(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}}
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 var unlocked = ld('vo-unlock', false) === true;
@@ -399,7 +382,7 @@ document.getElementById("share").onclick=async()=>{
   try{ if(navigator.share){await navigator.share({title:"Ce que coûte mon vote",text,url});return;} await navigator.clipboard.writeText(text+" "+url); document.getElementById("dlstatus").textContent="Lien copié, tu peux le coller où tu veux."; }catch(e){}
 };
 document.getElementById("restart").onclick=()=>{ if(unlocked||!done){openQuiz();return;} showLock("modif"); };
-function tryUnlock(raw){ const c=String(raw||"").trim().toUpperCase(); if(c&&isValidCode(c)){unlocked=true;sv("vo-unlock",true);refreshAccess();return true;} return false; }
+function tryUnlock(raw){ return window.checkCode(raw).then(ok=>{ if(ok){unlocked=true;sv("vo-unlock",true);refreshAccess();} return ok; }); }
 function refreshAccess(){
   document.getElementById("restart").textContent=unlocked||!done?"Modifier mes réponses":"Modifier mes réponses ("+PRICE_LABEL+")";
   document.getElementById("refine").textContent=unlocked?"Affiner mon résultat":"Affiner mon résultat ("+PRICE_LABEL+")";
@@ -410,7 +393,7 @@ function refreshAccess(){
   document.querySelectorAll(".js-price").forEach(e=>e.textContent=PRICE_LABEL);
   document.querySelectorAll(".js-mail").forEach(a=>{a.href="mailto:"+CONTACT_EMAIL;a.textContent=CONTACT_EMAIL;});
 }
-document.getElementById("codeOk").onclick=()=>{ const m=document.getElementById("codemsg"); if(tryUnlock(document.getElementById("code").value)){m.style.color="var(--gain)";m.textContent="Accès illimité activé. Tu peux modifier tes réponses.";if(window.track)track("vote-code-ok");setTimeout(()=>openQuiz(true),900);} else {m.style.color="";m.textContent="Ce code ne fonctionne pas. Vérifie-le et réessaie.";} };
+document.getElementById("codeOk").onclick=()=>{ const m=document.getElementById("codemsg"); m.style.color="";m.textContent="Vérification…"; tryUnlock(document.getElementById("code").value).then(ok=>{ if(ok){m.style.color="var(--gain)";m.textContent="Accès illimité activé. Tu peux modifier tes réponses.";if(window.track)track("vote-code-ok");setTimeout(()=>openQuiz(true),900);} else {m.style.color="";m.textContent="Ce code ne fonctionne pas. Vérifie-le et réessaie.";} }); };
 document.getElementById("code").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("codeOk").click();});
 
 /* ---------- Fiscalité ---------- */
