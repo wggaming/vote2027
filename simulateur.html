@@ -312,7 +312,7 @@ function renderQ(){
     const ni=document.createElement("input");ni.type="number";ni.min=0;ni.step=st;ni.value=A[key];ni.id="n_"+key;ni.inputMode="numeric";
     const u=document.createElement("span");u.textContent=mode==="brut"?"€ / an":"€ / mois";nb.append(ni,u);
     const hint=document.createElement("p");hint.className="qhelp";
-    const upd=()=>{ if(mode==="brut"){hint.textContent="Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt sur le revenu."+(q.id==="rev"&&A.sit==="indep"?" Pour un indépendant, on retient environ 75 % du revenu brut.":"");} else hint.textContent=""; };
+    const upd=()=>{ if(mode==="brut"){const b=+A[key]||0;hint.textContent="Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt sur le revenu."+(q.id==="rev"&&A.sit==="indep"?" Pour un indépendant, on retient environ 75 % du revenu brut.":"")+(b>0&&b<8000?" Attention : c'est un montant par an. Pour un salaire mensuel, choisis « Net mensuel ».":"");} else {const v=+A[key]||0;hint.textContent=v>15000?"Attention : "+fmtPlain(v)+" par mois, soit "+fmtPlain(v*12)+" par an. Si tu as tapé un montant annuel, choisis « Brut annuel » ou divise par 12.":"";} };
     rg.oninput=()=>{A[key]=+rg.value;ni.value=rg.value;save();upd();};
     ni.oninput=()=>{const v=Math.max(0,+ni.value||0);A[key]=v;rg.value=Math.min(v,mx);save();upd();};
     ni.onkeydown=e=>{if(e.key==="Enter")next();};
@@ -482,8 +482,9 @@ function compute(a){
   let base=ir;
   if(couple){const sp=1+kidParts(nk,false)/2; const sep=IR(me*12*.9,sp,false)+IR(cj*12*.9,sp,false); const d=ir-sep; base=sep;
     if(Math.abs(d)>1) lfi.push(L("Fin du quotient conjugal (imposition individuelle)",d,1,"Chaque conjoint déclare seul. Pénalise les couples aux revenus inégaux."));}
-  const perPart=(me+cj)/parts; const f=perPart<4000?-.10:perPart<8000?.15:.40;
-  if(base>0) lfi.push(L("Impôt sur le revenu à 14 tranches",-base*f,1,"Barème non publié. Hypothèse : −10 % sous 4 000 € net par part, +15 % jusqu'à 8 000 €, +40 % au-delà."));
+  const qx=R/parts, q4=4000*12*.9, q8=8000*12*.9, gx=taxPerPart(qx);
+  const f=gx>0?(-.10*taxPerPart(Math.min(qx,q4))+.15*(taxPerPart(Math.min(qx,q8))-taxPerPart(Math.min(qx,q4)))+.40*(gx-taxPerPart(Math.min(qx,q8))))/gx:0;
+  if(base>0) lfi.push(L("Impôt sur le revenu à 14 tranches",-base*f,1,"Barème non publié. Hypothèse, tranche par tranche : −10 % sur l'impôt dû pour la part du revenu sous 4 000 € net par mois et par part, +15 % entre 4 000 et 8 000 €, +40 % au-delà."));
   if(cap>0){const d=cap*(.30-(t+.172)); lfi.push(L("Fin de la flat tax : placements imposés au barème",d,1,"Tranche marginale "+Math.round(t*100)+" % + 17,2 % de prélèvements sociaux, contre 30 % aujourd'hui."+capHyp));}
   {const isfV=isf(W.isfBase); if(isfV>0||ifiNow>0) lfi.push(L("Retour de l'ISF (à la place de l'IFI)",-(isfV-ifiNow),1,"Ancien barème de l'ISF sur tout le patrimoine net (abattement de 30 % sur la résidence principale, dettes déduites) : "+fmtPlain(isfV)+", contre "+fmtPlain(ifiNow)+" d'IFI aujourd'hui. "+wHyp));
     if(P>100000000) lfi.push(L("Taxe Zucman (2 % au-delà de 100 M€)",-Math.max(0,.02*P-isfV),.5,"Risque constitutionnel et d'exil fiscal."));}
