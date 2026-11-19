@@ -50,6 +50,12 @@ input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
   <main class="card">
     <div class="ok" aria-hidden="true">✓</div>
     <h1>Merci pour ton achat !</h1>
+    <div id="done" hidden>
+      <p class="lead">Ton accès illimité est activé sur cet appareil. Tu peux affiner ton résultat et refaire autant de simulations que tu veux.</p>
+      <a class="btn" href="simulateur.html" style="display:block;text-align:center;text-decoration:none">Profiter de mon accès</a>
+      <p style="font-size:14px;color:var(--muted);margin:16px 0 0">Ton code personnel t'arrive aussi par mail, pour l'utiliser sur un autre appareil.</p>
+    </div>
+    <div id="wait">
     <p class="lead">Dès que ton paiement est confirmé, ton code personnel part par mail à l'adresse que tu as indiquée, en général dans l'heure. Pense à regarder dans tes indésirables.</p>
     <p style="margin:0 0 14px">Le mail contient un lien qui active tout d'un clic. Tu peux aussi taper ton code ici :</p>
     <form class="code" id="f">
@@ -58,6 +64,7 @@ input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
     </form>
     <div class="msg" id="msg" role="status"></div>
     <a class="btn" href="simulateur.html" style="display:block;text-align:center;text-decoration:none;margin-top:8px">Retour à mon résultat</a>
+    </div>
     <a class="sec" href="index.html">Accueil</a>
     <p style="font-size:14px;color:var(--muted);margin:18px 0 0">Pas de mail d'ici quelques heures ? Écris-moi à <a class="js-mail" href="#">l'adresse de contact</a>.</p>
   </main>
@@ -65,6 +72,22 @@ input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
 <script>
 var CONTACT_EMAIL = 'wagramconseil15@gmail.com';
 Array.prototype.forEach.call(document.querySelectorAll('.js-mail'), function (a) { a.href = 'mailto:' + CONTACT_EMAIL; a.textContent = CONTACT_EMAIL; });
+(function () {
+  var m = location.search.match(/[?&]t=([^&]+)/);
+  if (!m || !window.crypto || !crypto.subtle) return;
+  var t = decodeURIComponent(m[1]), enc = new TextEncoder();
+  crypto.subtle.importKey('raw', enc.encode(t), 'PBKDF2', false, ['deriveBits']).then(function (k) {
+    return crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: enc.encode('merci-v1:vote2027'), iterations: 100000 }, k, 64);
+  }).then(function (b) {
+    var h = Array.prototype.map.call(new Uint8Array(b), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    if (h !== '0930dca49bbb44a3') return;
+    try { localStorage.setItem('vo-unlock', 'true'); } catch (e) {}
+    history.replaceState(null, '', location.pathname);
+    document.getElementById('wait').hidden = true;
+    document.getElementById('done').hidden = false;
+    try { if (window.track) track('vote-merci-debloque'); } catch (e) {}
+  });
+})();
 document.getElementById('f').addEventListener('submit', function (e) {
   e.preventDefault();
   var v = document.getElementById('c').value.trim();
