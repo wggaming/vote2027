@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Combien te coûteraient les programmes économiques du RN, de LFI, du PS, de Renaissance, de LR et des Écologistes ? Réponds à 12 questions et télécharge ton résultat en page A4.">
+<meta name="description" content="Combien te coûteraient les programmes économiques du RN, de LFI, du PS, de Renaissance, de LR, des Écologistes et de Nouvelle Énergie (David Lisnard) ? Réponds à 12 questions et télécharge ton résultat en page A4.">
 <meta property="og:title" content="Ce que coûte mon vote">
 <meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
 <meta property="og:url" content="https://vote.wagramconseil.fr/">
@@ -19,7 +19,7 @@
 :root{
   --bg:#f3f5f8; --surface:#ffffff; --ink:#18202e; --muted:#5b6577; --line:#d9dee7;
   --accent:#2b4bd6; --accent-ink:#ffffff; --gain:#13804a; --loss:#c23a2b; --warn:#a86a00;
-  --rn:#1d3a8a; --lfi:#c8283c; --ps:#d4508f; --ctr:#e0a100; --lr:#0b7fb8; --eco:#2f8a3b;
+  --rn:#1d3a8a; --lfi:#c8283c; --ps:#d4508f; --ctr:#e0a100; --lr:#0b7fb8; --eco:#2f8a3b; --ne:#7a3fb0;
   --soft:#e8ecf3;
   --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -28,11 +28,11 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#10141c; --surface:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --line:#2a3242;
   --accent:#7d95ff; --accent-ink:#0d1220; --gain:#45c483; --loss:#ff7a68; --warn:#f0b43c;
-  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --soft:#222a38; color-scheme:dark}}
+  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --ne:#b48cf0; --soft:#222a38; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#10141c; --surface:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --line:#2a3242;
   --accent:#7d95ff; --accent-ink:#0d1220; --gain:#45c483; --loss:#ff7a68; --warn:#f0b43c;
-  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --soft:#222a38; color-scheme:dark}
+  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --ne:#b48cf0; --soft:#222a38; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
 .wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px;display:flex;flex-direction:column;gap:28px}
@@ -110,29 +110,29 @@ header{display:flex;flex-direction:column;gap:12px}
 @media (max-width:560px){.crow{grid-template-columns:76px 1fr}.axis{margin-left:88px}.facts{grid-template-columns:1fr}.card{padding:18px}}
 @media (prefers-reduced-motion:reduce){.bar span{transition:none}}
 /* Page A4 (rendue hors écran pour le PDF) : look imprimé fixe, couleurs explicites */
-#a4{position:fixed;left:-12000px;top:0;width:794px;height:1123px;background:#ffffff;color:#18202e;font-family:var(--f-body);padding:36px 44px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+#a4{position:fixed;left:-12000px;top:0;width:794px;height:1123px;background:#ffffff;color:#18202e;font-family:var(--f-body);padding:28px 40px;display:flex;flex-direction:column;gap:9px;overflow:hidden}
 #a4 .a4top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #18202e;padding-bottom:12px}
-#a4 h1{font-size:34px;color:#18202e}
+#a4 h1{font-size:30px;color:#18202e}
 #a4 .sub{font-size:12px;color:#5b6577}
-#a4 .prof{font-size:12px;color:#18202e;background:#eef1f6;border-radius:8px;padding:10px 14px;line-height:1.5}
-#a4 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-#a4 .chartA4{gap:6px}
-#a4 .chartA4 .track{height:18px}
-#a4 .pbox{border:1px solid #d9dee7;border-top:5px solid var(--pc);border-radius:8px;padding:9px 12px;display:flex;flex-direction:column;gap:4px}
-#a4 .pbox .h{display:flex;justify-content:space-between;align-items:baseline}
-#a4 .pbox .n{font:700 15px var(--f-display)}
-#a4 .pbox .v{font:600 20px var(--f-num)}
+#a4 .prof{font-size:11.5px;color:#18202e;background:#eef1f6;border-radius:8px;padding:8px 12px;line-height:1.4}
+#a4 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#a4 .chartA4{gap:4px}
+#a4 .chartA4 .track{height:15px}
+#a4 .pbox{border:1px solid #d9dee7;border-top:5px solid var(--pc);border-radius:8px;padding:7px 10px;display:flex;flex-direction:column;gap:3px}
+#a4 .pbox .h{display:flex;flex-direction:column;gap:2px}
+#a4 .pbox .n{font:700 13px var(--f-display)}
+#a4 .pbox .v{font:600 17px var(--f-num)}
 #a4 .pbox .mo{font-size:11px;color:#5b6577}
 #a4 .pbox ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
-#a4 .pbox li{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#18202e}
+#a4 .pbox li{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;line-height:1.3;color:#18202e}
 #a4 .pbox li b{font:600 11px var(--f-num);white-space:nowrap}
-#a4 .pbox .ret{font-size:10px;line-height:1.35;color:#5b6577;border-top:1px solid #eef1f6;padding-top:5px}
+#a4 .pbox .ret{font-size:9.5px;line-height:1.3;color:#5b6577;border-top:1px solid #eef1f6;padding-top:4px;max-height:30px;overflow:hidden}
 #a4 .pos{color:#13804a} #a4 .neg{color:#c23a2b} #a4 .zero{color:#5b6577}
 #a4 .chartA4 .crow{grid-template-columns:150px 1fr}
-#a4 .chartA4 .track{background:#eef1f6;height:18px}
+#a4 .chartA4 .track{background:#eef1f6;height:15px}
 #a4 .chartA4 .val{color:#18202e}
 #a4 .chartA4 .mid{background:#5b6577}
-#a4 .foot{margin-top:auto;font-size:10px;color:#5b6577;line-height:1.45;border-top:1px solid #d9dee7;padding-top:10px}
+#a4 .foot{margin-top:auto;font-size:9.5px;color:#5b6577;line-height:1.4;border-top:1px solid #d9dee7;padding-top:8px}
 #a4 .herit{font-size:12px;color:#18202e}
 
 body{margin:0}
@@ -164,7 +164,7 @@ footer a{color:inherit}
     <div class="stripe" aria-hidden="true"><i style="background:var(--lfi)"></i><i style="background:var(--ps)"></i><i style="background:var(--ctr)"></i><i style="background:var(--rn)"></i></div>
     <span class="eyebrow">Présidentielle 2027 · simulateur personnel</span>
     <h1>Ce que coûte mon vote</h1>
-    <p class="lede">Réponds à une douzaine de questions sur ta situation. On calcule ce que les programmes économiques du RN, de LFI, du PS, de Renaissance, de LR et des Écologistes changeraient pour ton budget, par an, en ne comptant que les promesses jugées tenables. Ta première simulation est gratuite. Tes réponses restent dans ton navigateur.</p>
+    <p class="lede">Réponds à une douzaine de questions sur ta situation. On calcule ce que les programmes économiques du RN, de LFI, du PS, de Renaissance, de LR, des Écologistes et de Nouvelle Énergie (David Lisnard) changeraient pour ton budget, par an, en ne comptant que les promesses jugées tenables. Ta première simulation est gratuite. Tes réponses restent dans ton navigateur.</p>
   </header>
 
   <section class="card" id="quiz" aria-live="polite">
@@ -219,7 +219,7 @@ footer a{color:inherit}
         <li>Quand un programme ne publie pas ses chiffres (barème LFI à 14 tranches, droits de succession), on applique une hypothèse signalée dans la ligne concernée.</li>
         <li>Ne sont pas comptés : les effets indirects (inflation, emploi, dette, baisse des services publics) et les mesures non chiffrables.</li>
       </ul>
-      <p>Sources des programmes (consultées en novembre 2026) : <a href="https://votons-2027.fr/candidats/bardella/programme/economie" target="_blank" rel="noopener">RN</a>, <a href="https://votons-2027.fr/candidats/melenchon/programme/economie" target="_blank" rel="noopener">LFI</a>, <a href="https://votons-2027.fr/candidats/faure/programme/economie" target="_blank" rel="noopener">PS</a>, <a href="https://selectra.info/finance/actualites/marche/csg-progressive-2027-salaire-net-smic" target="_blank" rel="noopener">CSG progressive du PS</a>, <a href="https://votons-2027.fr/candidats/attal/programme/economie" target="_blank" rel="noopener">Renaissance</a>, <a href="https://votons-2027.fr/candidats/retailleau/programme/economie" target="_blank" rel="noopener">LR</a> et <a href="https://www.publicsenat.fr/actualites/economie/presidentielle-2027-bruno-retailleau-sengage-sur-un-plan-deconomies-de-pres-de-200-milliards-deuros-sil-est-elu" target="_blank" rel="noopener">son plan d'économies</a>, <a href="https://votons-2027.fr/candidats/tondelier/programme/economie" target="_blank" rel="noopener">Écologistes</a> et <a href="https://www.linfodurable.fr/politique/les-ecologistes-veulent-taxer-davantage-les-heritages-des-plus-fortunes-58714" target="_blank" rel="noopener">leurs droits de succession</a>. Simulation indicative et non partisane.</p>
+      <p>Sources des programmes (consultées en novembre 2026) : <a href="https://votons-2027.fr/candidats/bardella/programme/economie" target="_blank" rel="noopener">RN</a>, <a href="https://votons-2027.fr/candidats/melenchon/programme/economie" target="_blank" rel="noopener">LFI</a>, <a href="https://votons-2027.fr/candidats/faure/programme/economie" target="_blank" rel="noopener">PS</a>, <a href="https://selectra.info/finance/actualites/marche/csg-progressive-2027-salaire-net-smic" target="_blank" rel="noopener">CSG progressive du PS</a>, <a href="https://votons-2027.fr/candidats/attal/programme/economie" target="_blank" rel="noopener">Renaissance</a>, <a href="https://votons-2027.fr/candidats/retailleau/programme/economie" target="_blank" rel="noopener">LR</a> et <a href="https://www.publicsenat.fr/actualites/economie/presidentielle-2027-bruno-retailleau-sengage-sur-un-plan-deconomies-de-pres-de-200-milliards-deuros-sil-est-elu" target="_blank" rel="noopener">son plan d'économies</a>, <a href="https://votons-2027.fr/candidats/tondelier/programme/economie" target="_blank" rel="noopener">Écologistes</a> et <a href="https://www.linfodurable.fr/politique/les-ecologistes-veulent-taxer-davantage-les-heritages-des-plus-fortunes-58714" target="_blank" rel="noopener">leurs droits de succession</a>, Nouvelle Énergie (<a href="https://lafacture2027.fr/programme-fiscal-david-lisnard-2027" target="_blank" rel="noopener">fiscalité</a>, <a href="https://presi2027.fr/candidat/lisnard" target="_blank" rel="noopener">salaires et retraites</a>). Simulation indicative et non partisane.</p>
     </div>
   </section>
   <footer><p>Ce que coûte mon vote · <a class="js-mail" href="#">Nous contacter</a> · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p></footer>
@@ -273,7 +273,7 @@ const Q = [
  {id:"kidsCant", fine:true, t:"Combien de tes enfants mangent à la cantine ?", help:"Sert à chiffrer la cantine gratuite proposée par LFI.", type:"num", min:0, max:6, step:1, unit:"enfants", def:a=>+a.enf, when:a=>a.enf!=="0"},
  {id:"loanInt", fine:true, t:"Intérêts de ton crédit immobilier sur ta résidence principale", help:"Montant annuel des intérêts (hors assurance), sur ton tableau d'amortissement. LR veut les rendre déductibles si tu as des enfants. Mets 0 si tu n'as pas de crédit.", type:"num", min:0, max:30000, step:100, unit:"€ / an", def:()=>0, when:a=>a.log==="prop"&&a.enf!=="0"},
  {id:"sick", fine:true, t:"Combien d'arrêts maladie as-tu en moyenne par an ?", help:"LR veut un jour de carence que l'employeur n'aura plus le droit de payer.", type:"num", min:0, max:6, step:1, unit:"par an", def:()=>0, when:a=>a.sit==="prive"},
- {id:"teach", fine:true, t:"Es-tu enseignant ?", help:"LR prévoit +135 € net par mois en début de carrière et jusqu'à +300 € en milieu de carrière. Les Écologistes, +15 % en 5 ans.", type:"choice", opts:[["non","Non"],["debut","Oui, en début de carrière"],["milieu","Oui, en milieu ou fin de carrière"]], when:a=>a.sit==="fonct"},
+ {id:"teach", fine:true, t:"Es-tu enseignant ?", help:"LR prévoit +135 € net par mois en début de carrière et jusqu'à +300 € en milieu de carrière. Les Écologistes, +15 % en 5 ans. David Lisnard, +20 %.", type:"choice", opts:[["non","Non"],["debut","Oui, en début de carrière"],["milieu","Oui, en milieu ou fin de carrière"]], when:a=>a.sit==="fonct"},
  {id:"rsa", fine:true, t:"Touches-tu le RSA ?", help:"LR veut le remplacer par un revenu de 300 € par mois, plus 250 € si tu suis au moins 15 h par semaine de formation ou de recherche d'emploi.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.sit==="etud"||a.sit==="chom"},
  {id:"start", fine:true, t:"À quel âge as-tu commencé à travailler ?", help:"Premier emploi déclaré, apprentissage compris. Sert à estimer ton âge de départ à taux plein avec chaque programme.", type:"num", min:14, max:30, step:1, unit:"ans", def:()=>21, when:a=>a.sit!=="retr"&&a.age!=="a62"},
  {id:"herX", fine:true, t:"Montant exact de l'héritage ou de la donation attendu", help:"Ta part personnelle, en ligne directe (parents).", type:"num", min:0, max:5000000, step:10000, unit:"€", def:a=>+a.her, when:a=>a.her!=="0"},
@@ -361,7 +361,7 @@ const PITCH={patd:"Le détail de ton patrimoine (résidence principale, autre im
  kidsCant:"Tes enfants à la cantine (cantine gratuite de LFI)",
  loanInt:"Les intérêts de ton crédit immobilier (déductibles avec LR)",
  sick:"Tes arrêts maladie (jour de carence de LR)",
- teach:"Ton métier d'enseignant (revalorisations de LR et des Écologistes)",
+ teach:"Ton métier d'enseignant (revalorisations de LR, des Écologistes et de Nouvelle Énergie (David Lisnard))",
  rsa:"Ton RSA (remplacé par le RIA avec LR)"};
 function fillUpsell(){
   const fq=Q.filter(q=>q.fine&&(!q.when||q.when(A)));
@@ -400,9 +400,9 @@ document.getElementById("code").addEventListener("keydown",e=>{if(e.key==="Enter
 const BAREME=[[11600,0],[29579,.11],[84577,.30],[181917,.41],[Infinity,.45]];
 function taxPerPart(q){let t=0,prev=0;for(const [lim,r] of BAREME){if(q>prev)t+=(Math.min(q,lim)-prev)*r;prev=lim;}return t;}
 function tmi(R,parts){const q=R/parts;let prev=0;for(const [lim,r] of BAREME){if(q<=lim)return r;prev=lim;}return .45;}
-function IR(R,parts,couple){
+function IR(R,parts,couple,noCap){
   const base=couple?2:1; const tBase=taxPerPart(R/base)*base; let t=taxPerPart(R/parts)*parts;
-  const maxAdv=1807*Math.round((parts-base)*2); if(tBase-t>maxAdv) t=tBase-maxAdv;
+  const maxAdv=1807*Math.round((parts-base)*2); if(!noCap&&tBase-t>maxAdv) t=tBase-maxAdv;
   const seuil=couple?3277:1982, dec=couple?1483:897; if(t<seuil) t=Math.max(0,t-(dec-.4525*t));
   return Math.max(0,t);
 }
@@ -424,7 +424,7 @@ function primeAct(me,cj,couple,nk,log){ // estimation mensuelle de la prime d'ac
   const v=base+.61*(me+cj)+bon(me)+bon(cj)-(me+cj)-fl; return v>=15?v:0; }
 function allocFam(nk,R){ if(nk<2) return 0; let a=151+(nk>2?194*(nk-2):0); const lim1=76000+5500*(nk-2), lim2=101000+5500*(nk-2); if(R>lim2)a/=4; else if(R>lim1)a/=2; return a; }
 function retireAges(s){const cur=s<16?58:s<18?60:s<20?62:s<21?63:Math.min(67,Math.max(64,s+43));
-  return {cur, rn:s<20?Math.min(cur,Math.max(60,s+40)):cur, lfi:Math.min(cur,Math.min(67,Math.max(60,s+40))), ps:Math.min(cur,Math.min(67,Math.max(62,s+43))), ctr:cur, eco:s<20?Math.min(cur,Math.max(60,s+43)):Math.min(cur,Math.min(67,Math.max(62,s+43))), lr:s<20?cur:Math.min(67,Math.max(65,s+43))};}
+  return {cur, rn:s<20?Math.min(cur,Math.max(60,s+40)):cur, lfi:Math.min(cur,Math.min(67,Math.max(60,s+40))), ps:Math.min(cur,Math.min(67,Math.max(62,s+43))), ctr:cur, eco:s<20?Math.min(cur,Math.max(60,s+43)):Math.min(cur,Math.min(67,Math.max(62,s+43))), lr:s<20?cur:Math.min(67,Math.max(65,s+43)), ne:cur};}
 function smicGain(s,target){ // gain mensuel
   if(s<=0)return 0; if(s<SMIC) return s*(target/SMIC-1);
   if(s<target) return target-s;
@@ -446,7 +446,8 @@ const PARTIES=[
  {k:"ps",name:"Parti socialiste",short:"PS",c:"--ps"},
  {k:"ctr",name:"Renaissance (centre)",short:"Renaissance",c:"--ctr"},
  {k:"lr",name:"Les Républicains",short:"LR",c:"--lr"},
- {k:"eco",name:"Les Écologistes",short:"Écologistes",c:"--eco"}
+ {k:"eco",name:"Les Écologistes",short:"Écologistes",c:"--eco"},
+ {k:"ne",name:"Nouvelle Énergie (David Lisnard)",short:"Lisnard",c:"--ne"}
 ];
 function compute(a){
   const me=netOf(a,"rev"), couple=a.couple==="oui", cj=couple?netOf(a,"revc"):0, cjw=couple&&a.sitc!=="retr"&&a.sitc!=="autre"?cj:0, nk=+a.enf, sit=a.sit;
@@ -551,7 +552,20 @@ function compute(a){
   res.eco={lines:eco,retraite:"Retour à 62 ans, objectif 60 ans pour les carrières longues ou pénibles.",
     herit:H>0?{now:droits(H,100000),then:droits(H,100000)+.1*Math.max(0,H-4e6)+.1*Math.max(0,H-13e6),hyp:"+10 % au-delà de 4 M€ et encore +10 % au-delà de 13 M€. Barème actuel en dessous."}:null};
 
-  const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const ag=retireAges(st); for(const k of ["rn","lfi","ps","ctr","lr","eco"]) res[k].perso="Toi : départ à taux plein vers "+ag[k]+" ans (aujourd'hui "+ag.cur+" ans).";}
+  /* Nouvelle Énergie (David Lisnard) */
+  const ne=[];
+  {const g=x=>Math.min(400,.2*x); const sal=(sit==="prive"?g(me):0)+(couple&&a.sitc==="sal"?g(cj):0);
+   if(sal>1) ne.push(L("Jusqu'à +400 € net par mois par la baisse des cotisations",sal*12,.5,"Objectif affiché pour 2032, financé par 200 Md€ d'économies non détaillées. Hypothèse : gain plafonné à 20 % du salaire net."));}
+  if(ir>0){const g=Math.min(ir,t*.03*(me+cj)*12); if(g>1) ne.push(L("CSG et CRDS entièrement déductibles de l'impôt",g,1,"Hypothèse : environ 3 % de ton revenu net devient déductible, gain au taux marginal de "+Math.round(t*100)+" %."));}
+  if(nk>0){const g=ir-IR(R,parts,couple,true); if(g>1) ne.push(L("Quotient familial déplafonné",g,1,"Simple modification du quotient familial."));}
+  if(ifiNow>0) ne.push(L("IFI supprimé, remplacé par une fiscalité foncière",ifiNow,.5,"Taux de la nouvelle fiscalité foncière non publié : gain compté pour moitié. "+wHyp));
+  {const nr=(sit==="retr"&&me>2000?me:0)+(couple&&a.sitc==="retr"&&cj>2000?cj:0); if(nr>0) ne.push(L("Pensions au-dessus de 2 000 € non revalorisées",-nr*.015*12,1,"Pour financer un étage de capitalisation. Hypothèse : inflation de 1,5 % par an, perte de la première année."));}
+  if(sit==="fonct"&&unlocked&&a.teach&&a.teach!=="non") ne.push(L("Enseignants : +20 % de salaire en 5 ans",me*.20*.8*12,.5,"Montant au bout de 5 ans, sur le traitement indiciaire, en contrepartie d'une réorganisation."));
+  ne.push(L("200 Md€ d'économies publiques d'ici 2032",0,1,"Effet sur les services publics et les prestations non chiffré."));
+  res.ne={lines:ne,retraite:"64 ans maintenu selon sa fiche fiscale (d'autres sources évoquent 65 ans), avec un étage de capitalisation obligatoire.",
+    herit:H>0?{now:droits(H,100000),then:0,hyp:"Suppression des droits de succession en ligne directe (tribune d'avril 2026)."}:null};
+
+  const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const ag=retireAges(st); for(const k of ["rn","lfi","ps","ctr","lr","eco","ne"]) res[k].perso="Toi : départ à taux plein vers "+ag[k]+" ans (aujourd'hui "+ag.cur+" ans).";}
   for(const p of PARTIES){const r=res[p.k]; r.total=r.lines.reduce((s,l)=>s+l.v*l.k,0); r.hyp=r.lines.filter(l=>/Hypoth|estimé|déduite|moyenne/.test(l.n)).length;}
   return res;
 }
@@ -596,9 +610,9 @@ function buildA4(res){
   const a=A, enf=+a.enf;
   const prof=`${LBL.sit[a.sit]}, ${LBL.age[a.age]}, ${fmtPlain(netOf(a,"rev"))} net/mois avant impôt${a.couple==="oui"?", en couple (conjoint : "+fmtPlain(netOf(a,"revc"))+")":", seul"}, ${enf?enf+(enf>=3?"+":"")+" enfant"+(enf>1?"s":""):"sans enfant"}, ${LBL.log[a.log]}. Énergie ${fmtPlain(+a.ener)}/mois, carburant ${fmtPlain(+a.carb)}/mois.${+a.pat>=1300000?" Patrimoine net "+fmtPlain(wealth(a).net)+".":""}`;
   const boxes=PARTIES.map(p=>{const r=res[p.k];
-    const ls=r.lines.filter(l=>l.k>0&&Math.abs(l.v)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,3)
+    const ls=r.lines.filter(l=>l.k>0&&Math.abs(l.v)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,2)
       .map(l=>`<li><span>${esc(l.m)}${l.k===.5?" (½)":""}</span><b class="${cls(l.v*l.k)}">${fmt(l.v*l.k)}</b></li>`).join("")||`<li><span>Aucune mesure chiffrable pour ton profil</span><b class="zero">0 €</b></li>`;
-    const her=r.herit?`<div class="ret">Héritage : ${fmtPlain(r.herit.then)} de droits (aujourd'hui ${fmtPlain(r.herit.now)})</div>`:"";
+    const her=r.herit?`<div class="ret">Héritage : ${fmtPlain(r.herit.then)} de droits (auj. ${fmtPlain(r.herit.now)})</div>`:"";
     return `<div class="pbox" style="--pc:var(${p.c})"><div class="h"><span class="n">${p.name}</span><span class="v ${cls(r.total)}">${fmt(r.total)}</span></div><span class="mo">par an, soit ${fmt(r.total/12)} par mois</span><ul>${ls}</ul><div class="ret">Retraite : ${esc(r.perso||r.retraite)}</div>${her}</div>`}).join("");
   const d=new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
   document.getElementById("a4").innerHTML=`
@@ -606,7 +620,7 @@ function buildA4(res){
    <div class="prof"><b>Mon profil :</b> ${esc(prof)}</div>
    <div><div style="font:700 15px var(--f-display);margin-bottom:8px">Impact net sur mon budget, par an</div><div class="chart chartA4">${chartHTML(res)}</div></div>
    <div class="grid">${boxes}</div>
-   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, combien ça te coûte ? Test gratuit sur <span style="color:#2b4bd6">vote.wagramconseil.fr</span></b><br>Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance, LR, Écologistes). Simulation indicative et non partisane.</div>`;
+   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, combien ça te coûte ? Test gratuit sur <span style="color:#2b4bd6">vote.wagramconseil.fr</span></b><br>Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance, LR, Écologistes, Nouvelle Énergie). Simulation indicative et non partisane.</div>`;
 }
 async function download(){
   const st=document.getElementById("dlstatus"), b=document.getElementById("dl");
