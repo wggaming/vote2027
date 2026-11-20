@@ -273,6 +273,8 @@ const Q = [
  {id:"pa", fine:true, t:"Pension alimentaire reçue pour tes enfants", help:"Aujourd'hui imposable. Le PS et Renaissance veulent la sortir du revenu imposable. Mets 0 si tu n'en reçois pas.", type:"num", min:0, max:3000, step:50, unit:"€ / mois", def:()=>0, when:a=>a.enf!=="0"&&a.couple!=="oui"},
  {id:"veuf", fine:true, t:"Es-tu veuf ou veuve ?", help:"Le RN veut rétablir une demi-part fiscale pour les veufs et veuves.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.couple!=="oui"&&a.age!=="u30"},
  {id:"cat", fine:true, t:"Ta catégorie dans la fonction publique", help:"Le PS réserve la hausse du point d'indice aux catégories B et C.", type:"choice", opts:[["A","Catégorie A (cadre)"],["B","Catégorie B"],["C","Catégorie C"]], when:a=>a.sit==="fonct"},
+ {id:"remu", fine:true, t:"Comment te rémunères-tu ?", help:"Si tu diriges une société (SAS, SASU, SARL, EURL), le choix entre salaire et dividendes dépend des programmes : LFI et le PS veulent imposer les dividendes au barème de l'impôt.", type:"choice", opts:[["ei","Entreprise individuelle ou micro, pas de société"],["sal","Ma société, en salaire seulement"],["div","Ma société, surtout en dividendes"],["mix","Ma société, salaire et dividendes"]], when:a=>a.sit==="indep"},
+ {id:"divX", fine:true, t:"Dividendes que tu te verses par an", help:"Montant avant impôt. Ton revenu indiqué au début doit alors être ta seule rémunération (salaire ou rémunération de gérant), sans les dividendes.", type:"num", min:0, max:300000, step:1000, unit:"€ / an", def:a=>Math.round(netOf(a,"rev")*12*(a.remu==="div"?.8:.4)/1000)*1000, when:a=>a.sit==="indep"&&(a.remu==="div"||a.remu==="mix")},
  {id:"kidsCant", fine:true, t:"Combien de tes enfants mangent à la cantine d'une école publique ?", help:"Sert à chiffrer la cantine gratuite proposée par LFI, réservée à l'école publique. Les enfants au privé ou qui rentrent déjeuner ne comptent pas.", type:"num", min:0, max:6, step:1, unit:"enfants", def:a=>pubKids(a,+a.enf), when:a=>a.enf!=="0"&&a.ecole!=="priv"&&a.ecole!=="none"},
  {id:"loanInt", fine:true, t:"Les intérêts de ton crédit immobilier sur ta résidence principale", help:"LR veut les rendre déductibles si tu as des enfants. Tu ne connais pas tes intérêts ? Indique le montant emprunté, le taux et la date de début : on les calcule. Mets 0 € emprunté si tu n'as pas de crédit.", type:"loan", when:a=>a.log==="prop"&&a.enf!=="0"},
  {id:"sick", fine:true, t:"Combien d'arrêts maladie as-tu en moyenne par an ?", help:"LR veut un jour de carence que l'employeur n'aura plus le droit de payer.", type:"num", min:0, max:6, step:1, unit:"par an", def:()=>0, when:a=>a.sit==="prive"},
@@ -375,6 +377,7 @@ document.getElementById("prev").onclick=()=>{if(step>0){step--;renderQ();}};
 const PITCH={patd:"Le détail de ton patrimoine (résidence principale, autre immobilier, placements, dettes, biens professionnels) : IFI, ISF et impôt sur la fortune financière calculés au plus juste",
  capX:"Le montant exact de tes revenus de placements, pour la fin de la flat tax (LFI, PS)",
  herX:"Le montant exact de ton héritage, pour les droits de succession de chaque parti",
+ remu:"Ta rémunération de dirigeant : salaire, dividendes, et le meilleur choix selon chaque programme",
  herLog:"Le nombre de logements de ton héritage (plafond de 5 logements de LFI)",
  start:"Ton âge de début de carrière : ton âge de départ à taux plein avec chaque programme",
  food:"Tes vraies dépenses de courses, pour la TVA à 0 % (RN)",
@@ -493,6 +496,8 @@ function compute(a){
   const persons=(couple?2:1)+nk, uc=1+(couple?.5:0)+.3*nk, ndv=(me+cj)/uc;
   const cap=F(a,"capX")??+a.cap, W=wealth(a), P=W.net, H=F(a,"herX")??+a.her, ifiNow=isf(W.ifiBase);
   const capHyp=F(a,"capX")!=null?"":" Montant estimé à partir de ta tranche.";
+  const remu=unlocked&&sit==="indep"?a.remu:null, div=(remu==="div"||remu==="mix")?(F(a,"divX")||0):0, capD=cap+div, divHyp=div>0?" Dont "+fmtPlain(div)+" de dividendes de ta société.":"";
+  const capNow=capD>0?Math.min(.30*capD,IR(R+.6*capD,parts,couple)-ir+.172*capD):0, capNew=capD>0?IR(R+capD,parts,couple)-ir+.172*capD:0, capTxt=capD>0?"Environ "+Math.round(capNew/capD*100)+" % d'impôt et de prélèvements sociaux, contre "+Math.round(capNow/capD*100)+" % aujourd'hui (flat tax de 30 %, ou barème avec abattement de 40 % s'il est plus avantageux).":"";
   const wHyp=W.fine?"Selon le détail de ton patrimoine.":"Hypothèse : moitié immobilier (dont la moitié en résidence principale), moitié financier. Affinable avec l'accès illimité.";
   const L=(m,v,k,n)=>({m,v,k,n});
   const res={};
@@ -521,7 +526,7 @@ function compute(a){
   const qx=R/parts, q4=4000*12*.9, q8=8000*12*.9, gx=taxPerPart(qx);
   const f=gx>0?(-.10*taxPerPart(Math.min(qx,q4))+.15*(taxPerPart(Math.min(qx,q8))-taxPerPart(Math.min(qx,q4)))+.40*(gx-taxPerPart(Math.min(qx,q8))))/gx:0;
   if(base>0) lfi.push(L("Impôt sur le revenu à 14 tranches",-base*f,1,"Barème non publié. Hypothèse, tranche par tranche : −10 % sur l'impôt dû pour la part du revenu sous 4 000 € net par mois et par part, +15 % entre 4 000 et 8 000 €, +40 % au-delà."));
-  if(cap>0){const d=cap*(.30-(t+.172)); lfi.push(L("Fin de la flat tax : placements imposés au barème",d,1,"Tranche marginale "+Math.round(t*100)+" % + 17,2 % de prélèvements sociaux, contre 30 % aujourd'hui."+capHyp));}
+  if(capD>0&&capNow-capNew<-1) lfi.push(L("Fin de la flat tax : placements"+(div>0?" et dividendes":"")+" imposés au barème",capNow-capNew,1,capTxt+(cap>0?capHyp:"")+divHyp));
   {const isfV=isf(W.isfBase); if(isfV>0||ifiNow>0) lfi.push(L("Retour de l'ISF (à la place de l'IFI)",-(isfV-ifiNow),1,"Ancien barème de l'ISF sur tout le patrimoine net (abattement de 30 % sur la résidence principale, dettes déduites) : "+fmtPlain(isfV)+", contre "+fmtPlain(ifiNow)+" d'IFI aujourd'hui. "+wHyp));
     if(P>100000000) lfi.push(L("Taxe Zucman (2 % au-delà de 100 M€)",-Math.max(0,.02*P-isfV),.5,"Risque constitutionnel et d'exil fiscal."));}
   if(ndv>2750){const th=F(a,"thX"); lfi.push(L("Retour d'une taxe d'habitation pour les 20 % les plus aisés",-(th?th:800),1,(th?"Sur la base de ta dernière taxe d'habitation.":"Hypothèse : 800 € par an en moyenne.")+" 80 % des ménages exonérés."));}
@@ -543,7 +548,7 @@ function compute(a){
   if(smps>1) ps.push(L("SMIC à 1 690 € net (en plus de la CSG)",smps*12,.5,"Faisable par décret, mais hausse rapide du coût du travail."));
   {const cat=unlocked?a.cat:null; const okMe=sit==="fonct"&&(cat?cat!=="A":me<2700); const okCj=couple&&a.sitc==="fonct"&&cj<2700; const fs=(okMe?me:0)+(okCj?cj:0);
    if(fs>0) ps.push(L("Point d'indice revalorisé (catégories B et C)",fs*.03*.8*12,1,"Montant non publié. Hypothèse : +3 %."+(sit==="fonct"&&!cat?" Catégorie déduite de ton salaire.":"")));}
-  if(cap>0){const d=cap*(.30-(t+.172)); ps.push(L("Fin de la flat tax : revenus financiers à l'impôt",d,1,"Tranche marginale "+Math.round(t*100)+" % + 17,2 % de prélèvements sociaux, contre 30 % aujourd'hui."+capHyp));}
+  if(capD>0&&capNow-capNew<-1) ps.push(L("Fin de la flat tax : revenus financiers"+(div>0?" et dividendes":"")+" à l'impôt",capNow-capNew,1,capTxt+(cap>0?capHyp:"")+divHyp));
   if(P>100000000) ps.push(L("Taxe Zucman (2 % au-delà de 100 M€)",-Math.max(0,.015*P-ifiNow),.5,"Hypothèse : 0,5 % déjà payé en impôts. Risque constitutionnel et d'exil fiscal."));
   ps.push(L("Mutuelle publique « Grande Sécu »",persons*50,.5,"Chiffrage du PS : 50 € rendus par an à chaque assuré."));
   if(pa>0) ps.push(L("Pension alimentaire sortie du revenu imposable",ir-IR(R-pa*12*.9,parts,couple),1,"Mesure simple à voter."));
@@ -602,6 +607,10 @@ function compute(a){
     herit:H>0?{now:droits(H,100000),then:0,hyp:"Suppression des droits de succession en ligne directe (tribune d'avril 2026)."}:null};
 
   const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const ag=retireAges(st); for(const k of ["rn","lfi","ps","ctr","lr","eco","ne"]) res[k].perso="Toi : départ à taux plein vers "+ag[k]+" ans (aujourd'hui "+ag.cur+" ans).";}
+  if(remu&&remu!=="ei"){const is=div>42500?.25:.15, t2=tmi(R+div,parts), sal=Math.round(56*(1-.9*t)), salB=Math.round(56*(1-.9*t2)), dNow=Math.round(100*(1-is)*(1-Math.min(.30,.172+.6*t))), dBar=Math.round(100*(1-is)*(1-t2-.172));
+    for(const k of ["rn","lfi","ps","ctr","lr","eco","ne"]){const bar=k==="lfi"||k==="ps", dv=bar?dBar:dNow, sl=bar?salB:sal, best=sl>dv+2?"en salaire":dv>sal+2?"en dividendes":"indifféremment en salaire ou en dividendes";
+      res[k].remu="Sur 100 € de bénéfice de ta société, il te reste environ "+sl+" € en salaire et "+dv+" € en dividendes"+(k==="lfi"||k==="ps"?" (dividendes au barème)":" (règles actuelles)")+". Mieux vaut te payer "+best+".";}
+    res.remuHyp="Hypothèses : dirigeant de SAS ou SASU (environ 56 € net pour 100 € de coût salarial), impôt sur les sociétés à "+Math.round(is*100)+" %, ta tranche d'impôt à "+Math.round(t*100)+" %"+(t2>t?" ("+Math.round(t2*100)+" % avec LFI et le PS, qui ajoutent les dividendes à ton revenu imposable)":"")+". En SARL ou EURL, les charges et les dividendes au-delà de 10 % du capital sont traités autrement. Le salaire ouvre aussi des droits à la retraite et au chômage, pas les dividendes.";}
   for(const p of PARTIES){const r=res[p.k]; r.total=r.lines.reduce((s,l)=>s+l.v*l.k,0); r.hyp=r.lines.filter(l=>/Hypoth|estimé|déduite|moyenne/.test(l.n)).length;}
   return res;
 }
@@ -632,7 +641,7 @@ function showResults(fromLoad){
   document.getElementById("parties").innerHTML=PARTIES.map(p=>{const r=res[p.k];
     const lines=r.lines.map(l=>`<div class="line${l.k===0?" excluded":""}"><span class="m">${esc(l.m)}${chip(l.k)}</span><span class="amt ${l.k?cls(l.v*l.k):"zero"}">${l.k===0?fmt(l.v):fmt(l.v*l.k)}</span><span class="note">${esc(l.n)}${l.k===.5?" Montant plein : "+fmt(l.v)+".":""}</span></div>`).join("");
     const her=r.herit?`<dt>Droits sur ton héritage</dt><dd>${fmtPlain(r.herit.then)} (aujourd'hui ${fmtPlain(r.herit.now)}). ${esc(r.herit.hyp)}</dd>`:"";
-    return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.</p>'}</div><dl class="facts"><dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}${r.perso?" <b>"+esc(r.perso)+"</b>":""}</dd>${her}</dl></article>`}).join("");
+    return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.</p>'}</div><dl class="facts"><dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}${r.perso?" <b>"+esc(r.perso)+"</b>":""}</dd>${r.remu?"<dt>Salaire ou dividendes ?</dt><dd><b>"+esc(r.remu)+"</b> "+esc(res.remuHyp||"")+"</dd>":""}${her}</dl></article>`}).join("");
   const nh=PARTIES.reduce((t,p)=>t+(res[p.k].hyp||0),0), T=document.getElementById("teaser");
   T.hidden=unlocked; if(!unlocked) document.getElementById("teasertxt").textContent=nh>0?nh+" montant"+(nh>1?"s":"")+" de ton résultat "+(nh>1?"reposent":"repose")+" sur des moyennes nationales ou des estimations.":"Ton résultat repose en partie sur des moyennes nationales.";
   document.getElementById("dlstatus").textContent="";
