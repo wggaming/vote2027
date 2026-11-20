@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ce que me coûtent mes frais : le simulateur</title>
+<meta name="description" content="Banque, assurance-vie, PEA : additionne ce que tes frais te coûtent sur 20 ans, effet des intérêts perdus compris. Gratuit, 2 minutes, sans inscription.">
+<link rel="canonical" href="https://vote.wagramconseil.fr/frais/simulateur.html">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#f4f5f2; --surface:#ffffff; --ink:#17201c; --muted:#5a6660; --line:#d8ddd8; --soft:#e9ece7;
+  --accent:#0d6b57; --accent-ink:#ffffff; --loss:#b8402c; --warn:#fff3c4; --warnink:#5a4300;
+  --c-bank:#3657c9; --c-av:#c0731a; --c-pea:#0d6b57;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101512; --surface:#18201c; --ink:#e7ece9; --muted:#9aa7a0; --line:#2a342f; --soft:#212a25;
+  --accent:#4fc7a6; --accent-ink:#06140f; --loss:#ff8a72; --warn:#4a3d0a; --warnink:#ffe9a0;
+  --c-bank:#8aa3ff; --c-av:#f0a54c; --c-pea:#4fc7a6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101512; --surface:#18201c; --ink:#e7ece9; --muted:#9aa7a0; --line:#2a342f; --soft:#212a25;
+  --accent:#4fc7a6; --accent-ink:#06140f; --loss:#ff8a72; --warn:#4a3d0a; --warnink:#ffe9a0;
+  --c-bank:#8aa3ff; --c-av:#f0a54c; --c-pea:#4fc7a6; color-scheme:dark}
+*{box-sizing:border-box;touch-action:manipulation}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;
+  padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:640px;margin:0 auto}
+a{color:var(--accent);text-underline-offset:3px}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.12;text-wrap:balance}
+p{margin:0}
+.top{display:flex;justify-content:space-between;align-items:center;padding:4px 0 14px;font-size:14px}
+.top a{color:var(--muted);font-weight:700;text-decoration:none}
+.eyebrow{font:600 12px var(--f-num);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.prog{display:flex;gap:6px;margin-bottom:14px}.prog i{flex:1;height:5px;border-radius:3px;background:var(--line)}.prog i.on{background:var(--accent)}
+.step h2{font-size:28px;margin:6px 0 6px}
+.step .lead{color:var(--muted);margin-bottom:18px;font-size:15.5px}
+.f{margin-bottom:18px}
+.f>label,.f>.lab{display:block;font-weight:700;margin-bottom:6px}
+.f .h{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.45}
+.opts{display:grid;gap:8px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opts button{font:600 15px var(--f-body);text-align:left;line-height:1.3;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.opts button small{display:block;font-weight:500;color:var(--muted);font-size:13px;margin-top:2px}
+.opts button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--surface)}
+.num{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:2px 14px;background:var(--bg)}
+.num:focus-within{border-color:var(--accent)}
+.num input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:700 20px var(--f-body);padding:10px 0}
+.num input:focus{outline:none}
+.num span{color:var(--muted);font-weight:600;white-space:nowrap;font-size:15px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row2>*{min-width:0}.num input[type=number]{-moz-appearance:textfield}
+.fine{border:1.5px dashed var(--line);border-radius:14px;padding:14px 14px 2px;margin-bottom:18px}
+.fine .t{font:600 12px var(--f-num);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:700 17px var(--f-body);padding:14px 22px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.6}
+.btn:focus-visible,.opts button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.nav{display:flex;gap:10px;margin-top:6px}.nav .primary{flex:1}
+.skip{display:block;width:100%;margin-top:10px;background:none;border:0;color:var(--muted);font:600 15px var(--f-body);text-decoration:underline;cursor:pointer;padding:6px}
+/* Résultat */
+.big{font:800 clamp(44px,11vw,68px) var(--f-display);letter-spacing:-.02em;color:var(--loss);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.sub{color:var(--muted);font-size:15.5px}
+.bars{display:grid;gap:12px;margin:20px 0 4px}
+.bar .l{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:15px;margin-bottom:5px}
+.bar .l b{font-family:var(--f-num);font-weight:600;white-space:nowrap}
+.bar .t{height:12px;border-radius:6px;background:var(--soft);overflow:hidden}.bar .t i{display:block;height:100%;border-radius:6px}
+.lock{margin-top:18px;border:1.5px solid var(--accent);border-radius:14px;padding:18px;background:var(--soft)}
+.lock h3{font-size:21px;margin-bottom:8px}
+.lock ul{margin:0 0 14px;padding-left:20px;font-size:15px;display:grid;gap:4px}
+.lock .btn{width:100%}
+.code{display:flex;gap:8px;margin-top:12px}.code input{flex:1;min-width:0;font:600 16px var(--f-num);text-transform:uppercase;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.lock .code .btn{width:auto;padding:12px 16px}
+.msg{min-height:20px;font-size:14px;margin-top:8px;color:var(--loss)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.acts .btn{font-size:15px;padding:12px 10px}
+.det h3{font-size:19px;margin:22px 0 8px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11.5px var(--f-num);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td.n,th.n{text-align:right;font-family:var(--f-num);white-space:nowrap}
+tr.tot td{font-weight:800;border-bottom:0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:baseline}
+.save{background:var(--soft);border-radius:14px;padding:16px;margin-top:18px}
+.save .v{font:800 30px var(--f-display);color:var(--accent)}
+.note{font-size:13px;color:var(--muted);margin-top:18px;line-height:1.5}
+.chart svg{width:100%;height:auto;display:block}
+.share{margin-top:14px;text-align:center;font-size:14.5px;color:var(--muted)}
+/* Page A4 pour le PDF */
+#a4{position:fixed;left:-10000px;top:0;width:794px;height:1123px;background:#fff;color:#17201c;padding:56px 60px;font-family:var(--f-body);font-size:13px;line-height:1.45}
+#a4 h1{font:800 34px var(--f-display);margin:4px 0 0}
+#a4 .k{font:600 11px var(--f-num);letter-spacing:.1em;text-transform:uppercase;color:#5a6660}
+#a4 .bigA{font:800 54px var(--f-display);color:#b8402c;margin:18px 0 0}
+#a4 table{font-size:12.5px}#a4 th,#a4 td{border-color:#d8ddd8;padding:6px 5px}#a4 th{color:#5a6660}
+#a4 .foot{position:absolute;left:60px;right:60px;bottom:44px;font-size:10.5px;color:#5a6660;border-top:1px solid #d8ddd8;padding-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="index.html">← Ce que me coûtent mes frais</a><span class="eyebrow" id="acc"></span></div>
+
+  <main id="quiz" class="card">
+    <div class="prog" id="prog"></div>
+    <div id="stepbox"></div>
+    <div class="nav"><button class="btn" id="back" type="button">Retour</button><button class="btn primary" id="next" type="button">Continuer</button></div>
+    <button class="skip" id="skip" type="button"></button>
+  </main>
+
+  <main id="res" class="card" hidden>
+    <div class="eyebrow" id="r-k">Sur 20 ans</div>
+    <h1 style="font-size:24px;margin-top:6px">Tes frais te coûtent</h1>
+    <div class="big" id="r-big">0 €</div>
+    <p class="sub" id="r-sub"></p>
+    <div class="bars" id="r-bars"></div>
+
+    <section class="lock" id="lock">
+      <h3>Où part ton argent, ligne par ligne</h3>
+      <ul>
+        <li>Le détail de chaque frais : carte, tenue de compte, frais sur versements, gestion, fonds, droits de garde, ordres</li>
+        <li>Ce que tu garderais avec des frais bas, enveloppe par enveloppe</li>
+        <li>La courbe année par année et ta page A4 en PDF</li>
+        <li>Tes vrais taux de frais, la durée (10 à 30 ans) et le rendement de ton choix, autant de simulations que tu veux</li>
+      </ul>
+      <a class="btn primary" id="pay" href="acheter.html">Voir le détail pour 1 €</a>
+      <form class="code" id="codef"><input id="codein" placeholder="J'ai déjà un code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Ton code"><button class="btn" type="submit">Activer</button></form>
+      <div class="msg" id="codemsg" role="status"></div>
+    </section>
+
+    <section class="det" id="det" hidden>
+      <h3>Le détail de tes frais</h3>
+      <table id="t-det"></table>
+      <h3>Année par année</h3>
+      <div class="chart" id="chart"></div>
+      <div class="save" id="save"></div>
+      <div class="acts"><button class="btn" id="dl" type="button">Télécharger le PDF</button><button class="btn" id="refine" type="button">Affiner mes frais</button></div>
+      <p class="msg" id="dlstatus" role="status" style="color:var(--muted)"></p>
+    </section>
+
+    <div class="acts" id="acts-free"><button class="btn" id="restart" type="button">Modifier mes réponses</button><a class="btn" href="index.html#methode">Comment c'est calculé</a></div>
+    <p class="share">Montre ce chiffre autour de toi : <a href="#" id="sharebtn">partager le simulateur</a></p>
+    <p class="note" id="r-note"></p>
+  </main>
+  <p style="text-align:center;font-size:13px;margin-top:18px"><a href="legal.html" style="color:var(--muted)">Mentions légales, CGV, confidentialité</a></p>
+</div>
+<div id="a4" aria-hidden="true"></div>
+
+<script src="../vendor/html2canvas.min.js"></script>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script src="codes.js"></script>
+<script src="stats.js"></script>
+<script>
+/* ===== Réglages ===== */
+var PAYMENT_URL = '';   // lien de paiement Mollie à 1 € (vide tant que le lien n'est pas créé : acheter.html propose alors d'écrire)
+var PRICE_LABEL = '1 €';
+
+/* ===== Hypothèses sourcées (voir index.html#methode) =====
+   Banque : 228,90 € par an en moyenne en 2025 (Meilleurtaux, février 2025), hausse de 1,7 % sur un an.
+   Commission d'intervention : plafonnée à 8 € par opération (art. R312-4-1 du Code monétaire et financier).
+   Assurance-vie (France Assureurs, mai 2026 ; CCSF, juin 2026, chiffres 2025) : frais de gestion 0,67 % fonds euros
+   et 0,88 % UC (moyenne pondérée), frais sur versement 0,55 % ; frais internes des fonds UC 1,60 %, ETF 0,33 %,
+   fonds actions 1,72 %.
+   PEA (AMF, plafonds en vigueur depuis le 1er juillet 2020) : droits de garde 0,4 % maximum par an, ordres 0,5 %
+   maximum en ligne. */
+var H = {
+  bankTrad: 229, bankOnline: 0, bankRise: 1.5, incident: 8,
+  avNet: { fv: 0.55, gE: 0.67, gU: 0.88 }, avOnline: { fv: 0, gE: 0.5, gU: 0.5 },
+  funds: { classic: 1.60, etf: 0.33, actions: 1.72, direct: 0 },
+  peaBank: { garde: 0.25, ordre: 0.5 }, peaOnline: { garde: 0, ordre: 0.1 },
+  rE: 3.2, rA: 5, years: 20
+};
+
+function ld(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+function sv(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+var unlocked = ld('fr-unlock', false) === true;
+var done = ld('fr-done', false) === true;
+var A = ld('fr-answers', null) || {
+  bank: 'trad', bankAmt: '', inc: 0, agios: 0, bankRise: H.bankRise,
+  av: true, avV: 20000, avDep: 100, avType: 'net', avUC: 30, avFund: 'classic', avFv: '', avGE: '', avGU: '', avFF: '',
+  pea: true, peaV: 5000, peaDep: 100, peaType: 'bank', peaFund: 'etf', peaGarde: '', peaOrdre: '', peaFF: '',
+  years: H.years, rE: H.rE, rA: H.rA
+};
+
+/* ===== Questions ===== */
+function opt(key, val, label, hint) { return '<button type="button" data-k="' + key + '" data-v="' + val + '" aria-pressed="' + (String(A[key]) === String(val)) + '">' + label + (hint ? '<small>' + hint + '</small>' : '') + '</button>'; }
+function num(key, unit, ph, step) { return '<div class="num"><input type="number" inputmode="decimal" min="0" step="' + (step || 'any') + '" data-n="' + key + '" value="' + (A[key] === '' || A[key] == null ? '' : A[key]) + '" placeholder="' + (ph || '') + '"><span>' + unit + '</span></div>'; }
+function fine(inner) { return unlocked ? '<div class="fine"><div class="t">Mode affiné : tes vrais frais (laisse vide pour garder la valeur par défaut)</div>' + inner + '</div>' : ''; }
+
+var STEPS = [
+  { id: 'bank', title: 'Ton compte courant', lead: 'Carte, tenue de compte, assurance des moyens de paiement, retraits : tout ce que ta banque prélève chaque année.',
+    render: function () {
+      return '<div class="f"><span class="lab">Tu es dans quelle banque ?</span><div class="opts">' +
+        opt('bank', 'trad', 'Une banque traditionnelle, avec agence', 'On compte la moyenne 2025 : 229 € par an') +
+        opt('bank', 'online', 'Une banque en ligne', 'Souvent gratuite sous conditions : on compte 0 €') +
+        opt('bank', 'exact', 'Je connais mon montant', 'Il figure sur le récapitulatif annuel des frais que ta banque t\'envoie en janvier') + '</div></div>' +
+        (A.bank === 'exact' ? '<div class="f"><label>Frais bancaires sur un an</label>' + num('bankAmt', '€ par an', '229') + '</div>' : '') +
+        '<div class="f"><span class="lab">Il t\'arrive de payer des frais d\'incident (découvert, rejet) ?</span><div class="opts">' +
+        opt('inc', 0, 'Jamais') + opt('inc', 3, 'Quelques fois par an', 'On compte 3 commissions de 8 €') + opt('inc', 12, 'Presque tous les mois', 'On compte 12 commissions de 8 €') + '</div></div>' +
+        fine('<div class="row2"><div class="f"><label>Agios par an</label>' + num('agios', '€', '0') + '</div><div class="f"><label>Hausse des tarifs par an</label>' + num('bankRise', '%', '1,5') + '</div></div>');
+    } },
+  { id: 'av', title: 'Ton assurance-vie', lead: 'Si tu en as plusieurs, additionne-les. Les frais se prennent chaque année sur ton épargne, et l\'argent prélevé ne rapporte plus rien.', opt: 'av',
+    render: function () {
+      return '<div class="row2"><div class="f"><label>Montant aujourd\'hui</label>' + num('avV', '€', '20000') + '</div><div class="f"><label>Versement par mois</label>' + num('avDep', '€', '0') + '</div></div>' +
+        '<div class="f"><span class="lab">Ton contrat vient d\'où ?</span><div class="opts">' +
+        opt('avType', 'net', 'De ma banque ou d\'un assureur', 'Frais moyens du marché : 0,55 % sur versements, 0,67 à 0,88 % de gestion') +
+        opt('avType', 'online', 'D\'un site en ligne', '0 % sur versements, 0,5 % de gestion') + '</div></div>' +
+        '<div class="f"><span class="lab">Quelle part est en unités de compte (fonds, actions) ?</span><div class="opts two">' +
+        opt('avUC', 0, 'Rien, tout en fonds euros') + opt('avUC', 30, 'Un peu, environ 30 %') + opt('avUC', 60, 'Plus de la moitié') + opt('avUC', 100, 'Presque tout') + '</div></div>' +
+        (+A.avUC > 0 ? '<div class="f"><span class="lab">Ces unités de compte sont plutôt…</span><div class="opts">' +
+        opt('avFund', 'classic', 'Des fonds choisis par la banque ou un conseiller', 'Frais des fonds : 1,60 % par an en moyenne') +
+        opt('avFund', 'etf', 'Des ETF (fonds indiciels, « trackers »)', 'Frais des fonds : 0,33 % par an en moyenne') + '</div></div>' : '') +
+        fine('<div class="row2"><div class="f"><label>Frais sur versement</label>' + num('avFv', '%', '') + '</div><div class="f"><label>Gestion fonds euros</label>' + num('avGE', '% par an', '') + '</div><div class="f"><label>Gestion UC</label>' + num('avGU', '% par an', '') + '</div><div class="f"><label>Frais des fonds UC</label>' + num('avFF', '% par an', '') + '</div></div>');
+    } },
+  { id: 'pea', title: 'Ton PEA ou compte-titres', lead: 'Droits de garde, frais de courtage à chaque achat, frais des fonds : ils sont plafonnés par la loi sur le PEA, mais pas nuls.', opt: 'pea',
+    render: function () {
+      return '<div class="row2"><div class="f"><label>Montant aujourd\'hui</label>' + num('peaV', '€', '5000') + '</div><div class="f"><label>Versement par mois</label>' + num('peaDep', '€', '0') + '</div></div>' +
+        '<div class="f"><span class="lab">Il est ouvert où ?</span><div class="opts">' +
+        opt('peaType', 'bank', 'Dans ma banque', 'On compte 0,25 % de droits de garde et 0,5 % par achat, sous les plafonds légaux') +
+        opt('peaType', 'online', 'Chez un courtier en ligne', 'On compte 0 % de garde et 0,1 % par achat') + '</div></div>' +
+        '<div class="f"><span class="lab">Tu y as surtout…</span><div class="opts">' +
+        opt('peaFund', 'direct', 'Des actions en direct', 'Pas de frais de fonds') +
+        opt('peaFund', 'etf', 'Des ETF (trackers)', '0,33 % par an en moyenne') +
+        opt('peaFund', 'actions', 'Des fonds de la banque (SICAV, FCP)', '1,72 % par an en moyenne pour les fonds actions') + '</div></div>' +
+        fine('<div class="row2"><div class="f"><label>Droits de garde</label>' + num('peaGarde', '% par an', '') + '</div><div class="f"><label>Frais par achat</label>' + num('peaOrdre', '%', '') + '</div><div class="f"><label>Frais des fonds</label>' + num('peaFF', '% par an', '') + '</div></div>');
+    } },
+  { id: 'hyp', title: 'Tes hypothèses', lead: 'Sur combien d\'années, et à quel rendement avant frais ? Les valeurs par défaut sont volontairement prudentes.', fineOnly: true,
+    render: function () {
+      return '<div class="f"><span class="lab">Durée</span><div class="opts two">' + opt('years', 10, '10 ans') + opt('years', 20, '20 ans') + opt('years', 25, '25 ans') + opt('years', 30, '30 ans') + '</div></div>' +
+        '<div class="row2"><div class="f"><label>Fonds euros, avant frais</label>' + num('rE', '% par an', '3,2') + '</div><div class="f"><label>Actions et fonds, avant frais</label>' + num('rA', '% par an', '5') + '</div></div>';
+    } }
+];
+function steps() { return STEPS.filter(function (s) { return !s.fineOnly || unlocked; }); }
+var step = 0, started = false;
+
+function renderStep() {
+  var S = steps(), s = S[step];
+  document.getElementById('prog').innerHTML = S.map(function (_, i) { return '<i class="' + (i <= step ? 'on' : '') + '"></i>'; }).join('');
+  var off = s.opt && A[s.opt] === false;
+  document.getElementById('stepbox').innerHTML = '<div class="step"><div class="eyebrow">Étape ' + (step + 1) + ' sur ' + S.length + '</div><h2>' + s.title + '</h2><p class="lead">' + s.lead + '</p>' +
+    (off ? '<p style="margin-bottom:18px">Tu as indiqué ne pas en avoir. <button type="button" class="skip" style="display:inline;width:auto;padding:0" id="reon">J\'en ai un, finalement</button></p>' : s.render()) + '</div>';
+  document.getElementById('back').hidden = step === 0;
+  document.getElementById('next').textContent = step === S.length - 1 ? 'Voir ce que ça me coûte' : 'Continuer';
+  var sk = document.getElementById('skip');
+  sk.hidden = !s.opt || off;
+  sk.textContent = s.id === 'av' ? 'Je n\'ai pas d\'assurance-vie' : 'Je n\'ai ni PEA ni compte-titres';
+  var re = document.getElementById('reon'); if (re) re.onclick = function () { A[s.opt] = true; renderStep(); };
+  Array.prototype.forEach.call(document.querySelectorAll('#stepbox [data-k]'), function (b) {
+    b.onclick = function () { var k = b.getAttribute('data-k'), v = b.getAttribute('data-v'); A[k] = /^-?\d+(\.\d+)?$/.test(v) ? +v : v; sv('fr-answers', A); renderStep(); };
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#stepbox [data-n]'), function (inp) {
+    inp.oninput = function () { var v = inp.value.replace(',', '.'); A[inp.getAttribute('data-n')] = v === '' ? '' : Math.max(0, +v); sv('fr-answers', A); };
+  });
+}
+document.getElementById('next').onclick = function () {
+  if (!started) { started = true; if (window.track) track('frais-debut-test'); }
+  var S = steps(); if (step < S.length - 1) { step++; renderStep(); window.scrollTo(0, 0); } else showResults();
+};
+document.getElementById('back').onclick = function () { if (step > 0) { step--; renderStep(); } };
+document.getElementById('skip').onclick = function () { var s = steps()[step]; A[s.opt] = false; sv('fr-answers', A); document.getElementById('next').onclick(); };
+
+/* ===== Calcul =====
+   Simulation mois par mois. Chaque frais prélevé est suivi avec ce qu'il aurait rapporté s'il était resté placé :
+   l'écart entre « sans aucun frais » et « avec tes frais » est exactement la somme de ces montants capitalisés. */
+function pv(v, d) { return v === '' || v == null || isNaN(+v) ? d : +v; }
+function simEnv(o) {
+  // o : V0, dep (par mois), r (% an avant frais), fv (% versement), g (% an gestion), ff (% an fonds), garde (% an), ordre (% achat), years
+  var rm = Math.pow(1 + o.r / 100, 1 / 12) - 1, V = o.V0, keys = ['fv', 'g', 'ff', 'garde', 'ordre'];
+  var paid = {}, lost = {}, series = [];
+  keys.forEach(function (k) { paid[k] = 0; lost[k] = 0; });
+  for (var m = 1; m <= o.years * 12; m++) {
+    var f = {};
+    f.fv = o.dep * o.fv / 100; f.ordre = (o.dep - f.fv) * o.ordre / 100;
+    V += o.dep - f.fv - f.ordre;
+    f.g = V * o.g / 1200; f.ff = V * o.ff / 1200;
+    f.garde = m % 12 === 0 ? V * o.garde / 100 : 0;
+    V -= f.g + f.ff + f.garde;
+    V *= 1 + rm;
+    keys.forEach(function (k) { paid[k] += f[k]; lost[k] = (lost[k] + f[k]) * (1 + rm); });
+    if (m % 12 === 0) series.push(keys.reduce(function (s, k) { return s + lost[k]; }, 0));
+  }
+  return { V: V, paid: paid, cost: lost, series: series, total: keys.reduce(function (s, k) { return s + lost[k]; }, 0) };
+}
+function avParams(a, low) {
+  var base = a.avType === 'online' || low ? H.avOnline : H.avNet, uc = (+a.avUC || 0) / 100;
+  var ffDef = low ? H.funds.etf : H.funds[a.avFund] || H.funds.classic;
+  return { fv: low ? 0 : pv(a.avFv, base.fv), gE: low ? 0.5 : pv(a.avGE, base.gE), gU: low ? 0.5 : pv(a.avGU, base.gU), ff: low ? ffDef : pv(a.avFF, ffDef), uc: uc };
+}
+function computeAV(a, low) {
+  if (!a.av) return null;
+  var p = avParams(a, low), V0 = pv(a.avV, 0), dep = pv(a.avDep, 0), y = +a.years, out = [];
+  var e = simEnv({ V0: V0 * (1 - p.uc), dep: dep * (1 - p.uc), r: pv(a.rE, H.rE), fv: p.fv, g: p.gE, ff: 0, garde: 0, ordre: 0, years: y });
+  var u = simEnv({ V0: V0 * p.uc, dep: dep * p.uc, r: pv(a.rA, H.rA), fv: p.fv, g: p.gU, ff: p.ff, garde: 0, ordre: 0, years: y });
+  var lines = [
+    { l: 'Frais sur versements (' + fmtP(p.fv) + ')', paid: e.paid.fv + u.paid.fv, cost: e.cost.fv + u.cost.fv },
+    { l: 'Frais de gestion du contrat (' + (p.uc < 1 ? fmtP(p.gE) + ' fonds euros' : '') + (p.uc > 0 && p.uc < 1 ? ', ' : '') + (p.uc > 0 ? fmtP(p.gU) + ' UC' : '') + ')', paid: e.paid.g + u.paid.g, cost: e.cost.g + u.cost.g },
+    { l: 'Frais des fonds en UC (' + fmtP(p.ff) + ' par an)', paid: u.paid.ff, cost: u.cost.ff }
+  ].filter(function (x) { return x.paid > 0.5 || (x.l.indexOf('fonds en UC') < 0 && x.l.indexOf('versements') < 0); });
+  return { lines: lines, total: e.total + u.total, V: e.V + u.V, series: e.series.map(function (v, i) { return v + u.series[i]; }) };
+}
+function computePEA(a, low) {
+  if (!a.pea) return null;
+  var base = a.peaType === 'online' || low ? H.peaOnline : H.peaBank;
+  var ffDef = a.peaFund === 'direct' ? 0 : low ? H.funds.etf : H.funds[a.peaFund] || 0;
+  var p = { garde: low ? 0 : pv(a.peaGarde, base.garde), ordre: low ? H.peaOnline.ordre : pv(a.peaOrdre, base.ordre), ff: low ? ffDef : pv(a.peaFF, ffDef) };
+  var r = simEnv({ V0: pv(a.peaV, 0), dep: pv(a.peaDep, 0), r: pv(a.rA, H.rA), fv: 0, g: 0, ff: p.ff, garde: p.garde, ordre: p.ordre, years: +a.years });
+  var lines = [
+    { l: 'Droits de garde (' + fmtP(p.garde) + ' par an)', paid: r.paid.garde, cost: r.cost.garde },
+    { l: 'Frais de courtage à l\'achat (' + fmtP(p.ordre) + ')', paid: r.paid.ordre, cost: r.cost.ordre },
+    { l: 'Frais des fonds (' + fmtP(p.ff) + ' par an)', paid: r.paid.ff, cost: r.cost.ff }
+  ].filter(function (x) { return x.paid > 0.5; });
+  return { lines: lines, total: r.total, V: r.V, series: r.series };
+}
+function computeBank(a, low) {
+  var y = +a.years, rise = pv(a.bankRise, H.bankRise) / 100;
+  var base = low ? H.bankOnline : a.bank === 'online' ? H.bankOnline : a.bank === 'exact' ? pv(a.bankAmt, H.bankTrad) : H.bankTrad;
+  var inc = (+a.inc || 0) * H.incident + pv(a.agios, 0);
+  var s1 = 0, s2 = 0, series = [];
+  for (var i = 0; i < y; i++) { var k = Math.pow(1 + rise, i); s1 += base * k; s2 += inc * k; series.push(s1 + s2); }
+  var lines = [{ l: 'Compte, carte et services (' + fmtE(base) + ' la première année)', paid: s1, cost: s1 }];
+  if (inc > 0) lines.push({ l: 'Frais d\'incident et agios (' + fmtE(inc) + ' la première année)', paid: s2, cost: s2 });
+  return { lines: lines, total: s1 + s2, series: series };
+}
+function compute(a, low) { return { bank: computeBank(a, low), av: computeAV(a, low), pea: computePEA(a, low) }; }
+
+/* ===== Affichage ===== */
+function fmtE(x) { return Math.round(x).toLocaleString('fr-FR').replace(/ /g, ' ') + ' €'; }
+function fmtP(x) { return (Math.round(x * 100) / 100).toLocaleString('fr-FR') + ' %'; }
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+var CATS = [{ k: 'bank', n: 'Compte courant', c: '--c-bank', hex: '#3657c9' }, { k: 'av', n: 'Assurance-vie', c: '--c-av', hex: '#c0731a' }, { k: 'pea', n: 'PEA ou compte-titres', c: '--c-pea', hex: '#0d6b57' }];
+var last = null;
+
+function showResults() {
+  var R = compute(A, false), L = compute(A, true), y = +A.years;
+  var tot = CATS.reduce(function (s, c) { return s + (R[c.k] ? R[c.k].total : 0); }, 0);
+  last = { R: R, L: L, tot: tot, y: y };
+  done = true; sv('fr-done', true); sv('fr-answers', A);
+  if (window.track) track('frais-resultat');
+  document.getElementById('quiz').hidden = true; document.getElementById('res').hidden = false;
+  document.getElementById('r-k').textContent = 'Sur ' + y + ' ans';
+  document.getElementById('r-big').textContent = fmtE(tot);
+  document.getElementById('r-sub').textContent = 'soit ' + fmtE(tot / y / 12) + ' par mois en moyenne, intérêts perdus compris : chaque euro prélevé en frais aurait continué à rapporter.';
+  var max = Math.max.apply(null, CATS.map(function (c) { return R[c.k] ? R[c.k].total : 0; })) || 1;
+  document.getElementById('r-bars').innerHTML = CATS.filter(function (c) { return R[c.k]; }).map(function (c) {
+    return '<div class="bar"><div class="l"><span>' + c.n + '</span><b>' + fmtE(R[c.k].total) + '</b></div><div class="t"><i style="width:' + Math.max(1.5, R[c.k].total / max * 100) + '%;background:var(' + c.c + ')"></i></div></div>';
+  }).join('');
+  document.getElementById('r-note').textContent = 'Estimation indicative en euros courants, hors fiscalité. Rendements avant frais retenus : ' + fmtP(pv(A.rE, H.rE)) + ' pour le fonds euros, ' + fmtP(pv(A.rA, H.rA)) + ' pour les actions et les fonds. Frais moyens du marché quand tu ne donnes pas les tiens (sources sur la page d\'accueil). Ce n\'est pas un conseil en investissement : le simulateur ne recommande aucun produit.';
+  renderDetail();
+  refreshAccess();
+  window.scrollTo(0, 0);
+}
+function renderDetail() {
+  if (!last || !unlocked) return;
+  var R = last.R, L = last.L, y = last.y, rows = '<tr><th>Frais</th><th class="n">Payé</th><th class="n">Coût réel*</th></tr>';
+  CATS.forEach(function (c) {
+    if (!R[c.k]) return;
+    rows += '<tr><td colspan="3" style="font-weight:800;padding-top:14px"><span class="dot" style="background:var(' + c.c + ')"></span>' + c.n + '</td></tr>';
+    R[c.k].lines.forEach(function (x) { rows += '<tr><td>' + esc(x.l) + '</td><td class="n">' + fmtE(x.paid) + '</td><td class="n">' + fmtE(x.cost) + '</td></tr>'; });
+  });
+  var paid = CATS.reduce(function (s, c) { return s + (R[c.k] ? R[c.k].lines.reduce(function (t, x) { return t + x.paid; }, 0) : 0); }, 0);
+  rows += '<tr class="tot"><td>Total sur ' + y + ' ans</td><td class="n">' + fmtE(paid) + '</td><td class="n">' + fmtE(last.tot) + '</td></tr>';
+  rows += '<tr><td colspan="3" style="font-size:12.5px;color:var(--muted);border:0">* Coût réel : le frais payé, plus ce qu\'il aurait rapporté s\'il était resté placé jusqu\'au bout (hors compte courant, compté sans intérêts).</td></tr>';
+  document.getElementById('t-det').innerHTML = rows;
+  document.getElementById('chart').innerHTML = chartSVG(R, y, false);
+  var ltot = CATS.reduce(function (s, c) { return s + (L[c.k] ? L[c.k].total : 0); }, 0), gain = Math.max(0, last.tot - ltot);
+  last.ltot = ltot; last.paid = paid;
+  var parts = CATS.filter(function (c) { return R[c.k]; }).map(function (c) { return c.n + ' : ' + fmtE(Math.max(0, R[c.k].total - L[c.k].total)); }).join(' · ');
+  document.getElementById('save').innerHTML = '<div class="eyebrow">Avec des frais bas</div><div class="v">' + fmtE(gain) + ' de plus pour toi</div><p style="font-size:14.5px;margin-top:6px">' + parts + '</p><p style="font-size:13px;color:var(--muted);margin-top:8px">Profil « frais bas » : compte courant gratuit, assurance-vie sans frais sur versements avec 0,5 % de gestion et des ETF à 0,33 %, PEA sans droits de garde avec 0,1 % par achat. Mêmes placements, mêmes versements, mêmes incidents. Ce n\'est pas une recommandation de produit : compare les frais réels avant de changer.</p>';
+}
+function chartSVG(R, y, print) {
+  var W = 600, Hh = 236, pl = 8, pb = 26, pt = 28, series = CATS.filter(function (c) { return R[c.k]; });
+  var tot = []; for (var i = 0; i < y; i++) tot.push(series.reduce(function (s, c) { return s + R[c.k].series[i]; }, 0));
+  var max = tot[y - 1] || 1, bw = (W - pl * 2) / y;
+  var out = '<svg viewBox="0 0 ' + W + ' ' + Hh + '" role="img" aria-label="Coût cumulé des frais année par année">';
+  for (var j = 0; j < y; j++) {
+    var base = Hh - pb;
+    series.forEach(function (c) {
+      var h = R[c.k].series[j] / max * (Hh - pb - pt);
+      out += '<rect x="' + (pl + j * bw + 1.5) + '" y="' + (base - h) + '" width="' + Math.max(1, bw - 3) + '" height="' + h + '" fill="' + (print ? c.hex : 'var(' + c.c + ')') + '" rx="1.5"></rect>';
+      base -= h;
+    });
+    if ((j + 1) % 5 === 0 || j === 0) out += '<text x="' + (pl + j * bw + bw / 2) + '" y="' + (Hh - 8) + '" text-anchor="middle" font-size="12" fill="' + (print ? '#5a6660' : 'currentColor') + '" opacity=".75">an ' + (j + 1) + '</text>';
+  }
+  out += '<text x="' + (W - pl) + '" y="' + (16) + '" text-anchor="end" font-size="13" font-weight="700" fill="' + (print ? '#17201c' : 'currentColor') + '">' + fmtE(max) + '</text></svg>';
+  return out;
+}
+
+/* ===== Accès payant ===== */
+function showLock(src) { var l = document.getElementById('lock'); if (window.track) track('frais-demande-' + src); l.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+function refreshAccess() {
+  document.getElementById('lock').hidden = unlocked;
+  document.getElementById('det').hidden = !unlocked;
+  document.getElementById('restart').textContent = unlocked ? 'Modifier mes réponses' : 'Modifier mes réponses (' + PRICE_LABEL + ')';
+  document.getElementById('acc').textContent = unlocked ? 'Accès complet' : '';
+  document.getElementById('pay').textContent = 'Voir le détail pour ' + PRICE_LABEL;
+}
+function tryUnlock(raw, via) {
+  return window.checkCode(raw).then(function (ok) {
+    if (ok) { unlocked = true; sv('fr-unlock', true); refreshAccess(); renderDetail(); if (window.track) track('frais-code-' + (window.lastCodeId || 'inconnu') + '-' + (via || 'champ')); }
+    return ok;
+  });
+}
+document.getElementById('codef').onsubmit = function (e) {
+  e.preventDefault(); var m = document.getElementById('codemsg'); m.textContent = 'Vérification…';
+  tryUnlock(document.getElementById('codein').value, 'champ').then(function (ok) { m.textContent = ok ? '' : 'Ce code n\'est pas reconnu. Vérifie-le (format FR-XXXXX-XXXXX).'; });
+};
+document.getElementById('pay').onclick = function () { if (window.track) track('frais-clic-achat'); };
+function openQuiz() { step = 0; document.getElementById('res').hidden = true; document.getElementById('quiz').hidden = false; renderStep(); window.scrollTo(0, 0); }
+document.getElementById('restart').onclick = function () { if (unlocked || !done) openQuiz(); else showLock('modif'); };
+document.getElementById('refine').onclick = function () { openQuiz(); };
+document.getElementById('sharebtn').onclick = function (e) {
+  e.preventDefault(); var url = 'https://vote.wagramconseil.fr/frais/', t = 'Combien te coûtent tes frais de banque, d\'assurance-vie et de PEA sur 20 ans ? Le calcul gratuit :';
+  if (window.track) track('frais-partage');
+  if (navigator.share) navigator.share({ title: 'Ce que me coûtent mes frais', text: t, url: url }).catch(function () {});
+  else if (navigator.clipboard) navigator.clipboard.writeText(t + ' ' + url).then(function () { e.target.textContent = 'lien copié'; });
+};
+
+/* ===== PDF ===== */
+function buildA4() {
+  var R = last.R, d = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }), rows = '<tr><th>Frais</th><th class="n">Payé</th><th class="n">Coût réel</th></tr>';
+  CATS.forEach(function (c) {
+    if (!R[c.k]) return;
+    rows += '<tr><td colspan="3" style="font-weight:800;padding-top:10px"><span class="dot" style="background:' + c.hex + '"></span>' + c.n + ' : ' + fmtE(R[c.k].total) + '</td></tr>';
+    R[c.k].lines.forEach(function (x) { rows += '<tr><td>' + esc(x.l) + '</td><td class="n">' + fmtE(x.paid) + '</td><td class="n">' + fmtE(x.cost) + '</td></tr>'; });
+  });
+  document.getElementById('a4').innerHTML = '<div class="k">Simulation personnelle · ' + d + '</div><h1>Ce que me coûtent mes frais</h1>' +
+    '<div class="bigA">' + fmtE(last.tot) + '</div><div style="font-size:15px;color:#5a6660">sur ' + last.y + ' ans, intérêts perdus compris, soit ' + fmtE(last.tot / last.y / 12) + ' par mois</div>' +
+    '<table style="margin-top:22px">' + rows + '</table>' +
+    '<div style="margin-top:18px">' + chartSVG(R, last.y, true) + '</div>' +
+    '<div style="margin-top:14px;background:#e9ece7;border-radius:10px;padding:12px 14px;font-size:14px"><b>Avec des frais bas : ' + fmtE(Math.max(0, last.tot - last.ltot)) + ' de plus pour moi</b> (mêmes placements et versements, compte gratuit, assurance-vie et PEA à frais réduits).</div>' +
+    '<div class="foot"><b style="color:#17201c;font-size:12px">Et toi, combien te coûtent tes frais ? Calcul gratuit sur <span style="color:#0d6b57">vote.wagramconseil.fr/frais</span></b><br>Estimation indicative, en euros courants, hors fiscalité. Rendements avant frais : ' + fmtP(pv(A.rE, H.rE)) + ' (fonds euros), ' + fmtP(pv(A.rA, H.rA)) + ' (actions et fonds). Frais par défaut : moyennes publiées par Meilleurtaux (2025), France Assureurs et le CCSF (2025), plafonds PEA de l\'AMF. Ni conseil en investissement, ni recommandation de produit. Édité par WG Conseil.</div>';
+}
+document.getElementById('dl').onclick = async function () {
+  var st = document.getElementById('dlstatus'), b = this;
+  if (!last) return;
+  if (!window.html2canvas || !window.jspdf) { st.textContent = 'Le générateur de PDF n\'a pas pu se charger. Recharge la page.'; return; }
+  b.disabled = true; st.textContent = 'Préparation de ta page A4…';
+  try {
+    buildA4(); if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    var canvas = await html2canvas(document.getElementById('a4'), { scale: 2, backgroundColor: '#ffffff', width: 794, height: 1123, windowWidth: 794, x: 0, y: 0, scrollX: 0, scrollY: 0, onclone: function (doc) { doc.getElementById('a4').style.left = '0'; } });
+    var pdf = new window.jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    pdf.addImage(canvas.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, 210, 297);
+    pdf.save('ce-que-me-coutent-mes-frais.pdf');
+    if (window.track) track('frais-pdf');
+    st.textContent = 'PDF téléchargé.';
+  } catch (e) { st.textContent = 'Le PDF n\'a pas pu être créé. Réessaie.'; }
+  finally { b.disabled = false; }
+};
+
+/* ===== Démarrage ===== */
+(function () {
+  var m = location.search.match(/[?&]code=([^&]+)/);
+  var q = location.search.match(/[?&]bank=(trad|online)/);
+  if (q && !done) { A.bank = q[1]; }
+  if (m) { tryUnlock(decodeURIComponent(m[1]), 'lien').then(function () { if (done) showResults(); }); history.replaceState(null, '', location.pathname); }
+  if (done) showResults(); else renderStep();
+  refreshAccess();
+})();
+</script>
+</body>
+</html>

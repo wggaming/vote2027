@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ce que me coûtent mes frais : banque, assurance-vie et PEA sur 20 ans</title>
+<meta name="description" content="Frais bancaires, frais d'assurance-vie, frais de PEA : le calcul gratuit de ce qu'ils te coûtent vraiment sur 20 ans, intérêts perdus compris. 2 minutes, sans inscription.">
+<link rel="canonical" href="https://vote.wagramconseil.fr/frais/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ce que me coûtent mes frais">
+<meta property="og:title" content="Combien tes frais te coûtent-ils sur 20 ans ?">
+<meta property="og:description" content="Banque, assurance-vie, PEA : additionne tout, intérêts perdus compris. Calcul gratuit en 2 minutes.">
+<meta property="og:url" content="https://vote.wagramconseil.fr/frais/">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#f4f5f2; --surface:#ffffff; --ink:#17201c; --muted:#5a6660; --line:#d8ddd8; --soft:#e9ece7;
+  --accent:#0d6b57; --accent-ink:#ffffff; --loss:#b8402c;
+  --c-bank:#3657c9; --c-av:#c0731a; --c-pea:#0d6b57;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101512; --surface:#18201c; --ink:#e7ece9; --muted:#9aa7a0; --line:#2a342f; --soft:#212a25;
+  --accent:#4fc7a6; --accent-ink:#06140f; --loss:#ff8a72; --c-bank:#8aa3ff; --c-av:#f0a54c; --c-pea:#4fc7a6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101512; --surface:#18201c; --ink:#e7ece9; --muted:#9aa7a0; --line:#2a342f; --soft:#212a25;
+  --accent:#4fc7a6; --accent-ink:#06140f; --loss:#ff8a72; --c-bank:#8aa3ff; --c-av:#f0a54c; --c-pea:#4fc7a6; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+p{margin:0}
+a{color:var(--accent);text-underline-offset:3px}
+.eyebrow{font:600 12px var(--f-num);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:700 17px var(--f-body);padding:15px 26px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+nav{display:flex;justify-content:space-between;align-items:center;padding-block:18px;font-size:14px}
+nav .brand{font:800 16px var(--f-display);color:var(--ink);text-decoration:none}
+nav a.l{color:var(--muted);text-decoration:none;font-weight:600}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding-block:36px 56px}
+.hero>*{min-width:0}
+.hero h1{font-size:clamp(36px,6vw,62px);font-weight:800;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--loss)}
+.lede{color:var(--muted);font-size:19px;max-width:46ch;margin-top:18px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:26px}
+.cta small{color:var(--muted);font-size:14px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.ticket .p{font-size:14px;color:var(--muted);margin:8px 0 14px}
+.ticket .v{font:800 46px var(--f-display);color:var(--loss);letter-spacing:-.02em}
+.bars{display:grid;gap:10px;margin-top:14px}
+.bar .l{display:flex;justify-content:space-between;font-weight:700;font-size:14.5px;margin-bottom:4px}
+.bar .l b{font-family:var(--f-num);font-weight:600}
+.bar .t{height:10px;border-radius:5px;background:var(--soft);overflow:hidden}.bar .t i{display:block;height:100%;border-radius:5px}
+.band{border-top:1px solid var(--line);padding-block:48px}
+.band h2{font-size:clamp(28px,4vw,38px);margin:8px 0 18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cell{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.cell h3{font-size:19px;margin-bottom:6px}
+.cell p{font-size:15px;color:var(--muted)}
+.src{font-size:15px;display:grid;gap:10px;max-width:72ch}
+.src li{padding-left:2px}
+.faq{display:grid;gap:10px;max-width:72ch}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+summary{font-weight:700;cursor:pointer}
+details p{margin-top:8px;color:var(--muted);font-size:15.5px}
+footer{border-top:1px solid var(--line);padding-block:28px 40px;font-size:13.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between}
+footer a{color:var(--muted)}
+@media (max-width:760px){.hero{grid-template-columns:1fr;gap:28px;padding-top:16px}.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><a class="brand" href="./">Ce que me coûtent mes frais</a><a class="l" href="#methode">Méthode et sources</a></nav>
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Banque · assurance-vie · PEA</div>
+      <h1>Tes frais te coûtent peut-être <em>une voiture</em>.</h1>
+      <p class="lede">Quelques euros par mois, 0,7 % par-ci, 1,6 % par-là : séparément, ça ne se voit pas. Additionnés sur 20 ans, avec ce que cet argent aurait rapporté, ça fait souvent plusieurs dizaines de milliers d'euros.</p>
+      <div class="cta"><a class="btn primary" href="simulateur.html" id="go">Calculer mes frais</a><small>Gratuit · 2 minutes · sans inscription</small></div>
+    </div>
+    <aside class="ticket" aria-label="Exemple de résultat">
+      <div class="eyebrow">Exemple sur 20 ans</div>
+      <p class="p">Banque traditionnelle, assurance-vie de 20 000 € (30 % en fonds), PEA de 5 000 € en ETF, 100 € versés par mois sur chacun.</p>
+      <div class="v">23 960 €</div>
+      <div class="bars">
+        <div class="bar"><div class="l"><span>Assurance-vie</span><b>14 340 €</b></div><div class="t"><i style="width:100%;background:var(--c-av)"></i></div></div>
+        <div class="bar"><div class="l"><span>Compte courant</span><b>5 300 €</b></div><div class="t"><i style="width:37%;background:var(--c-bank)"></i></div></div>
+        <div class="bar"><div class="l"><span>PEA</span><b>4 330 €</b></div><div class="t"><i style="width:30%;background:var(--c-pea)"></i></div></div>
+      </div>
+      <p class="p" style="margin:14px 0 0">Avec des frais bas et la même épargne : environ 14 200 € gardés.</p>
+    </aside>
+  </section>
+</div>
+
+<section class="band"><div class="wrap">
+  <div class="eyebrow">Comment ça marche</div>
+  <h2>Trois questions, un chiffre</h2>
+  <div class="grid3">
+    <div class="cell"><h3>1. Ton compte courant</h3><p>Banque en agence ou en ligne, frais d'incident. Ou ton montant exact, lu sur le récapitulatif annuel envoyé chaque janvier.</p></div>
+    <div class="cell"><h3>2. Ton assurance-vie</h3><p>Montant, versements, origine du contrat et part en unités de compte. Les frais de gestion et ceux des fonds sont comptés chaque année.</p></div>
+    <div class="cell"><h3>3. Ton PEA</h3><p>Banque ou courtier en ligne, actions, ETF ou fonds. Droits de garde, courtage et frais des fonds, sous les plafonds légaux.</p></div>
+  </div>
+  <p style="margin-top:18px;color:var(--muted);font-size:15.5px;max-width:72ch">Le total et la part de chaque enveloppe sont gratuits. Pour <b>1 €</b>, tu vois le détail ligne par ligne, ce que tu garderais avec des frais bas, la courbe année par année, ta page A4 en PDF, et tu peux saisir tes vrais taux de frais, la durée et le rendement.</p>
+</div></section>
+
+<section class="band" id="methode"><div class="wrap">
+  <div class="eyebrow">Méthode et sources</div>
+  <h2>Des chiffres publics, des hypothèses prudentes</h2>
+  <ul class="src">
+    <li><b>Compte courant</b> : 228,90 € par an en moyenne en 2025, dont 22,10 € de tenue de compte et 67,10 € de carte (<a href="https://banque.meilleurtaux.com/frais-bancaires/actualites/2025-fevrier/tarifs-bancaires-elevent-moyenne-228euros-an-2025.html" rel="noopener">Meilleurtaux, février 2025</a>). On compte 229 € pour une banque traditionnelle, 0 € pour une banque en ligne, et une hausse de 1,5 % par an (+1,7 % en 2025). Une commission d'intervention compte 8 €, son plafond légal par opération.</li>
+    <li><b>Assurance-vie</b> : frais de gestion moyens 2025 de 0,67 % sur les fonds euros et 0,88 % sur les unités de compte, frais sur versements de 0,55 % en moyenne (<a href="https://www.moneyvox.fr/assurance-vie/actualites/109415/votre-contrat-est-il-plus-gourmand-en-frais-que-la-moyenne" rel="noopener">Observatoire du CCSF, juin 2026</a>). Frais internes des fonds : 1,60 % en moyenne, 0,33 % pour les ETF, 1,72 % pour les fonds actions (<a href="https://www.toutsurmesfinances.com/actualites/a/assurance-vie-ce-que-les-frais-de-gestion-ont-coute-en-2025" rel="noopener">étude France Assureurs, mai 2026</a>). Ce sont des moyennes : beaucoup de contrats de banque prennent plus, on ne les surestime pas.</li>
+    <li><b>PEA</b> : droits de garde plafonnés à 0,4 % par an et frais d'ordre à 0,5 % en ligne depuis juillet 2020 (<a href="https://www.amf-france.org/fr/actualites-publications/actualites/plafonnement-des-frais-pour-le-pea-que-faut-il-retenir" rel="noopener">AMF</a>). On retient 0,25 % de garde et 0,5 % par achat en banque, 0 % et 0,1 % chez un courtier en ligne.</li>
+    <li><b>Rendements avant frais</b> : 3,2 % pour le fonds euros (environ 2,5 % une fois les frais de gestion moyens retirés), 5 % pour les actions et les fonds, plus bas que la moyenne historique des marchés actions. Euros courants, sans inflation ni impôts.</li>
+    <li><b>Intérêts perdus</b> : chaque euro prélevé en frais sur un placement est suivi jusqu'au bout, avec ce qu'il aurait rapporté. Les frais du compte courant sont additionnés sans intérêts.</li>
+  </ul>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <div class="eyebrow">Questions</div>
+  <h2>Avant de commencer</h2>
+  <div class="faq">
+    <details><summary>Mes réponses sont-elles envoyées quelque part ?</summary><p>Non. Le calcul se fait dans ton navigateur. Tes montants ne quittent pas ton appareil.</p></details>
+    <details><summary>C'est un conseil en placement ?</summary><p>Non. Le simulateur additionne des frais et ne recommande aucun produit, aucune banque, aucun assureur. Avant de changer de contrat, compare les frais réels et pense à la fiscalité (ancienneté de l'assurance-vie, du PEA).</p></details>
+    <details><summary>Où trouver mes vrais frais ?</summary><p>Banque : le récapitulatif annuel des frais, envoyé en janvier. Assurance-vie : le relevé annuel et le tableau des frais du contrat. PEA : la grille tarifaire de ton établissement et le document d'informations clés de chaque fonds.</p></details>
+    <details><summary>Pourquoi 1 € pour le détail ?</summary><p>Pour faire vivre le site sans publicité ni revente de données. Le total reste gratuit.</p></details>
+  </div>
+  <div class="cta"><a class="btn primary" href="simulateur.html">Calculer mes frais</a></div>
+</div></section>
+
+<div class="wrap"><footer><span>Édité par WG Conseil · <a href="https://vote.wagramconseil.fr/">Ce que coûte mon vote</a></span><a href="legal.html">Mentions légales, CGV, confidentialité</a></footer></div>
+<script src="stats.js"></script>
+<script>document.getElementById('go').addEventListener('click',function(){try{if(window.track)track('frais-accueil-clic')}catch(e){}});</script>
+</body>
+</html>
