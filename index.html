@@ -61,6 +61,20 @@ nav a.l{color:var(--muted);text-decoration:none;font-weight:600}
 .hero h1{font-size:clamp(38px,6.4vw,66px);font-weight:800;letter-spacing:-.02em}
 .hero h1 em{font-style:normal;color:var(--accent)}
 .hero .lede{color:var(--muted);font-size:19px;max-width:46ch;margin-top:18px}
+.qstart{margin-top:22px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;max-width:520px}
+.qs-k{font:600 12px var(--f-num,monospace);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.qs-t{font:800 22px var(--f-display);color:var(--ink)}
+.qs-mode{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.qs-mode button{font:700 13.5px var(--f-body);line-height:1.2;padding:9px 6px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.qs-mode button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.qs-row{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:4px 14px;background:var(--bg)}
+.qs-row input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:700 24px var(--f-body);padding:8px 0}
+.qs-row input:focus{outline:none}.qs-row:focus-within{border-color:var(--accent)}
+.qs-row span{color:var(--muted);font-weight:600;white-space:nowrap}
+.qs-h{margin:0;font-size:13.5px;color:var(--muted);line-height:1.45}
+.qstart .btn{width:100%}
+.qs-s{text-align:center;color:var(--muted);font-size:14px}
+.ex{margin:14px 0 0;font-size:15px;color:var(--ink);max-width:520px}
 .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:28px}
 .cta small{color:var(--muted);font-size:14px}
 /* Ticket d'exemple */
@@ -120,11 +134,21 @@ footer a{color:inherit}
     <div>
       <span class="eyebrow">Présidentielle 2027</span>
       <h1 style="margin-top:12px">Combien va te coûter <em>la présidentielle</em> ?</h1>
+      <form class="qstart" id="qstart" novalidate>
+        <span class="qs-k">Question 1 sur 12</span>
+        <label class="qs-t" for="qs-v">Combien gagnes-tu ?</label>
+        <div class="qs-mode" role="group" aria-label="Type de montant">
+          <button type="button" data-m="apres" aria-pressed="true">Versé sur mon compte</button>
+          <button type="button" data-m="net" aria-pressed="false">Net avant impôt</button>
+          <button type="button" data-m="brut" aria-pressed="false">Brut par an</button>
+        </div>
+        <div class="qs-row"><input id="qs-v" type="number" inputmode="numeric" min="0" step="50" placeholder="2000" autocomplete="off"><span id="qs-u">€ / mois</span></div>
+        <p class="qs-h" id="qs-h">Ton salaire net par mois tel qu'il arrive sur ton compte, après prélèvement à la source. On en déduit le reste.</p>
+        <button class="btn primary" id="go" type="submit">Calculer mon impact →</button>
+        <small class="qs-s">2 minutes · gratuit · anonyme · sans inscription</small>
+      </form>
+      <p class="ex"><b>Exemple :</b> pour un salarié seul à 2 000 € net par mois avant impôt, l'effet va de −490 € à +2 480 € par an selon le candidat, soit près de 3 000 € d'écart.</p>
       <p class="lede">RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard : réponds à 12 questions sur ta situation et découvre, en euros par an, ce que chaque programme économique changerait pour ton budget.</p>
-      <div class="cta">
-        <a class="btn primary" href="simulateur.html" id="go">Faire le test gratuit</a>
-        <small>2 minutes · sans inscription · résultat en PDF A4</small>
-      </div>
       <p class="fav" style="margin:14px 0 0;font-size:14px;color:var(--muted)">🔖 <b style="color:var(--ink)">Ajoute le site à tes favoris.</b> Les programmes et les promesses de campagne sont mis à jour au fur et à mesure qu'ils se précisent : reviens refaire ton test avant de voter.</p>
     </div>
     <aside class="ticket" aria-label="Exemple de résultat">
@@ -233,6 +257,20 @@ footer a{color:inherit}
   ['wa','x','fb','li'].forEach(function (id) { document.getElementById(id).addEventListener('click', function () { if (window.track) track('accueil-partage-' + id); }); });
   document.getElementById('te').addEventListener('click', function () { if (window.track) track('accueil-clic-tables-express'); });
   document.getElementById('go').addEventListener('click', function () { if (window.track) track('accueil-clic-test'); });
+})();
+</script>
+<script>
+(function(){
+  var f=document.getElementById('qstart'); if(!f) return;
+  var mode='apres', v=document.getElementById('qs-v'), u=document.getElementById('qs-u'), h=document.getElementById('qs-h');
+  var H={apres:h.textContent, net:"Le « net à payer avant impôt » de ta fiche de paie, avant le prélèvement à la source.", brut:"Le salaire brut annuel de ton contrat ou le cumul brut de ta fiche de paie de décembre."};
+  f.querySelectorAll('.qs-mode button').forEach(function(b){b.onclick=function(){mode=b.dataset.m;f.querySelectorAll('.qs-mode button').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});
+    u.textContent=mode==='brut'?'€ / an':'€ / mois'; v.placeholder=mode==='brut'?'30000':'2000'; v.step=mode==='brut'?500:50; h.textContent=H[mode]; v.focus();};});
+  f.addEventListener('submit',function(e){e.preventDefault(); var n=Math.max(0,+v.value||0), A={};
+    try{A=JSON.parse(localStorage.getItem('vo-answers')||'{}')||{};}catch(x){}
+    if(n>0){ A.revM=mode; if(mode==='brut') A.revB=n; else if(mode==='apres') A.revA=n; else A.rev=n; try{localStorage.setItem('vo-answers',JSON.stringify(A));}catch(x){} }
+    try{ if(window.track) track(n>0?'accueil-salaire-saisi':'accueil-clic-test'); }catch(x){}
+    setTimeout(function(){location.href='simulateur.html';},150);});
 })();
 </script>
 <script src="stats.js"></script>

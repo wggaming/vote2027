@@ -253,9 +253,9 @@ const Q = [
    ["prive","Salarié du privé"],["fonct","Fonctionnaire"],["indep","Indépendant"],
    ["chom","Demandeur d'emploi indemnisé"],["retr","Retraité"],["etud","Étudiant ou sans activité"]]},
  {id:"age", t:"Quel âge as-tu ?", type:"choice", opts:[["u30","Moins de 30 ans"],["a30","30 à 49 ans"],["a50","50 à 61 ans"],["a62","62 ans et plus"]]},
- {id:"rev", t:"Ton revenu", help:"Salaire, pension ou allocation. Le net, c'est ce que tu touches avant l'impôt sur le revenu (« net à payer avant impôt » sur la fiche de paie). Tu ne le connais pas ? Choisis le brut annuel.", type:"income"},
+ {id:"rev", t:"Ton revenu", help:"Salaire, pension ou allocation. Choisis le chiffre que tu connais : le net avant impôt (« net à payer avant impôt » sur ta fiche de paie), le net versé sur ton compte après prélèvement à la source, ou le brut par an.", type:"income"},
  {id:"couple", t:"Vis-tu en couple (marié ou pacsé) ?", type:"choice", opts:[["non","Non, seul"],["oui","Oui, en couple"]]},
- {id:"revc", t:"Revenu de ton conjoint", help:"Net avant impôt sur le revenu, ou brut annuel. Mets 0 s'il ou elle n'a pas de revenu.", type:"income", when:a=>a.couple==="oui"},
+ {id:"revc", t:"Revenu de ton conjoint", help:"Net par mois avant impôt sur le revenu (avant prélèvement à la source), ou brut par an. Mets 0 s'il ou elle n'a pas de revenu.", type:"income", when:a=>a.couple==="oui"},
  {id:"sitc", t:"Ton conjoint est plutôt…", type:"choice", opts:[["sal","Salarié du privé"],["fonct","Fonctionnaire"],["retr","Retraité"],["autre","Indépendant, sans activité ou autre"]], when:a=>a.couple==="oui"&&+a.revc>0},
  {id:"enf", t:"Combien d'enfants à charge ?", type:"choice", opts:[["0","Aucun"],["1","1"],["2","2"],["3","3 ou plus"]]},
  {id:"log", t:"Ton logement", type:"choice", opts:[["loc","Locataire sans APL"],["apl","Locataire avec APL"],["prop","Propriétaire"]]},
@@ -304,16 +304,17 @@ function renderQ(){
   } else if(q.type==="income"){
     const mode=A[q.id+"M"]||"net";
     const o=document.createElement("div");o.className="options";o.style.gridTemplateColumns="repeat(auto-fit,minmax(160px,1fr))";
-    [["net","Net mensuel avant impôt"],["brut","Brut annuel"]].forEach(([v,l])=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=l;b.setAttribute("aria-pressed",String(mode===v));b.onclick=()=>{A[q.id+"M"]=v;save();renderQ();};o.appendChild(b);});
+    [["net","Net par mois avant impôt"],["apres","Net versé (après impôt)"],["brut","Brut par an"]].forEach(([v,l])=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=l;b.setAttribute("aria-pressed",String(mode===v));b.onclick=()=>{A[q.id+"M"]=v;save();renderQ();};o.appendChild(b);});
     box.appendChild(o);
-    const key=mode==="brut"?q.id+"B":q.id, mx=mode==="brut"?150000:12000, st=mode==="brut"?500:50;
+    const key=mode==="brut"?q.id+"B":mode==="apres"?q.id+"A":q.id, mx=mode==="brut"?150000:12000, st=mode==="brut"?500:50;
+    if(A[key]==null){const n0=netOf(A,q.id); A[key]=mode==="apres"?Math.round(n0*(1-pasRate(n0))/50)*50:mode==="brut"?Math.round(n0*12/.78/500)*500:n0;}
     const r=document.createElement("div");r.className="numrow";
     const rg=document.createElement("input");rg.type="range";rg.min=0;rg.max=mx;rg.step=st;rg.value=A[key];rg.id="r_"+key;rg.setAttribute("aria-label",q.t);
     const nb=document.createElement("label");nb.className="numbox";
     const ni=document.createElement("input");ni.type="number";ni.min=0;ni.step=st;ni.value=A[key];ni.id="n_"+key;ni.inputMode="numeric";
     const u=document.createElement("span");u.textContent=mode==="brut"?"€ / an":"€ / mois";nb.append(ni,u);
     const hint=document.createElement("p");hint.className="qhelp";
-    const upd=()=>{ if(mode==="brut"){const b=+A[key]||0;hint.textContent="Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt sur le revenu."+(q.id==="rev"&&A.sit==="indep"?" Pour un indépendant, on retient environ 75 % du revenu brut.":"")+(b>0&&b<8000?" Attention : c'est un montant par an. Pour un salaire mensuel, choisis « Net mensuel ».":"");} else {const v=+A[key]||0;hint.textContent=v>15000?"Attention : "+fmtPlain(v)+" par mois, soit "+fmtPlain(v*12)+" par an. Si tu as tapé un montant annuel, choisis « Brut annuel » ou divise par 12.":"";} };
+    const upd=()=>{ if(mode==="apres"){hint.textContent="Le montant versé sur ton compte, après prélèvement à la source. Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt (estimé avec le taux neutre du prélèvement).";} else if(mode==="brut"){const b=+A[key]||0;hint.textContent="Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt sur le revenu."+(q.id==="rev"&&A.sit==="indep"?" Pour un indépendant, on retient environ 75 % du revenu brut.":"")+(b>0&&b<8000?" Attention : c'est un montant par an. Pour un salaire mensuel, choisis « Net par mois ».":"");} else {const v=+A[key]||0;hint.textContent=v>15000?"Attention : "+fmtPlain(v)+" par mois, soit "+fmtPlain(v*12)+" par an. Si tu as tapé un montant annuel, choisis « Brut par an » ou divise par 12.":"";} };
     rg.oninput=()=>{A[key]=+rg.value;ni.value=rg.value;save();upd();};
     ni.oninput=()=>{const v=Math.max(0,+ni.value||0);A[key]=v;rg.value=Math.min(v,mx);save();upd();};
     ni.onkeydown=e=>{if(e.key==="Enter")next();};
@@ -413,7 +414,10 @@ function droits(H,abatt){const b=Math.max(0,H-abatt);let t=0,prev=0;for(const [l
 const ISFB=[[800000,0],[1300000,.005],[2570000,.007],[5000000,.01],[10000000,.0125],[Infinity,.015]];
 function isf(P){if(P<1300000)return 0;let t=0,prev=0;for(const [lim,r] of ISFB){if(P>prev)t+=(Math.min(P,lim)-prev)*r;prev=lim;}return t;}
 const RATIO={prive:.78,fonct:.82,indep:.75,chom:.93,retr:.91,etud:.78,sal:.78,autre:.78};
-function netOf(a,id){ if((a[id+"M"]||"net")!=="brut") return +a[id]||0; const sit=id==="rev"?a.sit:(a.sitc||"sal"); return Math.round((+a[id+"B"]||0)*(RATIO[sit]||.78)/12); }
+const PAS=[[1620,0],[1683,.005],[1791,.013],[1911,.021],[2042,.029],[2151,.035],[2294,.041],[2714,.053],[3107,.075],[3539,.099],[3983,.119],[4648,.138],[5574,.158],[6974,.179],[8711,.20],[12091,.24],[16376,.28],[25706,.33],[55062,.38],[Infinity,.43]];
+function pasRate(y){for(const [l,r] of PAS) if(y<l) return r; return .43;}
+function beforeTax(x){ if(x<=0) return 0; let lo=0; for(const [l,r] of PAS){const c=x/(1-r); if(c<lo) return Math.round(lo); if(c<l) return Math.round(c); lo=l;} return Math.round(x/(1-.43)); }
+function netOf(a,id){ const md=a[id+"M"]||"net"; if(md==="apres") return beforeTax(+a[id+"A"]||0); if(md!=="brut") return +a[id]||0; const sit=id==="rev"?a.sit:(a.sitc||"sal"); return Math.round((+a[id+"B"]||0)*(RATIO[sit]||.78)/12); }
 function wealth(a){ let rp,im,fi,de,pro=0; if(unlocked&&a.patFine&&+a.pat>=1300000){rp=+a.rp||0;im=+a.im||0;fi=+a.fi||0;de=+a.de||0;pro=Math.min(fi,+a.pro||0);} else {const P=+a.pat;rp=P*.25;im=P*.25;fi=P*.5;de=0;}
   const net=rp+im+fi-de; return {rp,im,fi,de,pro,net,ifiBase:Math.max(0,rp*.7+im-de),isfBase:Math.max(0,rp*.7+im+fi-pro-de),iffBase:Math.max(0,fi-pro),fine:unlocked&&!!a.patFine}; }
 function ndvOf(a){const me=netOf(a,"rev"),cj=a.couple==="oui"?netOf(a,"revc"):0;return (me+cj)/(1+(a.couple==="oui"?.5:0)+.3*(+a.enf));}
