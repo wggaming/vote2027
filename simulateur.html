@@ -253,7 +253,7 @@ const Q = [
    ["prive","Salarié du privé"],["fonct","Fonctionnaire"],["indep","Indépendant"],
    ["chom","Demandeur d'emploi indemnisé"],["retr","Retraité"],["etud","Étudiant ou sans activité"]]},
  {id:"age", t:"Quel âge as-tu ?", type:"choice", opts:[["u30","Moins de 30 ans"],["a30","30 à 49 ans"],["a50","50 à 61 ans"],["a62","62 ans et plus"]]},
- {id:"rev", t:"Ton revenu", help:"Salaire, pension ou allocation. Choisis le chiffre que tu connais : le net avant impôt (« net à payer avant impôt » sur ta fiche de paie), le net versé sur ton compte après prélèvement à la source, ou le brut par an.", type:"income"},
+ {id:"rev", t:"Ton revenu", help:"Salaire, pension ou allocation. Choisis le chiffre que tu connais : le net avant impôt (« net à payer avant impôt » sur ta fiche de paie), le net versé sur ton compte après prélèvement à la source, ou le brut par an. Indépendant : ton résultat net annuel.", type:"income"},
  {id:"couple", t:"Vis-tu en couple (marié ou pacsé) ?", type:"choice", opts:[["non","Non, seul"],["oui","Oui, en couple"]]},
  {id:"revc", t:"Revenu de ton conjoint", help:"Net par mois avant impôt sur le revenu (avant prélèvement à la source), ou brut par an. Mets 0 s'il ou elle n'a pas de revenu.", type:"income", when:a=>a.couple==="oui"},
  {id:"sitc", t:"Ton conjoint est plutôt…", type:"choice", opts:[["sal","Salarié du privé"],["fonct","Fonctionnaire"],["retr","Retraité"],["autre","Indépendant, sans activité ou autre"]], when:a=>a.couple==="oui"&&+a.revc>0},
@@ -264,22 +264,23 @@ const Q = [
  {id:"carb", t:"Carburant (essence, gazole)", help:"Dépense moyenne du foyer.", type:"num", min:0, max:600, step:10, unit:"€ / mois"},
  {id:"cap", t:"Revenus de ton épargne et placements par an", help:"Dividendes, intérêts, plus-values. Hors Livret A, LDDS et LEP.", type:"choice", opts:[["0","Aucun ou presque"],["500","Environ 500 €"],["3000","Environ 3 000 €"],["15000","Environ 15 000 €"],["60000","Plus de 40 000 €"]]},
  {id:"pat", t:"Patrimoine net total du foyer", help:"Immobilier et placements, moins les crédits restant dus. Au-delà de 1,3 M€, tu pourras affiner à l'étape suivante.", type:"choice", opts:[["0","Moins de 1,3 M€"],["2000000","1,3 à 3 M€"],["5000000","3 à 10 M€"],["25000000","10 à 100 M€"],["200000000","Plus de 100 M€"]]},
+ {id:"her", t:"Héritage ou donation attendu de tes parents d'ici 10 ans", help:"Ta part personnelle, à peu près.", type:"choice", opts:[["0","Rien de prévu"],["75000","Moins de 100 000 €"],["150000","100 000 à 200 000 €"],["300000","200 000 à 500 000 €"],["700000","500 000 € à 1 M€"],["2000000","Plus de 1 M€"]]},
  {id:"patd", fine:true, t:"Le détail de ton patrimoine", help:"Pour calculer précisément l'IFI, l'ISF et l'impôt sur la fortune financière. Valeurs du foyer, en euros. Sans changement, on garde l'estimation.", type:"assets", when:a=>+a.pat>=1300000},
  {id:"capX", fine:true, t:"Montant exact de tes revenus de placements", help:"Dividendes, intérêts et plus-values imposés aujourd'hui à la flat tax de 30 %, par an. Hors Livret A, LDDS, LEP et PEA de plus de 5 ans.", type:"num", min:0, max:100000, step:100, unit:"€ / an", def:a=>+a.cap, when:a=>a.cap!=="0"},
  {id:"food", fine:true, t:"Tes courses alimentaires", help:"Budget du foyer en supermarché, par mois. Sert à chiffrer la TVA à 0 % sur les produits de première nécessité.", type:"num", min:0, max:2000, step:20, unit:"€ / mois", def:a=>((a.couple==="oui"?2:1)+(+a.enf))*220},
  {id:"aplM", fine:true, t:"Montant de tes APL", type:"num", min:0, max:800, step:10, unit:"€ / mois", def:()=>250, when:a=>a.log==="apl"},
  {id:"thX", fine:true, t:"Ta dernière taxe d'habitation sur ta résidence principale", help:"Le montant payé en 2020, avant sa suppression. Sert à chiffrer son retour pour les ménages aisés. Mets 0 si tu ne sais pas : on garde 800 €.", type:"num", min:0, max:5000, step:50, unit:"€ / an", def:()=>0, when:a=>ndvOf(a)>2750},
- {id:"pa", fine:true, t:"Pension alimentaire reçue pour tes enfants", help:"Aujourd'hui imposable. Le PS et Renaissance veulent la sortir du revenu imposable. Mets 0 si tu n'en reçois pas.", type:"num", min:0, max:3000, step:50, unit:"€ / mois", def:()=>0, when:a=>a.enf!=="0"},
- {id:"veuf", fine:true, t:"Es-tu veuf ou veuve ?", help:"Le RN veut rétablir une demi-part fiscale pour les veufs et veuves.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.couple!=="oui"},
+ {id:"pa", fine:true, t:"Pension alimentaire reçue pour tes enfants", help:"Aujourd'hui imposable. Le PS et Renaissance veulent la sortir du revenu imposable. Mets 0 si tu n'en reçois pas.", type:"num", min:0, max:3000, step:50, unit:"€ / mois", def:()=>0, when:a=>a.enf!=="0"&&a.couple!=="oui"},
+ {id:"veuf", fine:true, t:"Es-tu veuf ou veuve ?", help:"Le RN veut rétablir une demi-part fiscale pour les veufs et veuves.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.couple!=="oui"&&a.age!=="u30"},
  {id:"cat", fine:true, t:"Ta catégorie dans la fonction publique", help:"Le PS réserve la hausse du point d'indice aux catégories B et C.", type:"choice", opts:[["A","Catégorie A (cadre)"],["B","Catégorie B"],["C","Catégorie C"]], when:a=>a.sit==="fonct"},
  {id:"kidsCant", fine:true, t:"Combien de tes enfants mangent à la cantine d'une école publique ?", help:"Sert à chiffrer la cantine gratuite proposée par LFI, réservée à l'école publique. Les enfants au privé ou qui rentrent déjeuner ne comptent pas.", type:"num", min:0, max:6, step:1, unit:"enfants", def:a=>pubKids(a,+a.enf), when:a=>a.enf!=="0"&&a.ecole!=="priv"&&a.ecole!=="none"},
  {id:"loanInt", fine:true, t:"Les intérêts de ton crédit immobilier sur ta résidence principale", help:"LR veut les rendre déductibles si tu as des enfants. Tu ne connais pas tes intérêts ? Indique le montant emprunté, le taux et la date de début : on les calcule. Mets 0 € emprunté si tu n'as pas de crédit.", type:"loan", when:a=>a.log==="prop"&&a.enf!=="0"},
  {id:"sick", fine:true, t:"Combien d'arrêts maladie as-tu en moyenne par an ?", help:"LR veut un jour de carence que l'employeur n'aura plus le droit de payer.", type:"num", min:0, max:6, step:1, unit:"par an", def:()=>0, when:a=>a.sit==="prive"},
  {id:"teach", fine:true, t:"Es-tu enseignant ?", help:"LR prévoit +135 € net par mois en début de carrière et jusqu'à +300 € en milieu de carrière. Les Écologistes, +15 % en 5 ans. David Lisnard, +20 %.", type:"choice", opts:[["non","Non"],["debut","Oui, en début de carrière"],["milieu","Oui, en milieu ou fin de carrière"]], when:a=>a.sit==="fonct"},
- {id:"rsa", fine:true, t:"Touches-tu le RSA ?", help:"LR veut le remplacer par un revenu de 300 € par mois, plus 250 € si tu suis au moins 15 h par semaine de formation ou de recherche d'emploi.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.sit==="etud"||a.sit==="chom"},
- {id:"start", fine:true, t:"À quel âge as-tu commencé à travailler ?", help:"Premier emploi déclaré, apprentissage compris. Sert à estimer ton âge de départ à taux plein avec chaque programme.", type:"num", min:14, max:30, step:1, unit:"ans", def:()=>21, when:a=>a.sit!=="retr"&&a.age!=="a62"},
+ {id:"rsa", fine:true, t:"Touches-tu le RSA ?", help:"LR veut le remplacer par un revenu de 300 € par mois, plus 250 € si tu suis au moins 15 h par semaine de formation ou de recherche d'emploi.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.sit==="etud"||a.sit==="chom"||(a.sit==="indep"&&netOf(a,"rev")<1300)},
+ {id:"start", fine:true, t:"À quel âge as-tu commencé à travailler ?", help:"Premier emploi déclaré, apprentissage compris. Sert à estimer ton âge de départ à taux plein avec chaque programme.", type:"num", min:14, max:30, step:1, unit:"ans", def:()=>21, when:a=>a.sit!=="retr"&&a.sit!=="etud"&&a.age!=="a62"},
  {id:"herX", fine:true, t:"Montant exact de l'héritage ou de la donation attendu", help:"Ta part personnelle, en ligne directe (parents).", type:"num", min:0, max:5000000, step:10000, unit:"€", def:a=>+a.her, when:a=>a.her!=="0"},
- {id:"her", t:"Héritage ou donation attendu de tes parents d'ici 10 ans", help:"Ta part personnelle, à peu près.", type:"choice", opts:[["0","Rien de prévu"],["75000","Moins de 100 000 €"],["150000","100 000 à 200 000 €"],["300000","200 000 à 500 000 €"],["700000","500 000 € à 1 M€"],["2000000","Plus de 1 M€"]]}
+ {id:"herLog", fine:true, t:"Combien de logements dans cet héritage ?", help:"Maisons et appartements, loués ou non. LFI veut limiter à 5 les logements transmissibles par héritage. Mets 0 si tu ne sais pas.", type:"num", min:0, max:30, step:1, unit:"logements", def:()=>0, when:a=>+a.her>=300000},
 ];
 const A = {sit:"prive",age:"a30",rev:2200,couple:"oui",revc:1800,sitc:"sal",revM:"net",revB:34000,revcM:"net",revcB:28000,enf:"1",patFine:false,rp:0,im:0,fi:0,de:0,log:"loc",ener:120,carb:120,cap:"0",pat:"0",her:"0"};
 try{const s=JSON.parse(localStorage.getItem("vo-answers")||"null"); if(s) Object.assign(A,s);}catch(e){}
@@ -303,19 +304,20 @@ function renderQ(){
       b.onclick=()=>{A[q.id]=v;save();renderQ();setTimeout(next,140);};o.appendChild(b);});
     box.appendChild(o);
   } else if(q.type==="income"){
-    const mode=A[q.id+"M"]||"net";
+    const ind=q.id==="rev"&&A.sit==="indep";
+    let mode=A[q.id+"M"]||(ind?"res":"net"); if(ind&&mode==="brut") mode="res"; if(!ind&&mode==="res") mode="net"; A[q.id+"M"]=mode;
     const o=document.createElement("div");o.className="options";o.style.gridTemplateColumns="repeat(auto-fit,minmax(160px,1fr))";
-    [["net","Net par mois avant impôt"],["apres","Net versé (après impôt)"],["brut","Brut par an"]].forEach(([v,l])=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=l;b.setAttribute("aria-pressed",String(mode===v));b.onclick=()=>{A[q.id+"M"]=v;save();renderQ();};o.appendChild(b);});
+    (ind?[["res","Résultat net par an"],["net","Net par mois avant impôt"],["apres","Net versé (après impôt)"]]:[["net","Net par mois avant impôt"],["apres","Net versé (après impôt)"],["brut","Brut par an"]]).forEach(([v,l])=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=l;b.setAttribute("aria-pressed",String(mode===v));b.onclick=()=>{A[q.id+"M"]=v;save();renderQ();};o.appendChild(b);});
     box.appendChild(o);
-    const key=mode==="brut"?q.id+"B":mode==="apres"?q.id+"A":q.id, mx=mode==="brut"?150000:12000, st=mode==="brut"?500:50;
-    if(A[key]==null){const n0=netOf(A,q.id); A[key]=mode==="apres"?Math.round(n0*(1-pasRate(n0))/50)*50:mode==="brut"?Math.round(n0*12/.78/500)*500:n0;}
+    const key=mode==="brut"?q.id+"B":mode==="apres"?q.id+"A":mode==="res"?q.id+"R":q.id, mx=mode==="brut"?150000:mode==="res"?200000:12000, st=mode==="brut"?500:mode==="res"?1000:50;
+    if(A[key]==null){const sv=A[q.id+"M"];A[q.id+"M"]="net";const n0=netOf(A,q.id);A[q.id+"M"]=sv; A[key]=mode==="apres"?Math.round(n0*(1-pasRate(n0))/50)*50:mode==="brut"?Math.round(n0*12/.78/500)*500:mode==="res"?Math.round(n0*12/1000)*1000:n0;}
     const r=document.createElement("div");r.className="numrow";
     const rg=document.createElement("input");rg.type="range";rg.min=0;rg.max=mx;rg.step=st;rg.value=A[key];rg.id="r_"+key;rg.setAttribute("aria-label",q.t);
     const nb=document.createElement("label");nb.className="numbox";
     const ni=document.createElement("input");ni.type="number";ni.min=0;ni.step=st;ni.value=A[key];ni.id="n_"+key;ni.inputMode="numeric";
-    const u=document.createElement("span");u.textContent=mode==="brut"?"€ / an":"€ / mois";nb.append(ni,u);
+    const u=document.createElement("span");u.textContent=mode==="brut"||mode==="res"?"€ / an":"€ / mois";nb.append(ni,u);
     const hint=document.createElement("p");hint.className="qhelp";
-    const upd=()=>{ if(mode==="apres"){hint.textContent="Le montant versé sur ton compte, après prélèvement à la source. Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt (estimé avec le taux neutre du prélèvement).";} else if(mode==="brut"){const b=+A[key]||0;hint.textContent="Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt sur le revenu."+(q.id==="rev"&&A.sit==="indep"?" Pour un indépendant, on retient environ 75 % du revenu brut.":"")+(b>0&&b<8000?" Attention : c'est un montant par an. Pour un salaire mensuel, choisis « Net par mois ».":"");} else {const v=+A[key]||0;hint.textContent=v>15000?"Attention : "+fmtPlain(v)+" par mois, soit "+fmtPlain(v*12)+" par an. Si tu as tapé un montant annuel, choisis « Brut par an » ou divise par 12.":"";} };
+    const upd=()=>{ if(mode==="res"){hint.textContent="Ton bénéfice de l'année après cotisations sociales, celui que tu déclares aux impôts. En micro-entreprise : ton chiffre d'affaires moins l'abattement forfaitaire (71 %, 50 % ou 34 % selon l'activité). Soit environ "+fmtPlain(netOf(A,q.id))+" par mois.";} else if(mode==="apres"){hint.textContent="Le montant versé sur ton compte, après prélèvement à la source. Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt (estimé avec le taux neutre du prélèvement).";} else if(mode==="brut"){const b=+A[key]||0;hint.textContent="Soit environ "+fmtPlain(netOf(A,q.id))+" net par mois avant impôt sur le revenu."+(q.id==="rev"&&A.sit==="indep"?" Pour un indépendant, on retient environ 75 % du revenu brut.":"")+(b>0&&b<8000?" Attention : c'est un montant par an. Pour un salaire mensuel, choisis « Net par mois ».":"");} else {const v=+A[key]||0;hint.textContent=v>15000?"Attention : "+fmtPlain(v)+" par mois, soit "+fmtPlain(v*12)+" par an. Si tu as tapé un montant annuel, choisis « Brut par an » ou divise par 12.":"";} };
     rg.oninput=()=>{A[key]=+rg.value;ni.value=rg.value;save();upd();};
     ni.oninput=()=>{const v=Math.max(0,+ni.value||0);A[key]=v;rg.value=Math.min(v,mx);save();upd();};
     ni.onkeydown=e=>{if(e.key==="Enter")next();};
@@ -373,6 +375,7 @@ document.getElementById("prev").onclick=()=>{if(step>0){step--;renderQ();}};
 const PITCH={patd:"Le détail de ton patrimoine (résidence principale, autre immobilier, placements, dettes, biens professionnels) : IFI, ISF et impôt sur la fortune financière calculés au plus juste",
  capX:"Le montant exact de tes revenus de placements, pour la fin de la flat tax (LFI, PS)",
  herX:"Le montant exact de ton héritage, pour les droits de succession de chaque parti",
+ herLog:"Le nombre de logements de ton héritage (plafond de 5 logements de LFI)",
  start:"Ton âge de début de carrière : ton âge de départ à taux plein avec chaque programme",
  food:"Tes vraies dépenses de courses, pour la TVA à 0 % (RN)",
  aplM:"Tes APL réelles (+10 % avec LFI et les Écologistes)",
@@ -444,7 +447,7 @@ function loanCalc(a){ const P=+a.loanP||0, R=(+a.loanR||0)/1200, n=Math.round((+
   let it=0; for(let k=k0;k<Math.min(k0+12,n);k++) it+=bal(k)*R;
   return {int:Math.round(it),pay:Math.round(pay),left:Math.round(bal(k0)),year,done:false}; }
 function pubKids(a,nk){ const e=a.ecole; return e==="priv"||e==="none"?0:e==="mix"?Math.max(1,Math.floor(nk/2)):nk; }
-function netOf(a,id){ const md=a[id+"M"]||"net"; if(md==="apres") return beforeTax(+a[id+"A"]||0); if(md!=="brut") return +a[id]||0; const sit=id==="rev"?a.sit:(a.sitc||"sal"); return Math.round((+a[id+"B"]||0)*(RATIO[sit]||.78)/12); }
+function netOf(a,id){ let md=a[id+"M"]||"net"; if(md==="res"){ if(id==="rev"&&a.sit==="indep") return Math.round((+a.revR||0)/12); md="net"; } if(md==="apres") return beforeTax(+a[id+"A"]||0); if(md!=="brut") return +a[id]||0; const sit=id==="rev"?a.sit:(a.sitc||"sal"); return Math.round((+a[id+"B"]||0)*(RATIO[sit]||.78)/12); }
 function wealth(a){ let rp,im,fi,de,pro=0; if(unlocked&&a.patFine&&+a.pat>=1300000){rp=+a.rp||0;im=+a.im||0;fi=+a.fi||0;de=+a.de||0;pro=Math.min(fi,+a.pro||0);} else {const P=+a.pat;rp=P*.25;im=P*.25;fi=P*.5;de=0;}
   const net=rp+im+fi-de; return {rp,im,fi,de,pro,net,ifiBase:Math.max(0,rp*.7+im-de),isfBase:Math.max(0,rp*.7+im+fi-pro-de),iffBase:Math.max(0,fi-pro),fine:unlocked&&!!a.patFine}; }
 function ndvOf(a){const me=netOf(a,"rev"),cj=a.couple==="oui"?netOf(a,"revc"):0;return (me+cj)/(1+(a.couple==="oui"?.5:0)+.3*(+a.enf));}
@@ -527,6 +530,7 @@ function compute(a){
   if(sit==="retr"&&me<1700) lfi.push(L("Pension minimale au niveau du SMIC",(1700-me)*12,0,"Pour une carrière complète. Coût très élevé. Non retenue."));
   lfi.push(L("Fin des franchises médicales et participations forfaitaires",persons*50,1,"Hypothèse : 50 € par personne et par an en moyenne (plafond actuel 100 €)."));
   if(nk>0){const pk=pubKids(a,nk), fk=F(a,"kidsCant"), kc=fk!=null?Math.min(fk,a.ecole==="mix"?nk:pk):pk; if(kc>0) lfi.push(L("Cantine scolaire gratuite (école publique)",kc*500,.5,"Hypothèse : 3,50 € par repas, 140 repas par an. Réservée à l'école publique. Coût élevé pour les communes."+(fk==null?(a.ecole==="mix"?" "+kc+" enfant"+(kc>1?"s":"")+" sur "+nk+" compté"+(kc>1?"s":"")+" au public.":" Tous tes enfants au public comptés comme déjeunant à la cantine."):"")));}
+  {const nl=F(a,"herLog"); if(nl!=null&&nl>5&&H>0) lfi.push(L("Héritage limité à 5 logements, au-delà réquisition par l'État",-Math.round(H*(nl-5)/nl),0,"Programme officiel (L'Avenir en commun, édition 2027) : "+(nl-5)+" logement"+(nl-5>1?"s":"")+" sur "+nl+" seraient réquisitionnés, valeur estimée au prorata de ton héritage. Aucune indemnisation prévue : une telle privation de propriété est contraire à l'article 17 de la Déclaration de 1789. Non retenue."));}
   lfi.push(L("« 100 % Sécu » : fin des mutuelles",(couple?2:1)*600,0,"Hypothèse : 600 € de mutuelle par adulte. Financement par des cotisations non détaillé. Non retenue."));
   res.lfi={lines:lfi,retraite:"Retour à 60 ans avec 40 annuités (peu tenable). Un retour à 62 ans est plus réaliste.",
     herit:H>0?{now:droits(H,100000),then:H<150000?0:droits(H,100000),hyp:"Exonération sous 150 000 €. Au-delà, barème non publié : hypothèse du barème actuel (plafond à 12 M€)."}:null};
