@@ -608,8 +608,8 @@ function compute(a){
 
   const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const ag=retireAges(st); for(const k of ["rn","lfi","ps","ctr","lr","eco","ne"]) res[k].perso="Toi : départ à taux plein vers "+ag[k]+" ans (aujourd'hui "+ag.cur+" ans).";}
   if(remu&&remu!=="ei"){const is=div>42500?.25:.15, t2=tmi(R+div,parts), sal=Math.round(56*(1-.9*t)), salB=Math.round(56*(1-.9*t2)), dNow=Math.round(100*(1-is)*(1-Math.min(.30,.172+.6*t))), dBar=Math.round(100*(1-is)*(1-t2-.172));
-    for(const k of ["rn","lfi","ps","ctr","lr","eco","ne"]){const bar=k==="lfi"||k==="ps", dv=bar?dBar:dNow, sl=bar?salB:sal, best=sl>dv+2?"en salaire":dv>sal+2?"en dividendes":"indifféremment en salaire ou en dividendes";
-      res[k].remu="Sur 100 € de bénéfice de ta société, il te reste environ "+sl+" € en salaire et "+dv+" € en dividendes"+(k==="lfi"||k==="ps"?" (dividendes au barème)":" (règles actuelles)")+". Mieux vaut te payer "+best+".";}
+    for(const k of ["rn","lfi","ps","ctr","lr","eco","ne"]){const bar=k==="lfi"||k==="ps", dv=bar?dBar:dNow, sl=bar?salB:sal, best=sl>dv+2?"Mieux vaut te payer en salaire.":dv>sl+2?"Mieux vaut te payer en dividendes.":"Les deux se valent à peu près.";
+      res[k].remu="Sur 100 € de bénéfice de ta société, il te reste environ "+sl+" € en salaire et "+dv+" € en dividendes"+(k==="lfi"||k==="ps"?" (dividendes au barème)":" (règles actuelles)")+". "+best;}
     res.remuHyp="Hypothèses : dirigeant de SAS ou SASU (environ 56 € net pour 100 € de coût salarial), impôt sur les sociétés à "+Math.round(is*100)+" %, ta tranche d'impôt à "+Math.round(t*100)+" %"+(t2>t?" ("+Math.round(t2*100)+" % avec LFI et le PS, qui ajoutent les dividendes à ton revenu imposable)":"")+". En SARL ou EURL, les charges et les dividendes au-delà de 10 % du capital sont traités autrement. Le salaire ouvre aussi des droits à la retraite et au chômage, pas les dividendes.";}
   for(const p of PARTIES){const r=res[p.k]; r.total=r.lines.reduce((s,l)=>s+l.v*l.k,0); r.hyp=r.lines.filter(l=>/Hypoth|estimé|déduite|moyenne/.test(l.n)).length;}
   return res;
