@@ -258,6 +258,7 @@ const Q = [
  {id:"revc", t:"Revenu de ton conjoint", help:"Net par mois avant impôt sur le revenu (avant prélèvement à la source), ou brut par an. Mets 0 s'il ou elle n'a pas de revenu.", type:"income", when:a=>a.couple==="oui"},
  {id:"sitc", t:"Ton conjoint est plutôt…", type:"choice", opts:[["sal","Salarié du privé"],["fonct","Fonctionnaire"],["retr","Retraité"],["autre","Indépendant, sans activité ou autre"]], when:a=>a.couple==="oui"&&+a.revc>0},
  {id:"enf", t:"Combien d'enfants à charge ?", type:"choice", opts:[["0","Aucun"],["1","1"],["2","2"],["3","3 ou plus"]]},
+ {id:"ecole", t:"Tes enfants vont à l'école…", help:"La cantine gratuite proposée par LFI ne concerne que l'école publique.", type:"choice", opts:[["pub","Dans le public"],["priv","Dans le privé"],["mix","Les deux"],["none","Pas encore, ou plus, à l'école"]], when:a=>a.enf!=="0"},
  {id:"log", t:"Ton logement", type:"choice", opts:[["loc","Locataire sans APL"],["apl","Locataire avec APL"],["prop","Propriétaire"]]},
  {id:"ener", t:"Électricité et gaz du logement", help:"Montant moyen des factures du foyer.", type:"num", min:0, max:600, step:10, unit:"€ / mois"},
  {id:"carb", t:"Carburant (essence, gazole)", help:"Dépense moyenne du foyer.", type:"num", min:0, max:600, step:10, unit:"€ / mois"},
@@ -271,8 +272,8 @@ const Q = [
  {id:"pa", fine:true, t:"Pension alimentaire reçue pour tes enfants", help:"Aujourd'hui imposable. Le PS et Renaissance veulent la sortir du revenu imposable. Mets 0 si tu n'en reçois pas.", type:"num", min:0, max:3000, step:50, unit:"€ / mois", def:()=>0, when:a=>a.enf!=="0"},
  {id:"veuf", fine:true, t:"Es-tu veuf ou veuve ?", help:"Le RN veut rétablir une demi-part fiscale pour les veufs et veuves.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.couple!=="oui"},
  {id:"cat", fine:true, t:"Ta catégorie dans la fonction publique", help:"Le PS réserve la hausse du point d'indice aux catégories B et C.", type:"choice", opts:[["A","Catégorie A (cadre)"],["B","Catégorie B"],["C","Catégorie C"]], when:a=>a.sit==="fonct"},
- {id:"kidsCant", fine:true, t:"Combien de tes enfants mangent à la cantine ?", help:"Sert à chiffrer la cantine gratuite proposée par LFI.", type:"num", min:0, max:6, step:1, unit:"enfants", def:a=>+a.enf, when:a=>a.enf!=="0"},
- {id:"loanInt", fine:true, t:"Intérêts de ton crédit immobilier sur ta résidence principale", help:"Montant annuel des intérêts (hors assurance), sur ton tableau d'amortissement. LR veut les rendre déductibles si tu as des enfants. Mets 0 si tu n'as pas de crédit.", type:"num", min:0, max:30000, step:100, unit:"€ / an", def:()=>0, when:a=>a.log==="prop"&&a.enf!=="0"},
+ {id:"kidsCant", fine:true, t:"Combien de tes enfants mangent à la cantine d'une école publique ?", help:"Sert à chiffrer la cantine gratuite proposée par LFI, réservée à l'école publique. Les enfants au privé ou qui rentrent déjeuner ne comptent pas.", type:"num", min:0, max:6, step:1, unit:"enfants", def:a=>pubKids(a,+a.enf), when:a=>a.enf!=="0"&&a.ecole!=="priv"&&a.ecole!=="none"},
+ {id:"loanInt", fine:true, t:"Les intérêts de ton crédit immobilier sur ta résidence principale", help:"LR veut les rendre déductibles si tu as des enfants. Tu ne connais pas tes intérêts ? Indique le montant emprunté, le taux et la date de début : on les calcule. Mets 0 € emprunté si tu n'as pas de crédit.", type:"loan", when:a=>a.log==="prop"&&a.enf!=="0"},
  {id:"sick", fine:true, t:"Combien d'arrêts maladie as-tu en moyenne par an ?", help:"LR veut un jour de carence que l'employeur n'aura plus le droit de payer.", type:"num", min:0, max:6, step:1, unit:"par an", def:()=>0, when:a=>a.sit==="prive"},
  {id:"teach", fine:true, t:"Es-tu enseignant ?", help:"LR prévoit +135 € net par mois en début de carrière et jusqu'à +300 € en milieu de carrière. Les Écologistes, +15 % en 5 ans. David Lisnard, +20 %.", type:"choice", opts:[["non","Non"],["debut","Oui, en début de carrière"],["milieu","Oui, en milieu ou fin de carrière"]], when:a=>a.sit==="fonct"},
  {id:"rsa", fine:true, t:"Touches-tu le RSA ?", help:"LR veut le remplacer par un revenu de 300 € par mois, plus 250 € si tu suis au moins 15 h par semaine de formation ou de recherche d'emploi.", type:"choice", opts:[["non","Non"],["oui","Oui"]], when:a=>a.sit==="etud"||a.sit==="chom"},
@@ -319,6 +320,25 @@ function renderQ(){
     ni.oninput=()=>{const v=Math.max(0,+ni.value||0);A[key]=v;rg.value=Math.min(v,mx);save();upd();};
     ni.onkeydown=e=>{if(e.key==="Enter")next();};
     r.append(rg,nb);box.appendChild(r);box.appendChild(hint);upd();
+  } else if(q.type==="loan"){
+    const mode=A.loanM||"calc";
+    const o=document.createElement("div");o.className="options";o.style.gridTemplateColumns="repeat(auto-fit,minmax(160px,1fr))";
+    [["calc","Calcule-les pour moi"],["direct","Je connais le montant"]].forEach(([v,l])=>{const b=document.createElement("button");b.type="button";b.className="opt";b.textContent=l;b.setAttribute("aria-pressed",String(mode===v));b.onclick=()=>{A.loanM=v;if(v==="calc")A.loanInt=loanCalc(A).int;save();renderQ();};o.appendChild(b);});
+    box.appendChild(o);
+    const rows=mode==="calc"?[["loanP","Montant emprunté","€",1000],["loanR","Taux du crédit (hors assurance)","%",.05],["loanY","Année de début du prêt","",1],["loanD","Durée du prêt","ans",1]]:[["loanInt","Intérêts payés cette année (tableau d'amortissement)","€ / an",100]];
+    const DEF={loanP:200000,loanR:2,loanY:2020,loanD:20,loanInt:0};
+    const g=document.createElement("div");g.className="assets";
+    const tot=document.createElement("p");tot.className="qhelp";
+    const sum=()=>{ if(mode!=="calc"){tot.textContent="Montant annuel des intérêts, hors assurance.";return;} const c=loanCalc(A); A.loanInt=c.int; save();
+      tot.textContent=c.done?"Ton prêt est remboursé : pas d'intérêts cette année.":"Intérêts estimés en "+c.year+" : "+fmtPlain(c.int)+" (mensualité hors assurance d'environ "+fmtPlain(c.pay)+", capital restant dû d'environ "+fmtPlain(c.left)+"). Calcul à mensualités constantes, prêt supposé démarrer en janvier."; };
+    rows.forEach(([k,l,un,st])=>{ if(A[k]==null||A[k]==="")A[k]=DEF[k];
+      const lab=document.createElement("label");lab.className="arow";lab.htmlFor="n_"+k;const t=document.createElement("span");t.textContent=l;
+      const nb=document.createElement("span");nb.className="numbox";const ni=document.createElement("input");ni.type="number";ni.min=0;ni.step=st;ni.value=A[k];ni.id="n_"+k;ni.inputMode=st<1?"decimal":"numeric";
+      const u=document.createElement("span");u.textContent=un;nb.append(ni,u);
+      ni.oninput=()=>{A[k]=Math.max(0,+String(ni.value).replace(",",".")||0);save();sum();};
+      ni.onkeydown=e=>{if(e.key==="Enter")next();};
+      lab.append(t,nb);g.appendChild(lab);});
+    box.appendChild(g);box.appendChild(tot);sum();
   } else if(q.type==="assets"){
     if(!A.patFine){const P=+A.pat;A.rp=Math.round(P*.25);A.im=Math.round(P*.25);A.fi=Math.round(P*.5);A.de=0;A.pro=0;}
     const g=document.createElement("div");g.className="assets";
@@ -360,8 +380,8 @@ const PITCH={patd:"Le détail de ton patrimoine (résidence principale, autre im
  pa:"La pension alimentaire que tu reçois (PS, Renaissance)",
  veuf:"Ta situation de veuf ou veuve (demi-part du RN)",
  cat:"Ta catégorie dans la fonction publique (point d'indice du PS)",
- kidsCant:"Tes enfants à la cantine (cantine gratuite de LFI)",
- loanInt:"Les intérêts de ton crédit immobilier (déductibles avec LR)",
+ kidsCant:"Tes enfants à la cantine de l'école publique (cantine gratuite de LFI)",
+ loanInt:"Les intérêts de ton crédit immobilier, calculés pour toi (déductibles avec LR)",
  sick:"Tes arrêts maladie (jour de carence de LR)",
  teach:"Ton métier d'enseignant (revalorisations de LR, des Écologistes et de Nouvelle Énergie (David Lisnard))",
  rsa:"Ton RSA (remplacé par le RIA avec LR)"};
@@ -417,6 +437,13 @@ const RATIO={prive:.78,fonct:.82,indep:.75,chom:.93,retr:.91,etud:.78,sal:.78,au
 const PAS=[[1620,0],[1683,.005],[1791,.013],[1911,.021],[2042,.029],[2151,.035],[2294,.041],[2714,.053],[3107,.075],[3539,.099],[3983,.119],[4648,.138],[5574,.158],[6974,.179],[8711,.20],[12091,.24],[16376,.28],[25706,.33],[55062,.38],[Infinity,.43]];
 function pasRate(y){for(const [l,r] of PAS) if(y<l) return r; return .43;}
 function beforeTax(x){ if(x<=0) return 0; let lo=0; for(const [l,r] of PAS){const c=x/(1-r); if(c<lo) return Math.round(lo); if(c<l) return Math.round(c); lo=l;} return Math.round(x/(1-.43)); }
+function loanCalc(a){ const P=+a.loanP||0, R=(+a.loanR||0)/1200, n=Math.round((+a.loanD||20)*12), year=new Date().getFullYear(), k0=Math.max(0,(year-(+a.loanY||year))*12);
+  if(P<=0||n<=0) return {int:0,pay:0,left:0,year,done:P<=0?false:true};
+  const pay=R>0?P*R/(1-Math.pow(1+R,-n)):P/n, bal=k=>R>0?P*Math.pow(1+R,k)-pay*(Math.pow(1+R,k)-1)/R:P-pay*k;
+  if(k0>=n) return {int:0,pay:Math.round(pay),left:0,year,done:true};
+  let it=0; for(let k=k0;k<Math.min(k0+12,n);k++) it+=bal(k)*R;
+  return {int:Math.round(it),pay:Math.round(pay),left:Math.round(bal(k0)),year,done:false}; }
+function pubKids(a,nk){ const e=a.ecole; return e==="priv"||e==="none"?0:e==="mix"?Math.max(1,Math.floor(nk/2)):nk; }
 function netOf(a,id){ const md=a[id+"M"]||"net"; if(md==="apres") return beforeTax(+a[id+"A"]||0); if(md!=="brut") return +a[id]||0; const sit=id==="rev"?a.sit:(a.sitc||"sal"); return Math.round((+a[id+"B"]||0)*(RATIO[sit]||.78)/12); }
 function wealth(a){ let rp,im,fi,de,pro=0; if(unlocked&&a.patFine&&+a.pat>=1300000){rp=+a.rp||0;im=+a.im||0;fi=+a.fi||0;de=+a.de||0;pro=Math.min(fi,+a.pro||0);} else {const P=+a.pat;rp=P*.25;im=P*.25;fi=P*.5;de=0;}
   const net=rp+im+fi-de; return {rp,im,fi,de,pro,net,ifiBase:Math.max(0,rp*.7+im-de),isfBase:Math.max(0,rp*.7+im+fi-pro-de),iffBase:Math.max(0,fi-pro),fine:unlocked&&!!a.patFine}; }
@@ -499,7 +526,7 @@ function compute(a){
   if(sit==="etud"&&me<1337) lfi.push(L("Garantie d'autonomie à 1 337 € par mois",(1337-me)*12,0,"Très coûteuse, financement non détaillé. Non retenue."));
   if(sit==="retr"&&me<1700) lfi.push(L("Pension minimale au niveau du SMIC",(1700-me)*12,0,"Pour une carrière complète. Coût très élevé. Non retenue."));
   lfi.push(L("Fin des franchises médicales et participations forfaitaires",persons*50,1,"Hypothèse : 50 € par personne et par an en moyenne (plafond actuel 100 €)."));
-  if(nk>0){const kc=F(a,"kidsCant")??nk; if(kc>0) lfi.push(L("Cantine scolaire gratuite",kc*500,.5,"Hypothèse : 3,50 € par repas, 140 repas par an. Coût élevé pour les communes."+(F(a,"kidsCant")==null?" Tous tes enfants comptés.":"")));}
+  if(nk>0){const pk=pubKids(a,nk), fk=F(a,"kidsCant"), kc=fk!=null?Math.min(fk,a.ecole==="mix"?nk:pk):pk; if(kc>0) lfi.push(L("Cantine scolaire gratuite (école publique)",kc*500,.5,"Hypothèse : 3,50 € par repas, 140 repas par an. Réservée à l'école publique. Coût élevé pour les communes."+(fk==null?(a.ecole==="mix"?" "+kc+" enfant"+(kc>1?"s":"")+" sur "+nk+" compté"+(kc>1?"s":"")+" au public.":" Tous tes enfants au public comptés comme déjeunant à la cantine."):"")));}
   lfi.push(L("« 100 % Sécu » : fin des mutuelles",(couple?2:1)*600,0,"Hypothèse : 600 € de mutuelle par adulte. Financement par des cotisations non détaillé. Non retenue."));
   res.lfi={lines:lfi,retraite:"Retour à 60 ans avec 40 annuités (peu tenable). Un retour à 62 ans est plus réaliste.",
     herit:H>0?{now:droits(H,100000),then:H<150000?0:droits(H,100000),hyp:"Exonération sous 150 000 €. Au-delà, barème non publié : hypothèse du barème actuel (plafond à 12 M€)."}:null};
@@ -613,7 +640,7 @@ const LBL={sit:{prive:"salarié du privé",fonct:"fonctionnaire",indep:"indépen
   age:{u30:"moins de 30 ans",a30:"30-49 ans",a50:"50-61 ans",a62:"62 ans et plus"},log:{loc:"locataire",apl:"locataire avec APL",prop:"propriétaire"}};
 function buildA4(res){
   const a=A, enf=+a.enf;
-  const prof=`${LBL.sit[a.sit]}, ${LBL.age[a.age]}, ${fmtPlain(netOf(a,"rev"))} net/mois avant impôt${a.couple==="oui"?", en couple (conjoint : "+fmtPlain(netOf(a,"revc"))+")":", seul"}, ${enf?enf+(enf>=3?"+":"")+" enfant"+(enf>1?"s":""):"sans enfant"}, ${LBL.log[a.log]}. Énergie ${fmtPlain(+a.ener)}/mois, carburant ${fmtPlain(+a.carb)}/mois.${+a.pat>=1300000?" Patrimoine net "+fmtPlain(wealth(a).net)+".":""}`;
+  const prof=`${LBL.sit[a.sit]}, ${LBL.age[a.age]}, ${fmtPlain(netOf(a,"rev"))} net/mois avant impôt${a.couple==="oui"?", en couple (conjoint : "+fmtPlain(netOf(a,"revc"))+")":", seul"}, ${enf?enf+(enf>=3?"+":"")+" enfant"+(enf>1?"s":""):"sans enfant"}${enf&&a.ecole?" ("+{pub:"école publique",priv:"école privée",mix:"public et privé",none:"non scolarisés"}[a.ecole]+")":""}, ${LBL.log[a.log]}. Énergie ${fmtPlain(+a.ener)}/mois, carburant ${fmtPlain(+a.carb)}/mois.${+a.pat>=1300000?" Patrimoine net "+fmtPlain(wealth(a).net)+".":""}`;
   const boxes=PARTIES.map(p=>{const r=res[p.k];
     const ls=r.lines.filter(l=>l.k>0&&Math.abs(l.v)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,2)
       .map(l=>`<li><span>${esc(l.m)}${l.k===.5?" (½)":""}</span><b class="${cls(l.v*l.k)}">${fmt(l.v*l.k)}</b></li>`).join("")||`<li><span>Aucune mesure chiffrable pour ton profil</span><b class="zero">0 €</b></li>`;
