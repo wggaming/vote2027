@@ -25,6 +25,8 @@ const annees = (p,a) => Math.max(0, a - p.s - p.gaps);
 /* Capital obtenu en plaçant c € par an pendant n années, versements en milieu d'année */
 const capital = (c,n,r) => n<=0 ? 0 : c*((Math.pow(1+r,n)-1)/r)*Math.sqrt(1+r);
 const rente = (K,a) => K*capiConv(a)*CAPI_PRELEV/12;
+/* Autre usage du capital : le garder placé au rendement r et le vider progressivement jusqu'à RE_HORIZON ans */
+const retrait = (K,a,r) => { const n=Math.max(1,RE_HORIZON-a); return K*r/(1-Math.pow(1+r,-n))*CAPI_PRELEV/12; };
 
 /* Allemagne : retraite par points (répartition), 18,6 % du salaire. Transposée à ton salaire relatif. */
 const DE = {rentenwert:42.52, moyen:51944, plafond:101400, taux:.186, prelev:.11};
@@ -59,7 +61,7 @@ const eur0 = n => fmtPlain(Math.round(n/10)*10);
 
 function simulerCapi(p, actuel){
   const a=actuel.a, n=annees(p,a), c=cotisFR(p,brutAn(p));
-  const scen=CAPI_TAUX.map(t=>{const K=capital(c,n,t.r); return Object.assign({K, mois:rente(K,a)}, t);});
+  const scen=CAPI_TAUX.map(t=>{const K=capital(c,n,t.r); return Object.assign({K, mois:rente(K,a), retrait:retrait(K,a,t.r), verse:c*n}, t);});
   return {a, n, cotisAn:c, scen, pays:[modeleDE(p), modeleUK(p), modeleUS(p)]};
 }
 
@@ -79,11 +81,11 @@ function simulerCapi(p, actuel){
 function renderCapi(p,res){
   const el=document.getElementById("capi"); if(!el) return;
   const cur=res.actuel, C=simulerCapi(p,cur); window.lastCapi=C;
-  const tFR=`<div class="ct fr"><span class="n">Aujourd'hui, en France</span><span class="big">${fmtAge(cur.a)}</span><span class="per"><b>${eur0(cur.mois)}</b> par mois, à vie</span><span class="per">Répartition : tes cotisations paient les retraites d'aujourd'hui.</span></div>`;
-  const tCap=C.scen.map(s=>`<div class="ct cap"><span class="n">Tout placé · ${s.nom} (${(s.r*100).toLocaleString("fr-FR")} % par an)</span><span class="big">${fmtAge(cur.a)}</span><span class="per"><b>${eur0(s.mois)}</b> par mois, à vie</span><span class="per">Capital de ${eur0(s.K)} à ton départ, ${s.aide}.</span></div>`).join("");
+  const tFR=`<div class="ct fr"><span class="n">Aujourd'hui, en France</span><span class="big">${eur0(cur.mois)} / mois</span><span class="per">à vie, départ à ${fmtAge(cur.a)}</span><span class="per">Pas de capital : en répartition, tes cotisations paient les retraites d'aujourd'hui.</span></div>`;
+  const tCap=C.scen.map(s=>`<div class="ct cap"><span class="n">Tout placé · ${s.nom} (${(s.r*100).toLocaleString("fr-FR")} % par an)</span><span class="big">${eur0(s.K)}</span><span class="per">de capital à ton départ à ${fmtAge(cur.a)}, pour ${eur0(s.verse)} versés</span><span class="per"><b>${eur0(s.mois)}</b> par mois à vie</span><span class="per">ou <b>${eur0(s.retrait)}</b> par mois en puisant dans le capital jusqu'à ${RE_HORIZON} ans (plus rien ensuite)</span><span class="per">${s.aide.charAt(0).toUpperCase()+s.aide.slice(1)}.</span></div>`).join("");
   const tPays=C.pays.map(m=>`<div class="ct pays"><span class="n">Modèle ${m.nom==="États-Unis"?"américain":m.nom==="Royaume-Uni"?"britannique":"allemand"}</span><span class="big">${fmtAge(m.a)}</span><span class="per"><b>${eur0(m.mois)}</b> par mois · cotisation ${m.cotis}</span><span class="per">${m.detail}</span></div>`).join("");
   el.innerHTML=`<span class="eyebrow">Et ailleurs ?</span><h3>Et si tes cotisations avaient été placées ?</h3>
-    <p class="qhelp">Toi et ton employeur versez environ <b>${eur0(C.cotisAn/12)} par mois</b> pour ta retraite. Placés pendant tes ${Math.round(C.n)} années de travail jusqu'à ${fmtAge(cur.a)}, puis transformés en rente à vie, voilà ce que ça donnerait, comparé aux modèles de trois pays transposés à ton salaire.</p>
+    <p class="qhelp">Toi et ton employeur versez environ <b>${eur0(C.cotisAn/12)} par mois</b> pour ta retraite. Placés pendant tes ${Math.round(C.n)} années de travail jusqu'à ${fmtAge(cur.a)}, voilà le capital que tu aurais au départ, et ce qu'il verserait chaque mois, comparé aux modèles de trois pays transposés à ton salaire.</p>
     <div class="ctiles">${tFR}${tCap}</div>
     <h3 style="font-size:16px">Avec les règles d'un autre pays</h3>
     <div class="ctiles">${tPays}</div>
@@ -91,5 +93,5 @@ function renderCapi(p,res){
 }
 function capiA4(){
   const C=window.lastCapi; if(!C) return "";
-  return `<div class="prof"><b>Si mes cotisations avaient été placées</b> (départ au même âge, rente à vie) : ${C.scen.map(s=>eur0(s.mois)+" par mois au rendement "+s.nom.toLowerCase()+" de "+(s.r*100).toLocaleString("fr-FR")+" %").join(", ")}. <b>Ailleurs :</b> ${C.pays.map(m=>m.nom+" "+fmtAge(m.a)+", "+eur0(m.mois)+" par mois").join(" ; ")}.</div>`;
+  return `<div class="prof"><b>Si mes cotisations avaient été placées</b> (départ au même âge, rente à vie) : ${C.scen.map(s=>"à "+(s.r*100).toLocaleString("fr-FR")+" % par an, capital de "+eur0(s.K)+", soit "+eur0(s.mois)+" par mois à vie").join(" ; ")}. <b>Ailleurs :</b> ${C.pays.map(m=>m.nom+" "+fmtAge(m.a)+", "+eur0(m.mois)+" par mois").join(" ; ")}.</div>`;
 }
