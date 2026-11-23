@@ -105,7 +105,7 @@ function openQuiz(fine){document.getElementById("lock").hidden=true;document.get
   if(fine===true){const vs=visible(); const i=vs.findIndex(q=>q.fine); step=i>=0?i:0;}
   renderQ();document.getElementById("quiz").scrollIntoView({behavior:"smooth"});}
 document.getElementById("teaserbtn").onclick=()=>showLock("encart");
-document.getElementById("pay").addEventListener("click",()=>{if(window.track)track("vote-clic-achat");});
+document.getElementById("pay").addEventListener("click",()=>{sv("vo-from","vote");if(window.track)track("vote-clic-achat");});
 document.getElementById("share").onclick=async()=>{
   const url="https://vote.wagramconseil.fr/", text="J'ai fait le test : voilà ce que les programmes de la présidentielle changeraient pour mon budget. Et toi, combien ça te coûte ?";
   if(window.track)track("vote-partage-resultat");

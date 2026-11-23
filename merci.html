@@ -59,9 +59,14 @@ document.getElementById('f').addEventListener('submit', function (e) {
   e.preventDefault();
   var v = document.getElementById('c').value.trim();
   if (v.length < 6) { document.getElementById('msg').textContent = 'Colle le code reçu par mail.'; return; }
-  location.href = 'simulateur.html?code=' + encodeURIComponent(v);
+  location.href = BACK + '?code=' + encodeURIComponent(v);
 });
 
+</script>
+<script>
+/* Retour vers le test d'où vient l'achat (retraite.html ou simulateur.html) */
+var BACK = (function () { try { return JSON.parse(localStorage.getItem('vo-from')) === 'retraite' ? 'retraite.html' : 'simulateur.html'; } catch (e) { return 'simulateur.html'; } })();
+Array.prototype.forEach.call(document.querySelectorAll('a[href="simulateur.html"]'), function (a) { a.href = BACK; });
 </script>
 <script src="stats.js"></script>
 <script>try{ if(window.track) track('vote-merci-vue'); }catch(e){}</script>

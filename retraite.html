@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="À quel âge partirais-tu à la retraite, et avec combien, selon les programmes 2027 du RN, de LFI, du PS, de Renaissance, de LR, des Écologistes, de David Lisnard et d'Édouard Philippe ? Test gratuit en 4 questions.">
+<meta property="og:title" content="Ma retraite selon les candidats 2027">
+<meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
+<meta property="og:url" content="https://vote.wagramconseil.fr/retraite.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta property="og:description" content="Ton âge de départ et ta pension avec chaque programme de la présidentielle 2027.">
+<title>Ma retraite selon les candidats 2027 : âge de départ et pension par programme</title>
+<link rel="canonical" href="https://vote.wagramconseil.fr/retraite.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+/* Layout : une colonne façon "bulletin" — le test en fiches successives, puis un relevé chiffré par parti. */
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px;display:flex;flex-direction:column;gap:28px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,6vw,48px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:700}
+h3{font-size:18px;font-weight:700}
+p{margin:0}
+.eyebrow{font-family:var(--f-num);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:62ch}
+header{display:flex;flex-direction:column;gap:12px}
+.stripe{display:flex;height:6px;border-radius:3px;overflow:hidden;width:160px}
+.stripe i{flex:1}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px}
+/* Quiz */
+.progress{display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:6px;background:var(--soft);border-radius:3px;overflow:hidden}
+.bar span{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.qnum{font-family:var(--f-num);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
+.question{display:flex;flex-direction:column;gap:18px;margin-top:20px}
+.qhelp{color:var(--muted);font-size:14px}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.opt{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;font-weight:500;cursor:pointer;text-align:left}
+.opt:hover{border-color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--soft)}
+.opt:focus-visible,.btn:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.numrow{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.numrow input[type=range]{flex:1;min-width:180px;accent-color:var(--accent)}
+.numbox{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--surface)}
+.numbox input{width:110px;border:0;background:transparent;color:var(--ink);font:600 20px var(--f-num);text-align:right}
+.numbox span{color:var(--muted);font-size:14px}
+.assets{display:flex;flex-direction:column;gap:10px}
+.arow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;font-size:15px;font-weight:500}
+.arow>span:first-child{flex:1;min-width:200px}
+.arow .numbox input{width:140px}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn{font:600 15px var(--f-body);padding:12px 20px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:default}
+/* Results */
+#results{display:flex;flex-direction:column;gap:24px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:560px){.summary{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;border-top:5px solid var(--pc)}
+.tile .pname{font-family:var(--f-display);font-weight:700;font-size:15px}
+.tile .big{font:600 26px var(--f-num);font-variant-numeric:tabular-nums}
+.tile .per{font-size:13px;color:var(--muted)}
+.pos{color:var(--gain)} .neg{color:var(--loss)} .zero{color:var(--muted)}
+.chart{display:flex;flex-direction:column;gap:10px}
+.crow{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:center}
+.crow .lbl{font-weight:600;font-size:14px}
+.track{position:relative;height:26px;background:var(--soft);border-radius:6px}
+.track .mid{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--muted);opacity:.5}
+.track .fill{position:absolute;top:3px;bottom:3px;border-radius:4px;background:var(--pc)}
+.track .val{position:absolute;top:50%;transform:translateY(-50%);font:600 12px var(--f-num);white-space:nowrap;color:var(--ink)}
+.axis{display:flex;justify-content:space-between;font:500 11px var(--f-num);color:var(--muted);margin-left:132px}
+.party{display:flex;flex-direction:column;gap:14px;border-left:5px solid var(--pc)}
+.phead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.phead .tot{font:600 22px var(--f-num);font-variant-numeric:tabular-nums}
+.lines{display:flex;flex-direction:column}
+.line{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:10px 0;border-top:1px solid var(--line)}
+.line .m{font-weight:600;font-size:15px;min-width:0}
+.line .amt{font:600 15px var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
+.line .note{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.chip{display:inline-block;font:600 11px var(--f-num);letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:2px;border:1px solid currentColor}
+.chip.t1{color:var(--gain)} .chip.t05{color:var(--warn)} .chip.t0{color:var(--loss)}
+.line.excluded .m,.line.excluded .amt{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:14px}
+.facts dt{color:var(--muted)} .facts dd{margin:0;font-weight:500}
+.actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.status{font-size:14px;color:var(--muted)}
+.method{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:10px}
+.method a{color:var(--accent)}
+.method ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+@media (max-width:560px){.crow{grid-template-columns:76px 1fr}.axis{margin-left:88px}.facts{grid-template-columns:1fr}.card{padding:18px}}
+@media (prefers-reduced-motion:reduce){.bar span{transition:none}}
+/* Page A4 (rendue hors écran pour le PDF) : look imprimé fixe, couleurs explicites */
+#a4{position:fixed;left:-12000px;top:0;width:794px;height:1123px;background:#ffffff;color:#18202e;font-family:var(--f-body);padding:28px 40px;display:flex;flex-direction:column;gap:9px;overflow:hidden}
+#a4 .a4top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #18202e;padding-bottom:12px}
+#a4 h1{font-size:30px;color:#18202e}
+#a4 .sub{font-size:12px;color:#5b6577}
+#a4 .prof{font-size:11.5px;color:#18202e;background:#eef1f6;border-radius:8px;padding:8px 12px;line-height:1.4}
+#a4 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+#a4 .chartA4{gap:4px}
+#a4 .chartA4 .track{height:15px}
+#a4 .pbox{border:1px solid #d9dee7;border-top:5px solid var(--pc);border-radius:8px;padding:7px 10px;display:flex;flex-direction:column;gap:3px}
+#a4 .pbox .h{display:flex;flex-direction:column;gap:2px}
+#a4 .pbox .n{font:700 13px var(--f-display)}
+#a4 .pbox .v{font:600 17px var(--f-num)}
+#a4 .pbox .mo{font-size:11px;color:#5b6577}
+#a4 .pbox ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:3px}
+#a4 .pbox li{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;line-height:1.3;color:#18202e}
+#a4 .pbox li b{font:600 11px var(--f-num);white-space:nowrap}
+#a4 .pbox .ret{font-size:9.5px;line-height:1.3;color:#5b6577;border-top:1px solid #eef1f6;padding-top:4px;max-height:30px;overflow:hidden}
+#a4 .pos{color:#13804a} #a4 .neg{color:#c23a2b} #a4 .zero{color:#5b6577}
+#a4 .chartA4 .crow{grid-template-columns:150px 1fr}
+#a4 .chartA4 .track{background:#eef1f6;height:15px}
+#a4 .chartA4 .val{color:#18202e}
+#a4 .chartA4 .mid{background:#5b6577}
+#a4 .foot{margin-top:auto;font-size:9.5px;color:#5b6577;line-height:1.4;border-top:1px solid #d9dee7;padding-top:8px}
+#a4 .herit{font-size:12px;color:#18202e}
+
+body{margin:0}
+[hidden]{display:none!important}
+.topnav{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px}
+.topnav a{color:var(--muted);font-weight:600;text-decoration:none}
+.teaser{display:flex;align-items:center;justify-content:space-between;gap:16px;border:2px dashed var(--accent)}
+.teaser>div{display:flex;flex-direction:column;gap:4px}
+.teaser .btn{flex:none}
+@media (max-width:600px){.teaser{flex-direction:column;align-items:stretch}}
+.lockcard{display:flex;flex-direction:column;gap:14px;border:2px solid var(--accent)}
+.lockcard .price{display:flex;justify-content:space-between;align-items:baseline;gap:12px;background:var(--soft);border-radius:10px;padding:12px 16px}
+.lockcard .price b{font:600 26px var(--f-num)}
+.upsell{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.upsell li::marker{color:var(--accent)}
+.codebox{display:flex;gap:8px;flex-wrap:wrap}
+.codebox input{flex:1;min-width:0;font:600 16px var(--f-num);text-transform:uppercase;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.codemsg{min-height:20px;font-size:14px;color:var(--loss)}
+a.btn{display:inline-block;text-decoration:none;text-align:center}
+footer{font-size:13px;color:var(--muted);text-align:center}
+footer a{color:inherit}
+
+/* Propre au test retraite */
+.nowcard{display:flex;flex-direction:column;gap:12px;border-top:5px solid var(--ink)}
+.nowrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.nowrow>div{display:flex;flex-direction:column;gap:4px}
+.nowrow .big{font:600 24px var(--f-num);font-variant-numeric:tabular-nums}
+.nowrow .per{font-size:13px;color:var(--muted)}
+@media (max-width:560px){.nowrow{grid-template-columns:1fr}}
+.tile .big{font-size:20px}
+.line.info .m{font-weight:500}
+.headline{font:700 20px var(--f-display)}
+#a4 .pbox .v{font:600 16px var(--f-num)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav class="topnav"><a href="index.html">← Accueil</a><a href="simulateur.html">Le test « Ce que coûte mon vote »</a></nav>
+  <header>
+    <div class="stripe" aria-hidden="true"><i style="background:var(--lfi)"></i><i style="background:var(--ps)"></i><i style="background:var(--ctr)"></i><i style="background:var(--lr)"></i><i style="background:var(--rn)"></i></div>
+    <span class="eyebrow">Présidentielle 2027 · simulateur personnel</span>
+    <h1>Ma retraite selon les candidats</h1>
+    <p class="lede">Quatre questions sur ta carrière. On calcule à quel âge tu pourrais partir à taux plein, et avec quelle pension, avec les règles d'aujourd'hui puis avec le programme de chaque candidat. Une promesse jugée non tenable est remplacée par sa version réaliste. Ta première simulation est gratuite. Tes réponses restent dans ton navigateur.</p>
+  </header>
+
+  <section class="card" id="quiz" aria-live="polite">
+    <div class="progress"><div class="bar"><span id="pbar"></span></div><span class="qnum" id="qnum">1 / 4</span></div>
+    <div class="question" id="qbox"></div>
+    <div class="nav">
+      <button class="btn" id="prev" type="button">Précédent</button>
+      <button class="btn primary" id="next" type="button">Suivant</button>
+    </div>
+  </section>
+
+  <section id="results" hidden>
+    <div class="actions">
+      <button class="btn primary" id="dl" type="button">Télécharger ma page A4 (PDF)</button>
+      <button class="btn" id="refine" type="button">Affiner mon résultat</button>
+      <button class="btn" id="restart" type="button">Modifier mes réponses</button>
+      <button class="btn" id="share" type="button">Partager le test</button>
+      <span class="status" id="dlstatus"></span>
+    </div>
+    <div class="card lockcard" id="lock" hidden>
+      <span class="eyebrow">Accès illimité</span>
+      <h3>Affine ta simulation et teste d'autres situations</h3>
+      <p class="qhelp">Ta simulation gratuite suppose une carrière sans interruption, sans trimestres pour enfants, et un salaire moyen de carrière égal à 85 % de ton salaire actuel.</p>
+      <p style="font-weight:600;margin:0">Tu pourras préciser :</p>
+      <ul class="upsell" id="upsell"></ul>
+      <div class="price"><span>Affinage et simulations illimitées, pour toujours</span><b class="js-price">1 €</b></div>
+      <a class="btn primary" id="pay" href="acheter.html">Débloquer pour 1 €</a>
+      <p class="qhelp">Tu indiques ton nom et ton mail, tu paies, et ton code t'est envoyé par mail dès réception du paiement. Si tu as déjà un code pour « Ce que coûte mon vote », il marche ici aussi.</p>
+      <div class="codebox">
+        <input id="code" type="text" placeholder="J'ai déjà un code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de déblocage">
+        <button class="btn" id="codeOk" type="button">Valider</button>
+      </div>
+      <div class="codemsg" id="codemsg" role="status"></div>
+    </div>
+    <div>
+      <span class="eyebrow">Ton résultat</span>
+      <h2 style="margin-top:6px">Ton départ et ta pension, programme par programme</h2>
+      <p class="headline" id="headline" style="margin-top:8px"></p>
+      <p class="lede" style="margin-top:6px">En euros d'aujourd'hui. Le montant en couleur compare la pension totale touchée jusqu'à 85 ans avec les règles actuelles : positif, tu y gagnes.</p>
+    </div>
+    <div class="card nowcard" id="now"></div>
+    <div class="summary" id="tiles"></div>
+    <div class="card chart" id="chart"></div>
+    <div class="card teaser" id="teaser" hidden><div><b>Ta simulation gratuite suppose une carrière complète sans interruption.</b><span class="qhelp">Précise tes années sans trimestres, tes enfants, l'évolution de ton salaire et l'âge auquel tu veux partir, et refais autant de simulations que tu veux.</span></div><button class="btn primary" id="teaserbtn" type="button">Affiner pour 1 €</button></div>
+    <div id="parties" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="card method">
+      <h3 style="color:var(--ink)">Comment on calcule</h3>
+      <ul>
+        <li><b>Règles actuelles</b> : suspension de la réforme de 2023 votée dans la loi de financement de la Sécurité sociale pour 2026 (âge légal de 62 ans et 9 mois à 64 ans selon la génération, 170 à 172 trimestres), carrières longues, taux plein automatique à 67 ans, décote de 1,25 % par trimestre manquant.</li>
+        <li><b>Âge de départ</b> : le premier âge auquel tu as le taux plein (assez de trimestres, carrière longue ou âge du taux plein automatique). Chaque année travaillée depuis ton premier emploi compte pour 4 trimestres.</li>
+        <li><b>Pension</b> : régime de base (50 % du salaire moyen dans la limite du plafond de la Sécurité sociale, au prorata des trimestres) et complémentaire Agirc-Arrco (points 2026), ou 75 % du traitement hors primes dans la fonction publique. Prélèvements sociaux d'un retraité au taux plein. Le minimum contributif, le minimum vieillesse et les pensions de réversion ne sont pas comptés.</li>
+        <li><b>Total jusqu'à 85 ans</b> : la pension mensuelle multipliée par le nombre de mois entre ton départ et 85 ans, sans compter les salaires des années travaillées en plus ou en moins.</li>
+        <li><b>Tenable</b> : la règle est finançable. <b>Incertain</b> : coûteuse, financement contesté, comptée telle quelle. <b>Non tenable</b> : affichée barrée, on compte sa version réaliste.</li>
+        <li>Les réformes proposées sont supposées s'appliquer aux départs à partir de 2028. Quand un rythme de mise en place n'est pas publié, on suppose 3 mois de plus par génération, à partir de la génération 1969.</li>
+        <li>C'est une estimation indicative et non partisane, pas un relevé officiel. Ton estimation officielle, à partir de ta vraie carrière, est sur <a href="https://www.info-retraite.fr" target="_blank" rel="noopener">info-retraite.fr</a>.</li>
+      </ul>
+      <p>Sources (consultées en novembre 2026) : <a href="https://www.lafinancepourtous.com/2026/08/31/retraite-decalage-de-lage-legal-et-lage-de-depart-pour-carriere-longue-au-1er-septembre-2026/" target="_blank" rel="noopener">règles actuelles après la suspension</a>, <a href="https://www.publicsenat.fr/actualites/politique/presidentielle-2027-que-contient-la-reforme-des-retraites-presentee-par-marine-le-pen" target="_blank" rel="noopener">plan du RN du 17 novembre</a>, <a href="https://www.publicsenat.fr/actualites/politique/reculer-ou-avancer-lage-legal-avec-ou-sans-capitalisation-ce-que-proposent-les-principaux-candidats-a-lelection-presidentielle-sur-les-retraites" target="_blank" rel="noopener">propositions des candidats</a>, <a href="https://votons-2027.fr/themes/retraite" target="_blank" rel="noopener">votons-2027.fr</a>, <a href="https://www.edouardphilippe.fr/programme/retraites" target="_blank" rel="noopener">programme retraites d'Édouard Philippe</a>.</p>
+    </div>
+  </section>
+  <footer><p>Ma retraite selon les candidats · un test de <a href="index.html">Ce que coûte mon vote</a> · <a class="js-mail" href="#">Nous contacter</a> · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p></footer>
+</div>
+
+<div id="a4" aria-hidden="true"></div>
+
+<script src="reglages.js"></script>
+<script src="codes.js"></script>
+<script src="js/fiscalite.js"></script>
+<script src="js/programmes.js"></script>
+<script src="js/retraite-regles.js"></script>
+<script src="js/retraite.js"></script>
+<script src="stats.js"></script>
+
+</body>
+</html>
