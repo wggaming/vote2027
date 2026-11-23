@@ -6,17 +6,17 @@
 <title>Ce que coûte mon vote : simulateur des programmes de la présidentielle 2027</title>
 <link rel="canonical" href="https://vote.wagramconseil.fr/">
 <meta name="google-site-verification" content="b5j1tCwXvVsUPI34AKEqYDCP3CelcPzubEFa6AxPzXo">
-<meta name="description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : combien leurs programmes économiques te feraient gagner ou perdre chaque année ? Test gratuit en 2 minutes, résultat en page A4.">
+<meta name="description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : combien leurs programmes économiques te feraient gagner ou perdre chaque année ? Test gratuit en 2 minutes, classement immédiat.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Ce que coûte mon vote">
-<meta property="og:title" content="Combien va te coûter la présidentielle ?">
-<meta property="og:description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : le test gratuit qui chiffre ce que chaque programme change pour ton budget. 2 minutes, résultat en page A4.">
+<meta property="og:title" content="Combien va te coûter la présidentielle, ou te rapporter ?">
+<meta property="og:description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : le test gratuit qui chiffre ce que chaque programme change pour ton budget. 2 minutes, classement immédiat.">
 <meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:url" content="https://vote.wagramconseil.fr/">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Combien va te coûter la présidentielle ?">
+<meta name="twitter:title" content="Combien va te coûter la présidentielle, ou te rapporter ?">
 <meta name="twitter:description" content="Le test gratuit qui chiffre ce que chaque programme change pour ton budget.">
 <meta name="twitter:image" content="https://vote.wagramconseil.fr/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,7 +74,8 @@ nav a.l{color:var(--muted);text-decoration:none;font-weight:600}
 .track{height:12px;background:var(--soft);border-radius:6px;position:relative;overflow:hidden}
 .track span{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--pc)}
 .row .v{font:600 14px var(--f-num);font-variant-numeric:tabular-nums;color:var(--gain);text-align:right;min-width:78px}
-.row .v.neg{color:var(--loss)}
+.row .v.neg{color:var(--loss)} .row .v.zero{color:var(--muted)}
+.track.c span{left:50%} .track.c span.n{left:auto;right:50%} .track.c::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--muted);opacity:.5}
 .ticket .foot{border-top:1px dashed var(--line);padding-top:10px;font-size:12px;color:var(--muted)}
 /* Sections */
 section.band{padding-block:56px;border-top:1px solid var(--line)}
@@ -118,7 +119,7 @@ footer a{color:inherit}
   "@type": "WebApplication",
   "name": "Ce que coûte mon vote",
   "url": "https://vote.wagramconseil.fr/",
-  "description": "RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : combien leurs programmes économiques te feraient gagner ou perdre chaque année ? Test gratuit en 2 minutes, résultat en page A4.",
+  "description": "RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : combien leurs programmes économiques te feraient gagner ou perdre chaque année ? Test gratuit en 2 minutes, classement immédiat.",
   "applicationCategory": "FinanceApplication",
   "operatingSystem": "Tous (navigateur web)",
   "inLanguage": "fr-FR",
@@ -137,7 +138,7 @@ footer a{color:inherit}
     "name": "C'est gratuit ?",
     "acceptedAnswer": {
      "@type": "Answer",
-     "text": "Oui, ta première simulation est entièrement gratuite, détail et PDF compris. Pour l'affiner (patrimoine détaillé, montant exact de ton épargne et de ton héritage, âge de départ à la retraite selon chaque programme…) et tester d'autres situations, l'accès illimité coûte 1 €, une seule fois."
+     "text": "Oui : ton classement, le montant de chaque programme pour toi et sa mesure principale sont gratuits, comme la méthode et les sources. Pour 1 €, une seule fois : le détail mesure par mesure, ta page A4 en PDF, l'affinage (patrimoine détaillé, montant exact de ton épargne et de ton héritage, âge de départ à la retraite…) et autant de simulations que tu veux."
     }
    },
    {
@@ -145,7 +146,7 @@ footer a{color:inherit}
     "name": "Le site est-il neutre ?",
     "acceptedAnswer": {
      "@type": "Answer",
-     "text": "Les huit programmes sont passés à la même grille. Chaque mesure affiche son niveau de crédibilité et l'hypothèse utilisée quand un parti ne publie pas ses chiffres. Le site ne donne aucune consigne de vote."
+     "text": "Les huit programmes sont passés à la même grille. Chaque mesure affiche son niveau de crédibilité et l'hypothèse utilisée quand un parti ne publie pas ses chiffres. Le site ne donne aucune consigne de vote. Chaque fiche indique aussi comment le programme se finance (économies, impôts nouveaux), pour que les promesses ne soient jamais présentées sans leur coût."
     }
    },
    {
@@ -179,9 +180,9 @@ footer a{color:inherit}
   <header class="hero">
     <div>
       <span class="eyebrow">Présidentielle 2027</span>
-      <h1 style="margin-top:12px">Combien va te coûter <em>la présidentielle</em> ?</h1>
+      <h1 style="margin-top:12px">Combien va te coûter <em>la présidentielle</em>, ou te rapporter ?</h1>
       <form class="qstart" id="qstart" novalidate>
-        <span class="qs-k">Question 1 sur 12</span>
+        <span class="qs-k">Question 1 sur 12 environ</span>
         <label class="qs-t" for="qs-v">Combien gagnes-tu ?</label>
         <div class="qs-mode" role="group" aria-label="Type de montant">
           <button type="button" data-m="apres" aria-pressed="true">Versé sur mon compte</button>
@@ -193,22 +194,22 @@ footer a{color:inherit}
         <button class="btn primary" id="go" type="submit">Calculer mon impact →</button>
         <small class="qs-s">2 minutes · gratuit · anonyme · sans inscription</small>
       </form>
-      <p class="ex"><b>Exemple :</b> pour une salariée à 2 200 € net par mois, en couple avec un enfant et locataire, l'effet va de +240 € à +4 720 € par an selon le candidat, soit près de 4 500 € d'écart.</p>
-      <p class="lede">RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : réponds à 12 questions sur ta situation et découvre, en euros par an, ce que chaque programme économique changerait pour ton budget.</p>
+      <p class="ex"><b>Exemple :</b> pour un couple de salariés à 4 500 € et 3 000 € net par mois, avec deux enfants et propriétaire, l'effet va de −420 € à +4 510 € par an selon le candidat. Et chaque fiche dit comment le programme se finance.</p>
+      <p class="lede">RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : réponds à une douzaine de questions sur ta situation et découvre, en euros par an, ce que chaque programme économique changerait pour ton budget.</p>
       <p class="fav" style="margin:14px 0 0;font-size:14px;color:var(--muted)">🔖 <b style="color:var(--ink)">Ajoute le site à tes favoris.</b> Les programmes et les promesses de campagne sont mis à jour au fur et à mesure qu'ils se précisent : reviens refaire ton test avant de voter.</p>
     </div>
     <aside class="ticket" aria-label="Exemple de résultat">
       <div class="top"><b style="font-family:var(--f-display);font-size:17px">Impact sur ton budget, par an</b><span class="tag">Exemple</span></div>
-      <span class="who">Salariée à 2 200 € net, en couple, 1 enfant, locataire</span>
-      <div class="row" style="--pc:var(--rn)"><b>RN</b><span class="track"><span style="width:5%"></span></span><span class="v">+240 €</span></div>
-      <div class="row" style="--pc:var(--lfi)"><b>LFI</b><span class="track"><span style="width:21%"></span></span><span class="v">+990 €</span></div>
-      <div class="row" style="--pc:var(--ps)"><b>PS</b><span class="track"><span style="width:58%"></span></span><span class="v">+2 750 €</span></div>
-      <div class="row" style="--pc:var(--ctr)"><b>Renaissance</b><span class="track"><span style="width:58%"></span></span><span class="v">+2 730 €</span></div>
-      <div class="row" style="--pc:var(--lr)"><b>LR</b><span class="track"><span style="width:29%"></span></span><span class="v">+1 390 €</span></div>
-      <div class="row" style="--pc:var(--eco)"><b>Écologistes</b><span class="track"><span style="width:21%"></span></span><span class="v">+1 000 €</span></div>
-      <div class="row" style="--pc:var(--ne)"><b>Lisnard</b><span class="track"><span style="width:100%"></span></span><span class="v">+4 720 €</span></div>
-      <div class="row" style="--pc:var(--hor)"><b>Philippe</b><span class="track"><span style="width:44%"></span></span><span class="v">+2 100 €</span></div>
-      <p class="foot">Les montants changent beaucoup selon le revenu, le patrimoine et la famille. Un cadre à 6 500 € avec 5 M€ de patrimoine peut perdre 21 000 € par an avec un programme et en gagner 6 000 avec un autre.</p>
+      <span class="who">Couple de salariés à 4 500 € et 3 000 € net, 2 enfants, propriétaires</span>
+      <div class="row" style="--pc:var(--ne)"><b>Lisnard</b><span class="track c"><span style="width:50%"></span></span><span class="v">+4 510 €</span></div>
+      <div class="row" style="--pc:var(--lr)"><b>LR</b><span class="track c"><span style="width:26%"></span></span><span class="v">+2 320 €</span></div>
+      <div class="row" style="--pc:var(--rn)"><b>RN</b><span class="track c"><span style="width:24%"></span></span><span class="v">+2 190 €</span></div>
+      <div class="row" style="--pc:var(--ctr)"><b>Renaissance</b><span class="track c"><span style="width:11%"></span></span><span class="v">+950 €</span></div>
+      <div class="row" style="--pc:var(--hor)"><b>Philippe</b><span class="track c"><span style="width:7%"></span></span><span class="v">+600 €</span></div>
+      <div class="row" style="--pc:var(--eco)"><b>Écologistes</b><span class="track c"><span style="width:0%"></span></span><span class="v zero">0 €</span></div>
+      <div class="row" style="--pc:var(--lfi)"><b>LFI</b><span class="track c"><span class="n" style="width:4%"></span></span><span class="v neg">−360 €</span></div>
+      <div class="row" style="--pc:var(--ps)"><b>PS</b><span class="track c"><span class="n" style="width:5%"></span></span><span class="v neg">−420 €</span></div>
+      <p class="foot">Les montants changent beaucoup selon le revenu, le patrimoine et la famille. Un cadre à 6 500 € avec 5 M€ de patrimoine peut perdre plus de 30 000 € par an avec un programme et en gagner 10 000 avec un autre. Le financement des programmes (économies, impôts sur d'autres) n'est pas compté, il est indiqué à côté.</p>
     </aside>
   </header>
 </div>
@@ -217,9 +218,9 @@ footer a{color:inherit}
   <span class="eyebrow">Comment ça marche</span>
   <h2>Ta situation, leurs promesses, tes euros</h2>
   <div class="steps">
-    <div><span class="n">Étape 1</span><h3>Tu réponds à 12 questions</h3><p>Métier, revenu (net ou brut), couple, enfants, logement, énergie, épargne, patrimoine, héritage. Jamais pour qui tu votes.</p></div>
+    <div><span class="n">Étape 1</span><h3>Tu réponds à une douzaine de questions</h3><p>Métier, revenu (net ou brut), couple, enfants, logement, énergie, épargne, patrimoine, héritage. Jamais pour qui tu votes.</p></div>
     <div><span class="n">Étape 2</span><h3>On applique chaque programme</h3><p>Impôt sur le revenu, CSG, SMIC, TVA, IFI et ISF, prestations, droits de succession : chaque mesure est calculée sur ta situation, comparée aux règles actuelles.</p></div>
-    <div><span class="n">Étape 3</span><h3>Tu télécharges ta page A4</h3><p>Un résultat clair, parti par parti, avec le détail des mesures, à garder ou à partager en PDF.</p></div>
+    <div><span class="n">Étape 3</span><h3>Tu vois ton classement</h3><p>Gratuit : le montant de chaque programme pour toi. Pour 1 € : le détail mesure par mesure et ta page A4 en PDF.</p></div>
   </div>
 </div></section>
 
@@ -247,8 +248,8 @@ footer a{color:inherit}
   <span class="eyebrow">Questions</span>
   <h2>Avant de commencer</h2>
   <div class="faq">
-    <details><summary>C'est gratuit ?</summary><p>Oui, ta première simulation est entièrement gratuite, détail et PDF compris. Pour l'affiner (patrimoine détaillé, montant exact de ton épargne et de ton héritage, âge de départ à la retraite selon chaque programme…) et tester d'autres situations, l'accès illimité coûte 1 €, une seule fois.</p></details>
-    <details><summary>Le site est-il neutre ?</summary><p>Les huit programmes sont passés à la même grille. Chaque mesure affiche son niveau de crédibilité et l'hypothèse utilisée quand un parti ne publie pas ses chiffres. Le site ne donne aucune consigne de vote.</p></details>
+    <details><summary>C'est gratuit ?</summary><p>Oui : ton classement, le montant de chaque programme pour toi et sa mesure principale sont gratuits, comme la méthode et les sources. Pour 1 €, une seule fois : le détail mesure par mesure, ta page A4 en PDF, l'affinage (patrimoine détaillé, montant exact de ton épargne et de ton héritage, âge de départ à la retraite…) et autant de simulations que tu veux.</p></details>
+    <details><summary>Le site est-il neutre ?</summary><p>Les huit programmes sont passés à la même grille. Chaque mesure affiche son niveau de crédibilité et l'hypothèse utilisée quand un parti ne publie pas ses chiffres. Le site ne donne aucune consigne de vote. Chaque fiche indique aussi comment le programme se finance (économies, impôts nouveaux), pour que les promesses ne soient jamais présentées sans leur coût.</p></details>
     <details><summary>Que deviennent mes réponses ?</summary><p>Elles restent dans ton navigateur et ne sont envoyées nulle part. On ne te demande jamais ton vote, ni ton nom pour faire le test.</p></details>
     <details><summary>Les chiffres sont-ils exacts ?</summary><p>Ce sont des estimations : barème de l'impôt 2026, programmes publiés à l'automne 2026 et hypothèses simplifiées. Les effets indirects (inflation, emploi, dette) ne sont pas comptés.</p></details>
   </div>
@@ -299,7 +300,7 @@ footer a{color:inherit}
 <script>
 (function () {
   var URL = 'https://vote.wagramconseil.fr/';
-  var TEXT = 'Combien va te coûter la présidentielle ? Le test gratuit qui chiffre ce que chaque programme change pour ton budget :';
+  var TEXT = 'Combien va te coûter la présidentielle, ou te rapporter ? Le test gratuit qui chiffre ce que chaque programme change pour ton budget :';
   var e = encodeURIComponent;
   document.getElementById('wa').href = 'https://wa.me/?text=' + e(TEXT + ' ' + URL);
   document.getElementById('x').href = 'https://twitter.com/intent/tweet?text=' + e(TEXT) + '&url=' + e(URL);

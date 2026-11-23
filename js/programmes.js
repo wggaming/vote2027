@@ -5,13 +5,17 @@
 
    Chaque mesure s'écrit L(libellé, montant par an, tenabilité, note) :
    - montant : en euros par an, positif si tu y gagnes, négatif si ça te coûte
-   - tenabilité : 1 tenable (compté en entier), .5 à moitié, 0 non tenable (affiché barré, non compté)
+   - tenabilité : 1 tenable (compté en entier), .5 à moitié, .25 simple objectif (« jusqu'à… »), 0 non tenable (affiché barré, non compté)
    - note : la justification affichée sous la ligne. Une note qui contient « Hypothèse », « estimé »,
      « déduite » ou « moyenne » est comptée comme une hypothèse (encart d'affinage).
+   fin : comment le parti dit se financer (md = milliards d'économies ou de recettes, null si non chiffré ; sens "rec" = recettes).
+     Affiché à côté du total, jamais compté : on ne sait pas quels ménages paieront.
    depart(s,cur) : âge de départ à taux plein selon l'âge de début de carrière s (cur = règle actuelle).
    divBareme : le parti impose les dividendes au barème (arbitrage salaire ou dividendes des dirigeants).
 
    Les variables partagées (revenus, impôt actuel, patrimoine…) sont calculées une fois dans contexte(). */
+/* Date de la dernière vérification des programmes, affichée sur chaque fiche : à changer à chaque mise à jour d'un programme. */
+const MAJ_PROGRAMMES="23 novembre 2026";
 const L=(m,v,k,n)=>({m,v,k,n});
 /* 60,5 → « 60 ans et 6 mois » */
 const ans=a=>{const y=Math.floor(a),m=Math.round((a-y)*12);return y+" ans"+(m?" et "+m+" mois":"");};
@@ -35,6 +39,7 @@ function contexte(a){
 const PARTIES=[
  /* RN */
  {k:"rn",name:"Rassemblement national",short:"RN",c:"--rn",
+  fin:{md:null,txt:"Chiffrage global non publié par le RN à ce jour. Seul son plan retraite est chiffré : 18,6 Md€ par an en 2032 selon le RN, financés en partie par les excédents de l'assurance chômage."},
   /* plan du 17/11/2026 : départ de 60 à 62 ans par paliers de 6 mois selon l'âge de début, 40 à 42 annuités, carrières longues conservées si plus avantageuses */
   depart:(s,cur)=>{const lg=s<20?60:s<21?60.5:s<22?61:s<23?61.5:62, d=s<20?40:s<21?40.5:s<22?41:s<23?41.5:42; return Math.min(cur,Math.min(67,Math.max(lg,s+d)));},
   mesures(x){ const {a,me,couple,cj,nk,sit,actif,veuf,R,parts,ir,persons,W,H,ifiNow,wHyp}=x;
@@ -53,6 +58,7 @@ const PARTIES=[
 
  /* LFI */
  {k:"lfi",name:"La France insoumise",short:"LFI",c:"--lfi",
+  fin:{md:106.4,sens:"rec",txt:"106,4 Md€ de recettes nouvelles (ISF climatique, fin de la flat tax, taxe sur les très hauts patrimoines, héritages, niches fiscales) pour 81,7 Md€ de dépenses nouvelles, selon le document de travail présenté le 14 octobre 2026. Chiffrage complet annoncé début 2027."},
   depart:(s,cur)=>Math.min(cur,Math.min(67,Math.max(60,s+40))),
   divBareme:true,
   mesures(x){ const {a,me,couple,cj,cjw,nk,sit,R,parts,ir,persons,ndv,cap,W,P,H,ifiNow,capHyp,div,capD,divHyp,capNow,capNew,capTxt,wHyp}=x;
@@ -83,6 +89,7 @@ const PARTIES=[
 
  /* PS */
  {k:"ps",name:"Parti socialiste",short:"PS",c:"--ps",
+  fin:{md:null,txt:"Chiffrage global non publié par le PS à ce jour. Ses hausses d'impôts (fin de la flat tax, grandes successions) sont comptées plus haut si elles te touchent."},
   depart:(s,cur)=>Math.min(cur,Math.min(67,Math.max(62,s+43))),
   divBareme:true,
   mesures(x){ const {a,me,couple,cj,cjw,sit,pa,R,parts,ir,persons,cap,P,H,ifiNow,capHyp,div,capD,divHyp,capNow,capNew,capTxt}=x;
@@ -103,6 +110,7 @@ const PARTIES=[
 
  /* Renaissance */
  {k:"ctr",name:"Renaissance (centre)",short:"Renaissance",c:"--ctr",
+  fin:{md:150,txt:"150 Md€ d'économies annoncées, non détaillées."},
   depart:(s,cur)=>cur,
   mesures(x){ const {me,couple,cjw,sit,pa,R,parts,ir,H}=x;
     const ctr=[];
@@ -117,6 +125,7 @@ const PARTIES=[
 
  /* Les Républicains */
  {k:"lr",name:"Les Républicains",short:"LR",c:"--lr",
+  fin:{md:200,txt:"Près de 200 Md€ d'économies annoncées, surtout sur les prestations sociales et la fonction publique."},
   depart:(s,cur)=>s<20?cur:Math.min(67,Math.max(65,s+43)),
   mesures(x){ const {a,me,couple,cjw,nk,sit,R,t,H}=x;
     const lr=[];
@@ -135,6 +144,7 @@ const PARTIES=[
 
  /* Les Écologistes */
  {k:"eco",name:"Les Écologistes",short:"Écologistes",c:"--eco",
+  fin:{md:null,txt:"Chiffrage global non publié par les Écologistes à ce jour. Leurs hausses d'impôts (ISF climatique, droits de succession) sont comptées plus haut si elles te touchent."},
   depart:(s,cur)=>s<20?Math.min(cur,Math.max(60,s+43)):Math.min(cur,Math.min(67,Math.max(62,s+43))),
   mesures(x){ const {a,me,couple,cj,cjw,nk,sit,R,W,H,ifiNow,wHyp}=x;
     const eco=[];
@@ -153,11 +163,12 @@ const PARTIES=[
 
  /* Nouvelle Énergie (David Lisnard) */
  {k:"ne",name:"Nouvelle Énergie (David Lisnard)",short:"Lisnard",c:"--ne",
+  fin:{md:200,txt:"200 Md€ d'économies publiques d'ici 2032, non détaillées."},
   depart:(s,cur)=>cur,
   mesures(x){ const {a,me,couple,cj,nk,sit,R,parts,ir,t,H,ifiNow,wHyp}=x;
     const ne=[];
     {const g=x=>Math.min(400,.2*x); const sal=(sit==="prive"?g(me):0)+(couple&&a.sitc==="sal"?g(cj):0);
-     if(sal>1) ne.push(L("Jusqu'à +400 € net par mois par la baisse des cotisations",sal*12,.5,"Objectif affiché pour 2032, financé par 200 Md€ d'économies non détaillées. Hypothèse : gain plafonné à 20 % du salaire net."));}
+     if(sal>1) ne.push(L("Jusqu'à +400 € net par mois par la baisse des cotisations",sal*12,.25,"Objectif « jusqu'à » affiché pour 2032, compté pour un quart, financé par 200 Md€ d'économies non détaillées. Hypothèse : gain plafonné à 20 % du salaire net."));}
     if(ir>0){const g=Math.min(ir,t*.03*(me+cj)*12); if(g>1) ne.push(L("CSG et CRDS entièrement déductibles de l'impôt",g,1,"Hypothèse : environ 3 % de ton revenu net devient déductible, gain au taux marginal de "+Math.round(t*100)+" %."));}
     if(nk>0){const g=ir-IR(R,parts,couple,true); if(g>1) ne.push(L("Quotient familial déplafonné",g,1,"Simple modification du quotient familial."));}
     if(ifiNow>0) ne.push(L("IFI supprimé, remplacé par une fiscalité foncière",ifiNow,.5,"Taux de la nouvelle fiscalité foncière non publié : gain compté pour moitié. "+wHyp));
@@ -170,6 +181,7 @@ const PARTIES=[
 
  /* Horizons (Édouard Philippe), programme publié le 18/11/2026 */
  {k:"hor",name:"Horizons (Édouard Philippe)",short:"Philippe",c:"--hor",
+  fin:{md:150,txt:"150 Md€ d'économies, dont la moitié sur les dépenses sociales et 250 000 postes de fonctionnaires en moins."},
   depart:(s,cur)=>s<21?cur:Math.min(67,Math.max(65,s+45)),
   mesures(x){ const {a,me,couple,cj,nk,sit,R,H}=x;
     const hor=[];
@@ -190,7 +202,7 @@ function compute(a){
   const x=contexte(a), {R,parts,t,remu,div}=x;
   const res={};
   for(const p of PARTIES) res[p.k]=p.mesures(x);
-  const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const cur=departActuel(st); for(const p of PARTIES) res[p.k].perso="Toi : départ à taux plein vers "+ans(p.depart(st,cur))+" (aujourd'hui "+ans(cur)+").";}
+  const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const cur=departActuel(st,anneeNaissance(a)); for(const p of PARTIES) res[p.k].perso="Toi : départ à taux plein vers "+ans(p.depart(st,cur))+" (aujourd'hui "+ans(cur)+").";}
   if(remu&&remu!=="ei"){const is=div>42500?.25:.15, t2=tmi(R+div,parts), sal=Math.round(56*(1-.9*t)), salB=Math.round(56*(1-.9*t2)), dNow=Math.round(100*(1-is)*(1-Math.min(.30,.172+.6*t))), dBar=Math.round(100*(1-is)*(1-t2-.172));
     for(const p of PARTIES){const k=p.k, bar=!!p.divBareme, dv=bar?dBar:dNow, sl=bar?salB:sal, best=sl>dv+2?"Mieux vaut te payer en salaire.":dv>sl+2?"Mieux vaut te payer en dividendes.":"Les deux se valent à peu près.";
       res[k].remu="Sur 100 € de bénéfice de ta société, il te reste environ "+sl+" € en salaire et "+dv+" € en dividendes"+(bar?" (dividendes au barème)":" (règles actuelles)")+". "+best;}

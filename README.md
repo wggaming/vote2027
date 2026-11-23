@@ -8,6 +8,9 @@ Simulateur de l'impact des programmes économiques de la présidentielle 2027 su
 | --- | --- |
 | Le prix affiché, le lien de paiement Mollie, l'adresse de contact, la clé du formulaire | `reglages.js` (vaut pour toutes les pages) |
 | Une mesure d'un parti, ou ajouter un parti | `js/programmes.js` (un bloc par parti) |
+| Le financement annoncé d'un parti (ligne « Financement », jamais comptée) | `js/programmes.js`, champ `fin` du bloc du parti |
+| La date « Programme vérifié le… » affichée sur chaque fiche | `js/programmes.js`, `MAJ_PROGRAMMES` en haut du fichier |
+| Le paiement direct depuis l'encart (case des CGV, bouton Mollie) | `js/paiement-direct.js` ; le mail est demandé après paiement sur `merci.html` |
 | Une question, son texte d'aide ou sa phrase dans l'encart de paiement | `js/questions.js` |
 | Le SMIC, le barème de l'impôt, l'IFI, les droits de succession (règles actuelles) | `js/fiscalite.js` |
 | Une couleur (dont celle d'un parti) | `site.css` |
@@ -33,4 +36,4 @@ Pour ajouter un parti : copier un bloc dans `js/programmes.js` et lui donner un 
   - `js/retraite-regles.js` : règles actuelles et règles de chaque parti, calcul de la pension. `js/retraite.js` : la page. `js/retraite-capi.js` : capitalisation et modèles étrangers.
 - `acheter.html` : formulaire (Web3Forms) puis redirection vers le paiement Mollie. `merci.html` : retour après paiement. Mise en page commune : `paiement.css`.
 - `legal.html` : mentions légales, CGV, confidentialité.
-- `stats.js` : statistiques GoatCounter sans cookie. Réponses à la question d'accueil : événements `accueil-salaire-saisi` (simulateur) et `accueil-retraite-annee-saisie` (retraite).
+- `stats.js` : statistiques GoatCounter sans cookie. Événements ajoutés le 23/11 : `vote-partage-image` (et `-montants`, `-inapp`), `vote-demande-detail`, `vote-demande-pdf`, `paiement-direct-vote`, `paiement-direct-retraite`, `vote-merci-mail`, `retraite-capi-ouvert`. Réponses à la question d'accueil : événements `accueil-salaire-saisi` (simulateur) et `accueil-retraite-annee-saisie` (retraite).

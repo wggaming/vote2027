@@ -18,3 +18,7 @@
   --bg:#10141c; --surface:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --line:#2a3242; --soft:#222a38;
   --accent:#7d95ff; --accent-ink:#0d1220; --gain:#45c483; --loss:#ff7a68; --warn:#f0b43c;
   --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --ne:#b48cf0; --hor:#4fd1c9; color-scheme:dark}
+
+.cgvcheck{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}
+.cgvcheck input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:var(--accent)}
+.cgvcheck a{color:var(--accent)}
