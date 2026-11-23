@@ -64,9 +64,9 @@ const RE_PARTIS = [
   mesures:[]},
  {k:"ne", t:1, src:"Programme de David Lisnard",
   resume:"Âge légal de 65 ans comme norme, socle de pension minimale à 65 ans, agence de retraite unique, part de capitalisation.",
-  tnote:"Rythme de passage à 65 ans non publié. Hypothèse : +3 mois par génération à partir de la génération 1969. Sa fiche fiscale évoque 64 ans maintenus.",
+  tnote:"Programme de Nouvelle Énergie : « la norme de l'âge légal de 65 ans est un impératif national urgent ». Rythme de passage non publié. Hypothèse : +3 mois par génération à partir de la génération 1969.",
   regle:y=>{const c=REGLE_ACTUELLE(y); return {legal:monte(c.legal,65,.25,y,1969), D:c.D, auto:67, cl:c.cl, clD:c.D, dec:.0125, decMax:.25};},
-  mesures:[["Pensions au-dessus de 2 000 € non revalorisées","Environ 1,5 % de pouvoir d'achat perdu par an sur les pensions concernées.", "nonReval"]]},
+  mesures:[["Pensions au-dessus de 2 200 € non revalorisées","Piste donnée par David Lisnard le 27 octobre 2026 (CNews, Europe 1). Environ 1,5 % de pouvoir d'achat perdu par an sur les pensions concernées.", "nonReval"]]},
  {k:"hor", t:1, src:"Programme d'Édouard Philippe publié le 18 novembre 2026",
   resume:"Âge légal porté à 65 ans et durée à 45 annuités en moins de dix ans. Carrières longues, pénibilité et départs pour raison de santé maintenus. Fonds de capitalisation collectif.",
   tnote:"Mesure d'économie, finançable. Hypothèse de calendrier : +3 mois et +1 trimestre par génération à partir de la génération 1969.",
@@ -134,9 +134,9 @@ function simulerRetraite(p){
     const notes=[];
     for(const [m,n,f] of P.mesures){
       if(f==="nonReval"){ const dep=p.y+r.a, k=Math.max(0,Math.min(5,2033-Math.max(dep,2028)));
-        if(r.mois>2000&&k>0){ const ans=Math.max(0,RE_HORIZON-r.a), perte=r.mois*12*.015*k, cumul=perte*Math.max(0,ans-k/2);
+        if(r.mois>2200&&k>0){ const ans=Math.max(0,RE_HORIZON-r.a), perte=r.mois*12*.015*k, cumul=perte*Math.max(0,ans-k/2);
           r.total-=cumul; notes.push({m,n:n+" Hypothèse : gel pendant le quinquennat (2028 à 2032), soit "+k+" revalorisation"+(k>1?"s":"")+" perdue"+(k>1?"s":"")+" pour toi : environ "+fmtPlain(perte/12)+" de moins par mois, "+fmtPlain(cumul)+" jusqu'à "+RE_HORIZON+" ans (compté).",v:-cumul,k:1}); }
-        else notes.push({m,n:n+" Ne te concerne pas : "+(r.mois<=2000?"ta pension estimée est sous 2 000 €.":"tu pars après le quinquennat (hypothèse d'un gel de 2028 à 2032)."),k:null}); }
+        else notes.push({m,n:n+" Ne te concerne pas : "+(r.mois<=2200?"ta pension estimée est sous 2 200 €.":"tu pars après le quinquennat (hypothèse d'un gel de 2028 à 2032)."),k:null}); }
       else notes.push({m,n,k:null});
     }
     r.notes=notes; r.annonce=annonce;
