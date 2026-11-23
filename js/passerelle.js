@@ -9,7 +9,7 @@ const PASSERELLE = {
   tranche(y){ const a=new Date().getFullYear()-y; return a<30?"u30":a<50?"a30":a<62?"a50":"a62"; },
   /* Réponses du test retraite -> simulateur de vote */
   versVote(re){ const o={}; if(!re) return o;
-    if(["prive","fonct","indep"].includes(re.sit)) o.sit=re.sit;
+    if(["prive","fonct","indep"].includes(re.sit)) o.sit=re.sit; else if(re.sit==="lib") o.sit="indep";
     if(+re.y) o.age=this.tranche(+re.y);
     if(+re.net>0){ o.rev=+re.net; o.revM="net"; }
     if(+re.s) o.start=+re.s;

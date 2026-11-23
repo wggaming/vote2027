@@ -13,6 +13,7 @@ Simulateur de l'impact des programmes économiques de la présidentielle 2027 su
 | Une couleur (dont celle d'un parti) | `site.css` |
 | Les textes de l'accueil, la liste des partis présentés, les sources | `index.html`, `simulateur.html` |
 | Test retraite : l'âge légal, les trimestres actuels ou la règle d'un parti | `js/retraite-regles.js` (`REGLE_ACTUELLE`, un bloc par parti dans `RE_PARTIS`) |
+| Test retraite : caisses des libéraux (CNBF, CARMF, CIPAV) et calcul des carrières mixtes | `js/retraite-regles.js` (`LIB`, `repartition`, `pension`) |
 | Test retraite : une question ou le fonctionnement de la page | `js/retraite.js` |
 | Test retraite : rendements, taux de cotisation ou paramètres des modèles allemand, britannique, américain (bloc « Et si tes cotisations avaient été placées ? ») | `js/retraite-capi.js` (constantes en haut du fichier et de chaque modèle) |
 | La question posée dès l'accueil (revenu pour le simulateur, année de naissance pour la retraite) | `index.html` (blocs `qstart` et `rqstart`, avec leur petit script en bas de page) |

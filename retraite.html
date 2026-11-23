@@ -202,21 +202,22 @@ footer a{color:inherit}
       <span class="eyebrow">Ton résultat</span>
       <h2 style="margin-top:6px">Ton départ et ta pension, programme par programme</h2>
       <p class="headline" id="headline" style="margin-top:8px"></p>
-      <p class="lede" style="margin-top:6px">En euros d'aujourd'hui. Le montant en couleur compare la pension totale touchée jusqu'à 85 ans avec les règles actuelles : positif, tu y gagnes.</p>
+      <p class="lede" style="margin-top:6px">En euros d'aujourd'hui. Les programmes sont classés du plus avantageux au moins avantageux pour toi : départ le plus tôt d'abord, puis pension la plus haute.</p>
     </div>
+    <div class="card chart" id="chart"></div>
     <div class="card nowcard" id="now"></div>
     <div class="summary" id="tiles"></div>
-    <div class="card chart" id="chart"></div>
-    <div class="card" id="capi"></div>
     <div class="card teaser" id="teaser" hidden><div><b>Ta simulation gratuite suppose une carrière complète sans interruption.</b><span class="qhelp">Précise tes années sans trimestres, tes enfants, l'évolution de ton salaire et l'âge auquel tu veux partir, et refais autant de simulations que tu veux.</span></div><button class="btn primary" id="teaserbtn" type="button">Affiner pour 1 €</button></div>
     <div id="parties" style="display:flex;flex-direction:column;gap:16px"></div>
     <div class="card teaser" id="versvote"><div><b>Et ton budget ? Ce que chaque programme change pour toi</b><span class="qhelp" id="vv-txt">Impôt, CSG, SMIC, prestations, TVA : 12 questions, résultat gratuit en euros par an. Tes réponses déjà données ici (statut, salaire, âge) sont reprises.</span></div><a class="btn primary" id="vv-btn" href="simulateur.html">Faire le test « Ce que coûte mon vote »</a></div>
+    <div class="card" id="capi"></div>
     <div class="card method">
       <h3 style="color:var(--ink)">Comment on calcule</h3>
       <ul>
         <li><b>Règles actuelles</b> : suspension de la réforme de 2023 votée dans la loi de financement de la Sécurité sociale pour 2026 (âge légal de 62 ans et 9 mois à 64 ans selon la génération, 170 à 172 trimestres), carrières longues, taux plein automatique à 67 ans, décote de 1,25 % par trimestre manquant.</li>
         <li><b>Âge de départ</b> : le premier âge auquel tu as le taux plein (assez de trimestres, carrière longue ou âge du taux plein automatique). Chaque année travaillée depuis ton premier emploi compte pour 4 trimestres.</li>
         <li><b>Pension</b> : régime de base (50 % du salaire moyen dans la limite du plafond de la Sécurité sociale, au prorata des trimestres) et complémentaire Agirc-Arrco (points 2026), ou 75 % du traitement hors primes dans la fonction publique. Prélèvements sociaux d'un retraité au taux plein. Le minimum contributif, le minimum vieillesse et les pensions de réversion ne sont pas comptés.</li>
+        <li><b>Carrière mixte</b> (affinage) : chaque régime verse sa part au prorata de tes années. Privé et indépendants : même régime de base, complémentaire en points. Fonction publique : 75 % du traitement au prorata des années de service. Libéraux : base de la CNAVPL en points (base forfaitaire de la CNBF pour les avocats) et complémentaire de ta caisse (CARMF avec l'allocation supplémentaire des médecins conventionnés, CIPAV ou autre), en ordres de grandeur. Le chômage indemnisé donne des trimestres, et des points complémentaires dans le privé. Un seul revenu est utilisé pour toute la carrière.</li>
         <li><b>Total jusqu'à 85 ans</b> : la pension mensuelle multipliée par le nombre de mois entre ton départ et 85 ans, sans compter les salaires des années travaillées en plus ou en moins.</li>
         <li><b>Tenable</b> : la règle est finançable. <b>Incertain</b> : coûteuse, financement contesté, comptée telle quelle. <b>Non tenable</b> : affichée barrée, on compte sa version réaliste.</li>
         <li>Les réformes proposées sont supposées s'appliquer aux départs à partir de 2028. Quand un rythme de mise en place n'est pas publié, on suppose 3 mois de plus par génération, à partir de la génération 1969.</li>

@@ -16,6 +16,7 @@ const FR_MEDIAN = 33600;            // salaire brut médian annuel en France (~2
 /* Taux de cotisation retraite français (salarié + employeur) sur le salaire brut annuel */
 function cotisFR(p, brut){
   if(p.sit==="fonct"){ const ti=brut*(1-p.primes); return .111*ti + .3065*ti + .10*brut*Math.min(p.primes,.2); } // pension civile 11,1 % + CNRACL employeur 30,65 % + RAFP 5+5 % sur primes
+  if(p.sit==="lib") return .20*Math.min(brut,3*PASS);                                                     // CNAVPL + complémentaire, ordre de grandeur
   if(p.sit==="indep") return .25*Math.min(brut,PASS) + .09*Math.max(0,Math.min(brut,4*PASS)-PASS);           // SSI base + complémentaire
   return .28*Math.min(brut,PASS) + .27*Math.max(0,Math.min(brut,8*PASS)-PASS);                             // CNAV + Agirc-Arrco (avec CEG/CET)
 }

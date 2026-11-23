@@ -17,9 +17,16 @@ const ANNEE = new Date().getFullYear();
 const RQ=[
  {id:"y", t:"Ton année de naissance", help:"Les règles de départ changent selon la génération.", type:"num", min:1962, max:2006, step:1, unit:"", def:1980},
  {id:"s", t:"À quel âge as-tu commencé à travailler ?", help:"Premier emploi déclaré, apprentissage et jobs d'été compris s'ils ont donné des trimestres. Sert pour les carrières longues.", type:"num", min:14, max:30, step:1, unit:"ans", def:21},
- {id:"sit", t:"Tu travailles…", type:"choice", opts:[["prive","Dans le privé"],["fonct","Dans la fonction publique"],["indep","À ton compte"]]},
+ {id:"sit", t:"Tu travailles…", type:"choice", opts:[["prive","Dans le privé"],["fonct","Dans la fonction publique"],["indep","À ton compte (artisan, commerçant, micro-entreprise)"],["lib","En profession libérale (avocat, médecin…)"]]},
  {id:"net", t:"Ton salaire net par mois, avant impôt", help:"Indépendant : ton revenu net mensuel moyen. On s'en sert comme salaire moyen de carrière, en euros d'aujourd'hui.", type:"num", min:0, max:15000, step:50, unit:"€ / mois", def:2500},
  {id:"gaps", fine:true, pitch:"Tes années sans trimestres (études longues, pause, temps très partiel), qui repoussent ton départ", t:"Combien d'années sans trimestres dans ta carrière ?", help:"Années où tu n'as rien validé : pause, expatriation, chômage non indemnisé. Le chômage indemnisé, la maladie et la maternité donnent des trimestres. Ton relevé de carrière est sur info-retraite.fr.", type:"num", min:0, max:20, step:1, unit:"ans", def:0},
+ {id:"mix", fine:true, pitch:"Ta carrière mixte : années comme salarié, à ton compte, en libéral (avocat, médecin…) ou au chômage", t:"As-tu eu d'autres statuts dans ta carrière ?", help:"Salarié puis à ton compte, fonctionnaire puis dans le privé, quelques années en libéral, des périodes de chômage… Compte aussi les années que tu prévois.", type:"choice", opts:[["non","Non, toujours le même"],["oui","Oui, plusieurs statuts"]]},
+ {id:"mprive", fine:true, t:"Combien d'années comme salarié du privé ?", help:"Le reste de ta carrière sera compté dans ton statut actuel.", type:"num", min:0, max:45, step:1, unit:"ans", def:0, when:a=>a.mix==="oui"&&a.sit!=="prive"},
+ {id:"mfonct", fine:true, t:"Combien d'années dans la fonction publique ?", help:"Titulaire uniquement. Les années de contractuel comptent comme salarié du privé.", type:"num", min:0, max:45, step:1, unit:"ans", def:0, when:a=>a.mix==="oui"&&a.sit!=="fonct"},
+ {id:"mindep", fine:true, t:"Combien d'années à ton compte ?", help:"Artisan, commerçant, micro-entrepreneur, gérant majoritaire.", type:"num", min:0, max:45, step:1, unit:"ans", def:0, when:a=>a.mix==="oui"&&a.sit!=="indep"},
+ {id:"mlib", fine:true, t:"Combien d'années en profession libérale ?", help:"Avocat, médecin, kiné, architecte, expert-comptable, consultant à la CIPAV…", type:"num", min:0, max:45, step:1, unit:"ans", def:0, when:a=>a.mix==="oui"&&a.sit!=="lib"},
+ {id:"caisse", t:"Ta caisse de retraite de libéral", help:"Chaque profession libérale a sa caisse, avec des règles différentes.", type:"choice", opts:[["avocat","Avocat (CNBF)"],["medecin","Médecin (CARMF)"],["autre","Autre (CIPAV, kiné, architecte, expert-comptable…)"]], when:a=>a.sit==="lib"||(unlocked&&a.mix==="oui"&&+a.mlib>0)},
+ {id:"mchom", fine:true, t:"Combien d'années de chômage indemnisé ?", help:"Le chômage indemnisé donne des trimestres, et des points de retraite complémentaire dans le privé. Le chômage non indemnisé se compte dans les années sans trimestres.", type:"num", min:0, max:20, step:1, unit:"ans", def:0, when:a=>a.mix==="oui"},
  {id:"kids", fine:true, pitch:"Tes enfants : trimestres en plus et majoration de 10 % à partir de 3 enfants", t:"Combien d'enfants as-tu eus ou élevés ?", type:"choice", opts:[["0","Aucun"],["1","1"],["2","2"],["3","3 ou plus"]]},
  {id:"kt", fine:true, t:"Qui a reçu les trimestres pour enfants ?", help:"Dans le privé, la mère reçoit en général 8 trimestres par enfant (4 pour la maternité, 4 pour l'éducation, partageables). Dans la fonction publique, c'est 2 à 4 trimestres par enfant né depuis 2004.", type:"choice", opts:[["moi","Moi"],["autre","L'autre parent"],["partage","Partagés"]], when:a=>+a.kids>0},
  {id:"evol", fine:true, pitch:"L'évolution de ton salaire, pour une pension plus juste", t:"Comment ton salaire a-t-il évolué ?", help:"La pension du privé dépend de tes 25 meilleures années, pas de ton salaire d'aujourd'hui.", type:"choice", opts:[["1","Stable depuis le début"],[".85","Progression normale"],[".7","Forte progression (cadre, promotions)"]], when:a=>a.sit!=="fonct"},
@@ -31,7 +38,8 @@ function profil(){
   const kids=+(unlocked?A.kids||0:0), kt=unlocked?A.kt||"moi":"autre";
   const perKid=A.sit==="fonct"?2:8, kidsTrim=kids?Math.min(kids,3)*perKid*(kt==="moi"?1:kt==="partage"?.5:0):0;
   return {y:+A.y||1980, s:+A.s||21, sit:A.sit||"prive", net:+A.net||0, gaps:unlocked?+A.gaps||0:0, kids, kidsTrim,
-    evol:unlocked&&A.evol?+A.evol:.85, primes:unlocked&&A.primes?+A.primes:.2, tot:unlocked&&A.tot==="oui"};
+    evol:unlocked&&A.evol?+A.evol:.85, primes:unlocked&&A.primes?+A.primes:.2, tot:unlocked&&A.tot==="oui",
+    caisse:A.caisse||"autre", mix:unlocked&&A.mix==="oui"?{prive:+A.mprive||0,fonct:+A.mfonct||0,indep:+A.mindep||0,lib:+A.mlib||0,chom:+A.mchom||0}:null};
 }
 
 /* ---------- Questionnaire ---------- */
@@ -120,12 +128,14 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const chipT=t=>t===1?'<span class="chip t1">Tenable</span>':t===.5?'<span class="chip t05">Incertain</span>':'<span class="chip t0">Non tenable</span>';
 const eur=n=>fmtPlain(Math.round(n/10)*10);
 let last=null;
+/* Programmes classés du plus avantageux au moins avantageux : départ le plus tôt, puis pension la plus haute */
+const ordre=res=>RE_PARTIS.slice().sort((x,y)=>res[x.k].a-res[y.k].a||res[y.k].mois-res[x.k].mois);
 /* écart en mois → « −2,5 ans », « +3 mois », « = » */
 const court=d=>{const m=Math.round(d); if(!m) return "="; const n=Math.abs(m), sg=m<0?"−":"+"; return sg+(n<12?n+" mois":(n/12).toLocaleString("fr-FR",{maximumFractionDigits:2})+" an"+(n>=24?"s":""));};
 function chartHTML(res){
   const cur=res.actuel.a, max=Math.max(12,...RE_PARTIS.map(P=>Math.abs(res[P.k].a-cur)*12)), nice=Math.ceil(max/12)*12;
   let h="";
-  for(const P of RE_PARTIS){ const p=NOM[P.k], d=(res[P.k].a-cur)*12, w=Math.abs(d)/nice*50, left=d<=0?50-w:50;
+  for(const P of ordre(res)){ const p=NOM[P.k], d=(res[P.k].a-cur)*12, w=Math.abs(d)/nice*50, left=d<=0?50-w:50;
     const inside=w>22, far=w>14, valPos=inside?(d<0?`left:calc(${50-w}% + 6px);color:#fff`:`right:calc(${50-w}% + 6px);color:#fff`):far?(d<=0?`left:calc(50% + 6px)`:`right:calc(50% + 6px)`):d<=0?`right:calc(${50+w}% + 6px)`:`left:calc(${50+w}% + 6px)`;
     h+=`<div class="crow" style="--pc:var(${p.c})"><span class="lbl">${p.short}</span><div class="track"><span class="mid"></span><span class="fill" style="left:${left}%;width:${w}%"></span><span class="val" style="${valPos}">${court(d)}</span></div></div>`; }
   h+=`<div class="axis"><span>← plus tôt</span><span>${fmtAge(cur)} aujourd'hui</span><span>plus tard →</span></div>`;
@@ -138,10 +148,10 @@ function showResults(fromLoad){
   document.getElementById("quiz").hidden=true; const R=document.getElementById("results"); R.hidden=false;
   const c=res.actuel;
   document.getElementById("now").innerHTML=`<span class="eyebrow">Avec les règles actuelles</span><div class="nowrow"><div><span class="big">${fmtAge(c.a)}</span><span class="per">âge de départ ${p.tot?"au plus tôt":"au taux plein"}</span></div><div><span class="big">${eur(c.mois)}</span><span class="per">de pension nette par mois${c.dec>0?" (décote de "+Math.round(c.dec*100)+" %)":""}</span></div><div><span class="big">${eur(c.total)}</span><span class="per">touchés jusqu'à ${RE_HORIZON} ans</span></div></div>`;
-  document.getElementById("tiles").innerHTML=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
+  document.getElementById("tiles").innerHTML=ordre(res).map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
     return `<div class="tile" style="--pc:var(${p2.c})"><span class="pname">${p2.name}</span><span class="big">${fmtAge(r.a)}</span><span class="per"><b>${fmtMois(r.a-c.a)}</b></span><span class="per">${eur(r.mois)} / mois${r.dec>0?", décote "+Math.round(r.dec*100)+" %":""}</span></div>`}).join("");
-  document.getElementById("chart").innerHTML=`<h3>Ton âge de départ, comparé à aujourd'hui</h3>`+chartHTML(res);
-  document.getElementById("parties").innerHTML=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
+  document.getElementById("chart").innerHTML=`<h3>Ton âge de départ, du plus avantageux au moins avantageux</h3>`+chartHTML(res);
+  document.getElementById("parties").innerHTML=ordre(res).map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
     const barre=P.t===0?`<div class="line excluded"><span class="m">Promesse : départ à ${fmtAge(r.annonce.a)}, ${eur(r.annonce.mois)} par mois</span><span class="amt zero">${fmtMois(r.annonce.a-c.a)}</span><span class="note">${esc(P.tnote)}</span></div>`:"";
     const notes=r.notes.map(n=>`<div class="line${n.k===1?"":" info"}"><span class="m">${esc(n.m)}</span><span class="amt ${n.v?cls(n.v):"zero"}">${n.v?fmt(n.v):"non compté"}</span><span class="note">${esc(n.n)}</span></div>`).join("");
     const det=r.effet?" Tu pars avant 2028 : la réforme ne changerait rien ou presque pour toi.":"";
@@ -164,8 +174,8 @@ function showResults(fromLoad){
 /* ---------- Page A4 ---------- */
 function buildA4(res,p){
   const c=res.actuel, d=new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
-  const prof=`Né(e) en ${p.y}, premier emploi à ${p.s} ans, ${{prive:"salarié du privé",fonct:"fonctionnaire",indep:"indépendant"}[p.sit]}, ${fmtPlain(p.net)} net par mois.${p.gaps?" "+p.gaps+" an"+(p.gaps>1?"s":"")+" sans trimestres.":""}${p.kids?" "+p.kids+(p.kids>=3?"+":"")+" enfant"+(p.kids>1?"s":"")+".":""}${p.tot?" Départ le plus tôt possible.":" Départ au taux plein."}`;
-  const boxes=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
+  const prof=`Né(e) en ${p.y}, premier emploi à ${p.s} ans, ${{prive:"salarié du privé",fonct:"fonctionnaire",indep:"indépendant",lib:"profession libérale"}[p.sit]}${p.mix?" (carrière mixte : "+[["prive","salarié"],["fonct","fonctionnaire"],["indep","à son compte"],["lib","libéral"],["chom","chômage indemnisé"]].filter(([k])=>p.mix[k]>0).map(([k,l])=>p.mix[k]+" an"+(p.mix[k]>1?"s":"")+" "+l).join(", ")+")":""}, ${fmtPlain(p.net)} net par mois.${p.gaps?" "+p.gaps+" an"+(p.gaps>1?"s":"")+" sans trimestres.":""}${p.kids?" "+p.kids+(p.kids>=3?"+":"")+" enfant"+(p.kids>1?"s":"")+".":""}${p.tot?" Départ le plus tôt possible.":" Départ au taux plein."}`;
+  const boxes=ordre(res).map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
     return `<div class="pbox" style="--pc:var(${p2.c})"><span class="n">${p2.name}</span><span class="v">${fmtAge(r.a)}</span><span class="mo">${fmtMois(r.a-c.a)}</span><ul><li><span>Pension nette</span><b>${eur(r.mois)}/mois</b></li><li><span>Trimestres</span><b>${Math.min(r.T,r.D)} / ${r.D}</b></li></ul><div class="ret">${P.t===0?"Promesse non tenable (départ à "+fmtAge(r.annonce.a)+"), version retenue":P.t===.5?"Financement incertain":"Tenable"}</div></div>`}).join("");
   document.getElementById("a4").innerHTML=`
    <div class="a4top"><div><div class="eyebrow" style="color:#5b6577">Présidentielle 2027 · simulation personnelle</div><h1>Ma retraite selon les candidats</h1></div><div class="sub">Édité le ${d}</div></div>
