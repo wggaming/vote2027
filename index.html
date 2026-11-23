@@ -6,11 +6,11 @@
 <title>Ce que coûte mon vote : simulateur des programmes de la présidentielle 2027</title>
 <link rel="canonical" href="https://vote.wagramconseil.fr/">
 <meta name="google-site-verification" content="b5j1tCwXvVsUPI34AKEqYDCP3CelcPzubEFa6AxPzXo">
-<meta name="description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard : combien leurs programmes économiques te feraient gagner ou perdre chaque année ? Test gratuit en 2 minutes, résultat en page A4.">
+<meta name="description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : combien leurs programmes économiques te feraient gagner ou perdre chaque année ? Test gratuit en 2 minutes, résultat en page A4.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Ce que coûte mon vote">
 <meta property="og:title" content="Combien va te coûter la présidentielle ?">
-<meta property="og:description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard : le test gratuit qui chiffre ce que chaque programme change pour ton budget. 2 minutes, résultat en page A4.">
+<meta property="og:description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : le test gratuit qui chiffre ce que chaque programme change pour ton budget. 2 minutes, résultat en page A4.">
 <meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -27,7 +27,7 @@
 :root{
   --bg:#f3f5f8; --surface:#ffffff; --ink:#18202e; --muted:#5b6577; --line:#d9dee7; --soft:#e8ecf3;
   --accent:#2b4bd6; --accent-ink:#ffffff; --gain:#13804a; --loss:#c23a2b;
-  --rn:#1d3a8a; --lfi:#c8283c; --ps:#d4508f; --ctr:#e0a100; --lr:#0b7fb8; --eco:#2f8a3b; --ne:#7a3fb0;
+  --rn:#1d3a8a; --lfi:#c8283c; --ps:#d4508f; --ctr:#e0a100; --lr:#0b7fb8; --eco:#2f8a3b; --ne:#7a3fb0; --hor:#0f8a8a;
   --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-num:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -35,11 +35,11 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#10141c; --surface:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --line:#2a3242; --soft:#222a38;
   --accent:#7d95ff; --accent-ink:#0d1220; --gain:#45c483; --loss:#ff7a68;
-  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --ne:#b48cf0; color-scheme:dark}}
+  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --ne:#b48cf0; --hor:#4fd1c9; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#10141c; --surface:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --line:#2a3242; --soft:#222a38;
   --accent:#7d95ff; --accent-ink:#0d1220; --gain:#45c483; --loss:#ff7a68;
-  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --ne:#b48cf0; color-scheme:dark}
+  --rn:#6f8fe8; --lfi:#f06478; --ps:#f08ac0; --ctr:#f2c140; --lr:#4fb3e8; --eco:#5fcf74; --ne:#b48cf0; --hor:#4fd1c9; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55}
@@ -148,7 +148,7 @@ footer a{color:inherit}
         <small class="qs-s">2 minutes · gratuit · anonyme · sans inscription</small>
       </form>
       <p class="ex"><b>Exemple :</b> pour un salarié seul à 2 000 € net par mois avant impôt, l'effet va de −490 € à +2 480 € par an selon le candidat, soit près de 3 000 € d'écart.</p>
-      <p class="lede">RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard : réponds à 12 questions sur ta situation et découvre, en euros par an, ce que chaque programme économique changerait pour ton budget.</p>
+      <p class="lede">RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : réponds à 12 questions sur ta situation et découvre, en euros par an, ce que chaque programme économique changerait pour ton budget.</p>
       <p class="fav" style="margin:14px 0 0;font-size:14px;color:var(--muted)">🔖 <b style="color:var(--ink)">Ajoute le site à tes favoris.</b> Les programmes et les promesses de campagne sont mis à jour au fur et à mesure qu'ils se précisent : reviens refaire ton test avant de voter.</p>
     </div>
     <aside class="ticket" aria-label="Exemple de résultat">
@@ -161,6 +161,7 @@ footer a{color:inherit}
       <div class="row" style="--pc:var(--lr)"><b>LR</b><span class="track"><span style="width:29%"></span></span><span class="v">+1 390 €</span></div>
       <div class="row" style="--pc:var(--eco)"><b>Écologistes</b><span class="track"><span style="width:21%"></span></span><span class="v">+1 000 €</span></div>
       <div class="row" style="--pc:var(--ne)"><b>Lisnard</b><span class="track"><span style="width:100%"></span></span><span class="v">+4 720 €</span></div>
+      <div class="row" style="--pc:var(--hor)"><b>Philippe</b><span class="track"><span style="width:44%"></span></span><span class="v">+2 100 €</span></div>
       <p class="foot">Les montants changent beaucoup selon le revenu, le patrimoine et la famille. Un cadre à 6 500 € avec 5 M€ de patrimoine peut perdre 21 000 € par an avec un programme et en gagner 6 000 avec un autre.</p>
     </aside>
   </header>
@@ -178,7 +179,7 @@ footer a{color:inherit}
 
 <section class="band"><div class="wrap">
   <span class="eyebrow">Ce qu'on compare</span>
-  <h2>Sept programmes, et seulement les promesses tenables</h2>
+  <h2>Huit programmes, et seulement les promesses tenables</h2>
   <div class="parties">
     <div class="party" style="--pc:var(--rn)"><b>Rassemblement national</b><span>TVA sur l'énergie, impôt des jeunes, IFI remplacé, quotient familial</span></div>
     <div class="party" style="--pc:var(--lfi)"><b>La France insoumise</b><span>SMIC, impôt à 14 tranches, ISF, quotient conjugal, cantine gratuite</span></div>
@@ -187,6 +188,7 @@ footer a{color:inherit}
     <div class="party" style="--pc:var(--lr)"><b>Les Républicains</b><span>Revenu familial, fin de la prime d'activité, jour de carence, retraite à 65 ans</span></div>
     <div class="party" style="--pc:var(--eco)"><b>Les Écologistes</b><span>SMIC à 2 000 € brut, allocations dès le 1er enfant, ISF climatique, retraite à 62 ans</span></div>
     <div class="party" style="--pc:var(--ne)"><b>Nouvelle Énergie (David Lisnard)</b><span>Salaire net, CSG déductible, quotient familial déplafonné, fin de l'IFI et des droits de succession</span></div>
+    <div class="party" style="--pc:var(--hor)"><b>Horizons (Édouard Philippe)</b><span>Allocation de 350 € dès le 1er enfant, heures au-delà de 35 h défiscalisées, jours de carence, retraite à 65 ans</span></div>
   </div>
   <div class="scale">
     <div><b class="t1">Tenable</b>Légale et finançable : comptée en entier.</div>
