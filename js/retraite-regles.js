@@ -77,7 +77,8 @@ const RE_PARTIS = [
 /* ---------- Calcul pour une personne ----------
    p : {y: année de naissance, s: âge de début, sit: prive|fonct|indep, net: salaire net mensuel, gaps: années sans trimestre,
         kids: nombre d'enfants, kidsTrim: trimestres pour enfants, evol: coefficient salaire moyen / salaire actuel,
-        primes: part des primes (fonctionnaires), tot: true pour partir le plus tôt possible même avec décote} */
+        primes: part des primes (fonctionnaires), tot: true pour partir le plus tôt possible même avec décote,
+        mix: années dans d'autres statuts {prive, fonct, indep, lib, chom}, caisse: avocat|medecin|autre pour les libéraux} */
 function trim(p,a){ return Math.max(0,Math.round((a-p.s)*4)-p.gaps*4); }
 function departs(R,p){
   const legal=R.legalS?R.legalS(p.s):R.legal, D=R.DS?R.DS(p.s):R.D;
@@ -92,6 +93,21 @@ function departs(R,p){
   }
   return {legal,D,cl,tp,first:first==null?tp:first};
 }
+/* Caisses des professions libérales : base CNAVPL en points (ou base forfaitaire des avocats) + complémentaire.
+   base : € de pension par an et par année cotisée au plafond (PASS) ; compl : part du revenu (jusqu'à cap × PASS) versée par an et par année. Ordres de grandeur 2026. */
+const LIB = {
+  avocat:{nom:"CNBF (avocats)", forfait:445, compl:.005, cap:3},
+  medecin:{nom:"CARMF (médecins)", base:336, compl:.0042, cap:3.5, asv:374},
+  autre:{nom:"CIPAV ou autre caisse libérale", base:336, compl:.005, cap:3}
+};
+/* Années de la carrière par statut. Le statut principal (p.sit) prend les années restantes. Le chômage indemnisé
+   donne des trimestres ; dans le privé il donne aussi des points Agirc-Arrco, ailleurs il ne compte que pour la durée. */
+function repartition(p,W){
+  const m=Object.assign({prive:0,fonct:0,indep:0,lib:0,chom:0},p.mix||{}); m[p.sit]=0;
+  let autres=m.prive+m.fonct+m.indep+m.lib+m.chom;
+  if(autres>W&&autres>0){ const k=W/autres; for(const c in m) m[c]*=k; autres=W; }
+  m[p.sit]=W-autres; return m;
+}
 function pension(R,p,a,info){
   const T=trim(p,a)+p.kidsTrim, D=info.D, clOk=info.cl!=null&&a>=info.cl&&trim(p,a)>=(R.clD||D);
   const tpOk=clOk||a>=R.auto||(T>=D&&a>=(R.tpAge||0));
@@ -100,19 +116,37 @@ function pension(R,p,a,info){
     const parAge=Math.ceil((R.auto-a)*4-1e-9);
     manque=T>=D&&R.tpAge?Math.ceil((R.tpAge-a)*4-1e-9):Math.min(D-T,parAge);
   }
-  const dec=Math.min(R.decMax,manque*R.dec), prorata=Math.min(1,T/D), maj=p.kids>=3?1.10:1;
-  if(p.sit==="fonct"){
-    const brutAn=p.net*12/.83, ti=brutAn*(1-p.primes);
-    const base=.75*ti*prorata*(1-dec);
+  const dec=Math.min(R.decMax,manque*R.dec), maj=p.kids>=3?1.10:1;
+  const y=repartition(p,trim(p,a)/4), kidsY=p.kidsTrim/4;
+  /* le chômage indemnisé compte avec le statut principal s'il est salarié du privé ou indépendant */
+  const chomAligne=p.sit==="prive"||p.sit==="indep";
+  let brut=0, net=0;
+  /* Fonction publique : 75 % du traitement hors primes, au prorata des années de service */
+  if(y.fonct>0||p.sit==="fonct"){
+    const brutAn=p.net*12/.83, ti=brutAn*(1-p.primes), yF=y.fonct+(p.sit==="fonct"?kidsY:0);
+    const base=.75*ti*Math.min(1,yF*4/D)*(1-dec);
     /* retraite additionnelle sur les primes (RAFP), ordre de grandeur : 0,45 % des primes par année cotisée */
-    const rafp=.0045*brutAn*Math.min(p.primes,.2)*(trim(p,a)/4);
-    return {mois:(base*maj*(1-.091)+rafp*(1-.101))/12,dec,manque,T,D};
+    const rafp=.0045*brutAn*Math.min(p.primes,.2)*y.fonct;
+    net+=base*maj*(1-.091)+rafp*(1-.101);
   }
-  const sal=p.net*12/.78*p.evol;
-  const base=Math.min(sal,PASS)*.5*prorata*(1-dec);
-  const pts=(Math.min(sal,PASS)*.062+Math.max(0,Math.min(sal,8*PASS)-PASS)*.17)/AA_ACHAT*(trim(p,a)/4);
-  const compl=pts*AA_VALEUR*(1-Math.min(.30,dec*1.0));
-  return {mois:(base*maj*(1-.091)+compl*maj*(1-.101))/12,dec,manque,T,D};
+  const sal=p.net*12/.78*(p.sit==="fonct"?1:p.evol);
+  /* Régimes alignés (salariés du privé et indépendants) : base sur le salaire moyen, complémentaire en points */
+  const yA=y.prive+y.indep+(chomAligne?y.chom:0)+(chomAligne?kidsY:0);
+  if(yA>0){
+    const base=Math.min(sal,PASS)*.5*Math.min(1,yA*4/D)*(1-dec);
+    const pts=(Math.min(sal,PASS)*.062+Math.max(0,Math.min(sal,8*PASS)-PASS)*.17)/AA_ACHAT*(y.prive+y.indep+(chomAligne?y.chom:0));
+    const compl=pts*AA_VALEUR*(1-Math.min(.30,dec*1.0));
+    net+=base*maj*(1-.091)+compl*maj*(1-.101);
+  }
+  /* Professions libérales */
+  const yL=y.lib+(p.sit==="lib"?kidsY:0);
+  if(yL>0){
+    const L=LIB[p.caisse]||LIB.autre, r=Math.min(sal,PASS)/PASS;
+    const base=(L.forfait?L.forfait:L.base*r)*yL*(1-dec);
+    const compl=L.compl*Math.min(sal,L.cap*PASS)*y.lib*(1-dec)+(L.asv||0)*(.5+.5*Math.min(1,sal/(L.cap*PASS)))*y.lib*(1-dec);  /* ASV des médecins : moitié forfaitaire, moitié selon le revenu */
+    net+=base*maj*(1-.091)+compl*maj*(1-.101);
+  }
+  return {mois:net/12,dec,manque,T,D,annees:y};
 }
 /* Résultat d'une règle pour la personne : âge de départ retenu, pension, total jusqu'à RE_HORIZON ans */
 function resultat(R,p){
