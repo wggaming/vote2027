@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Combien te coûteraient les programmes économiques du RN, de LFI, du PS, de Renaissance, de LR, des Écologistes, de Nouvelle Énergie (David Lisnard) et d'Horizons (Édouard Philippe) ? Réponds à 12 questions et télécharge ton résultat en page A4.">
+<meta name="description" content="Combien te coûteraient les programmes économiques du RN, de LFI, du PS, de Renaissance, de LR, des Écologistes, de Nouvelle Énergie (David Lisnard) et d'Horizons (Édouard Philippe) ? Réponds à 12 questions et télécharge ton classement immédiat.">
 <meta property="og:title" content="Ce que coûte mon vote">
 <meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
 <meta property="og:url" content="https://vote.wagramconseil.fr/">
@@ -81,11 +81,16 @@ header{display:flex;flex-direction:column;gap:12px}
 .line .m{font-weight:600;font-size:15px;min-width:0}
 .line .amt{font:600 15px var(--f-num);text-align:right;font-variant-numeric:tabular-nums}
 .line .note{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.line.locked{align-items:center}
+.line.locked .m{font-weight:500;color:var(--muted);font-size:14px}
+.line.locked .btn{padding:8px 14px;font-size:14px}
+@media (max-width:560px){.line.locked{grid-template-columns:1fr}.line.locked .btn{justify-self:start}}
 .chip{display:inline-block;font:600 11px var(--f-num);letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:2px;border:1px solid currentColor}
 .chip.t1{color:var(--gain)} .chip.t05{color:var(--warn)} .chip.t0{color:var(--loss)}
 .line.excluded .m,.line.excluded .amt{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;font-size:14px}
 .facts dt{color:var(--muted)} .facts dd{margin:0;font-weight:500}
+.pmaj{margin:0;font-size:13px;color:var(--muted)} .pmaj a{color:inherit}
 .actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .status{font-size:14px;color:var(--muted)}
 .method{font-size:14px;color:var(--muted);display:flex;flex-direction:column;gap:10px}
@@ -126,10 +131,12 @@ body{margin:0}
 .teaser{display:flex;align-items:center;justify-content:space-between;gap:16px;border:2px dashed var(--accent)}
 .teaser>div{display:flex;flex-direction:column;gap:4px}
 .teaser .btn{flex:none}
+.shareamt{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin-top:4px}
+.shareamt input{width:18px;height:18px;accent-color:var(--accent)}
 @media (max-width:600px){.teaser{flex-direction:column;align-items:stretch}}
 .lockcard{display:flex;flex-direction:column;gap:14px;border:2px solid var(--accent)}
 .lockcard .price{display:flex;justify-content:space-between;align-items:baseline;gap:12px;background:var(--soft);border-radius:10px;padding:12px 16px}
-.lockcard .price b{font:600 26px var(--f-num)}
+.lockcard .price b{font:600 26px var(--f-num);white-space:nowrap}
 .upsell{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
 .upsell li::marker{color:var(--accent)}
 .codebox{display:flex;gap:8px;flex-wrap:wrap}
@@ -175,13 +182,13 @@ footer a{color:inherit}
     <p class="fav" style="margin:12px 0 0;font-size:14px;color:var(--muted)">🔖 <b style="color:var(--ink)">Garde ce site en favori.</b> Les programmes sont mis à jour à chaque nouvelle promesse de campagne : reviens vérifier ton résultat d'ici l'élection. Tes réponses restent enregistrées dans ton navigateur.</p>
     <div class="card lockcard" id="lock" hidden>
       <span class="eyebrow">Accès illimité</span>
-      <h3>Affine ton résultat et teste d'autres situations</h3>
+      <h3>Le détail de ton résultat, ta page A4 et autant de simulations que tu veux</h3>
       <p class="qhelp" id="hypcount">Ta simulation gratuite utilise des moyennes nationales quand elle ne connaît pas ta situation exacte.</p>
-      <p style="font-weight:600;margin:0">Pour ton profil, tu pourras préciser :</p>
+      <p style="font-weight:600;margin:0">Pour 1 €, une seule fois :</p>
       <ul class="upsell" id="upsell"></ul>
-      <div class="price"><span>Affinage et simulations illimitées, pour toujours</span><b class="js-price">1 €</b></div>
-      <a class="btn primary" id="pay" href="acheter.html">Débloquer pour 1 €</a>
-      <p class="qhelp" id="mailline">Tu indiques ton nom et ton mail, tu paies, et ton code t'est envoyé par mail dès réception du paiement. Le même code débloque aussi le test retraite.</p>
+      <div class="price"><span>Détail, PDF, affinage et simulations illimitées, pour toujours</span><b class="js-price">1 €</b></div>
+      <a class="btn primary" id="pay" href="acheter.html">Payer 1 €</a>
+      <p class="qhelp" id="mailline">Le même accès débloque aussi le test retraite.</p>
       <div class="codebox">
         <input id="code" type="text" placeholder="J'ai déjà un code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Code de déblocage">
         <button class="btn" id="codeOk" type="button">Valider</button>
@@ -191,10 +198,11 @@ footer a{color:inherit}
     <div>
       <span class="eyebrow">Ton résultat</span>
       <h2 style="margin-top:6px">Impact net sur ton budget, par an</h2>
-      <p class="lede" style="margin-top:6px">Positif : tu gagnes. Négatif : ça te coûte. Comparé aux règles en vigueur fin 2026.</p>
+      <p class="lede" style="margin-top:6px">Positif : tu gagnes. Négatif : ça te coûte. Comparé aux règles en vigueur fin 2026. Ces montants ne comptent pas la façon dont chaque programme se finance (économies, impôts sur d'autres que toi) : elle est indiquée dans la fiche de chaque parti, plus bas.</p>
     </div>
     <div class="summary" id="tiles"></div>
     <div class="card chart" id="chart"></div>
+    <div class="card teaser sharecard" id="sharecard"><div><b>Partage ton classement en image</b><span class="qhelp">L'ordre des huit programmes pour toi, sans tes montants. Pour WhatsApp, Facebook ou une story.</span><label class="shareamt"><input type="checkbox" id="shareamt"> Afficher aussi mes montants</label></div><button class="btn primary" id="shareimg" type="button">Partager l'image</button></div>
     <div class="card teaser" id="teaser" hidden><div><b id="teasertxt">Ton résultat repose en partie sur des moyennes nationales.</b><span class="qhelp">Précise ta situation (patrimoine, dépenses, famille, métier) pour un chiffrage au plus juste, et refais autant de simulations que tu veux.</span></div><button class="btn primary" id="teaserbtn" type="button">Affiner pour 1 €</button></div>
     <div id="parties" style="display:flex;flex-direction:column;gap:16px"></div>
     <div class="card teaser" id="versretraite"><div><b>Et ta retraite ? À quel âge, avec combien, selon chaque candidat</b><span class="qhelp" id="vr-txt">Quatre questions, résultat gratuit. Tes réponses déjà données ici (statut, salaire, âge du premier emploi) sont reprises.</span></div><a class="btn primary" id="vr-btn" href="retraite.html">Faire le test retraite</a></div>
@@ -204,13 +212,15 @@ footer a{color:inherit}
       <ul>
         <li><b>Tenable (×1)</b> : la mesure est légale, chiffrable et finançable dans un quinquennat. Comptée en entier.</li>
         <li><b>À moitié (×0,5)</b> : faisable mais très coûteuse, contestable juridiquement ou dépendante d'autres acteurs. Comptée pour moitié.</li>
+        <li><b>Objectif (×0,25)</b> : simple objectif chiffré « jusqu'à… », sans montant garanti. Compté pour un quart.</li>
         <li><b>Non tenable (×0)</b> : contraire au droit européen ou à la Constitution, facultative, ou sans financement crédible. Affichée barrée, non comptée.</li>
         <li>Impôt sur le revenu : barème 2026, abattement de 10 %, quotient familial plafonné, décote. Un conjoint salarié est traité comme un salarié du privé. Un revenu brut annuel est converti en net avant impôt (environ 78 % dans le privé, 82 % dans la fonction publique, 91 % pour une pension).</li>
         <li>Patrimoine : l'IFI actuel porte sur l'immobilier net (30 % d'abattement sur la résidence principale, crédits déduits) au-delà de 1,3 M€. L'ISF de LFI ajoute les placements financiers. L'impôt du RN ne vise que les placements financiers.</li>
         <li>Quand un programme ne publie pas ses chiffres (barème LFI à 14 tranches, droits de succession), on applique une hypothèse signalée dans la ligne concernée.</li>
         <li>Ne sont pas comptés : les effets indirects (inflation, emploi, dette, baisse des services publics) et les mesures non chiffrables.</li>
+        <li><b>Financement</b> : chaque fiche indique comment le parti dit se financer (économies, impôts nouveaux) et ce que ça représente en moyenne par ménage. Ce n'est pas compté, car on ne sait pas quels ménages paieront. Les hausses d'impôts qui te visent directement, elles, sont comptées. Un programme sans chiffrage global publié est signalé comme tel.</li>
       </ul>
-      <p>Sources des programmes (consultées en novembre 2026) : <a href="https://votons-2027.fr/candidats/bardella/programme/economie" target="_blank" rel="noopener">RN</a> et <a href="https://www.publicsenat.fr/actualites/politique/presidentielle-2027-que-contient-la-reforme-des-retraites-presentee-par-marine-le-pen" target="_blank" rel="noopener">son plan retraite du 17 novembre</a>, <a href="https://votons-2027.fr/candidats/melenchon/programme/economie" target="_blank" rel="noopener">LFI</a>, <a href="https://votons-2027.fr/candidats/faure/programme/economie" target="_blank" rel="noopener">PS</a>, <a href="https://selectra.info/finance/actualites/marche/csg-progressive-2027-salaire-net-smic" target="_blank" rel="noopener">CSG progressive du PS</a>, <a href="https://votons-2027.fr/candidats/attal/programme/economie" target="_blank" rel="noopener">Renaissance</a>, <a href="https://votons-2027.fr/candidats/retailleau/programme/economie" target="_blank" rel="noopener">LR</a> et <a href="https://www.publicsenat.fr/actualites/economie/presidentielle-2027-bruno-retailleau-sengage-sur-un-plan-deconomies-de-pres-de-200-milliards-deuros-sil-est-elu" target="_blank" rel="noopener">son plan d'économies</a>, <a href="https://votons-2027.fr/candidats/tondelier/programme/economie" target="_blank" rel="noopener">Écologistes</a> et <a href="https://www.linfodurable.fr/politique/les-ecologistes-veulent-taxer-davantage-les-heritages-des-plus-fortunes-58714" target="_blank" rel="noopener">leurs droits de succession</a>, Nouvelle Énergie (<a href="https://lafacture2027.fr/programme-fiscal-david-lisnard-2027" target="_blank" rel="noopener">fiscalité</a>, <a href="https://presi2027.fr/candidat/lisnard" target="_blank" rel="noopener">salaires et retraites</a>), Horizons (programme publié le 18 novembre 2026 : <a href="https://www.edouardphilippe.fr/programme/retraites" target="_blank" rel="noopener">retraites</a>, <a href="https://www.edouardphilippe.fr/programme/travail" target="_blank" rel="noopener">travail</a>, <a href="https://www.edouardphilippe.fr/programme/famille" target="_blank" rel="noopener">famille</a>, <a href="https://www.edouardphilippe.fr/programme/logement" target="_blank" rel="noopener">logement</a>, <a href="https://www.edouardphilippe.fr/programme/ecole" target="_blank" rel="noopener">école</a>, <a href="https://www.edouardphilippe.fr/programme/comptes-publics" target="_blank" rel="noopener">comptes publics</a>). Simulation indicative et non partisane.</p>
+      <p id="sources">Sources des programmes (consultées en novembre 2026) : <a href="https://votons-2027.fr/candidats/bardella/programme/economie" target="_blank" rel="noopener">RN</a> et <a href="https://www.publicsenat.fr/actualites/politique/presidentielle-2027-que-contient-la-reforme-des-retraites-presentee-par-marine-le-pen" target="_blank" rel="noopener">son plan retraite du 17 novembre</a>, <a href="https://votons-2027.fr/candidats/melenchon/programme/economie" target="_blank" rel="noopener">LFI</a>, <a href="https://votons-2027.fr/candidats/faure/programme/economie" target="_blank" rel="noopener">PS</a>, <a href="https://selectra.info/finance/actualites/marche/csg-progressive-2027-salaire-net-smic" target="_blank" rel="noopener">CSG progressive du PS</a>, <a href="https://votons-2027.fr/candidats/attal/programme/economie" target="_blank" rel="noopener">Renaissance</a>, <a href="https://votons-2027.fr/candidats/retailleau/programme/economie" target="_blank" rel="noopener">LR</a> et <a href="https://www.publicsenat.fr/actualites/economie/presidentielle-2027-bruno-retailleau-sengage-sur-un-plan-deconomies-de-pres-de-200-milliards-deuros-sil-est-elu" target="_blank" rel="noopener">son plan d'économies</a>, <a href="https://votons-2027.fr/candidats/tondelier/programme/economie" target="_blank" rel="noopener">Écologistes</a> et <a href="https://www.linfodurable.fr/politique/les-ecologistes-veulent-taxer-davantage-les-heritages-des-plus-fortunes-58714" target="_blank" rel="noopener">leurs droits de succession</a>, Nouvelle Énergie (<a href="https://lafacture2027.fr/programme-fiscal-david-lisnard-2027" target="_blank" rel="noopener">fiscalité</a>, <a href="https://presi2027.fr/candidat/lisnard" target="_blank" rel="noopener">salaires et retraites</a>), Horizons (programme publié le 18 novembre 2026 : <a href="https://www.edouardphilippe.fr/programme/retraites" target="_blank" rel="noopener">retraites</a>, <a href="https://www.edouardphilippe.fr/programme/travail" target="_blank" rel="noopener">travail</a>, <a href="https://www.edouardphilippe.fr/programme/famille" target="_blank" rel="noopener">famille</a>, <a href="https://www.edouardphilippe.fr/programme/logement" target="_blank" rel="noopener">logement</a>, <a href="https://www.edouardphilippe.fr/programme/ecole" target="_blank" rel="noopener">école</a>, <a href="https://www.edouardphilippe.fr/programme/comptes-publics" target="_blank" rel="noopener">comptes publics</a>). Simulation indicative et non partisane.</p>
     </div>
   </section>
   <footer><p>Ce que coûte mon vote · <a class="js-mail" href="#">Nous contacter</a> · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p><p style="margin-top:6px">Nos autres simulateurs : <a href="https://frais.wagramconseil.fr/">Ce que me coûtent mes frais</a> (banque, assurance-vie, PEA) · <a href="https://jeux.wagramconseil.fr/">Jeux Express</a> (calcul mental pour les enfants)</p></footer>
@@ -225,6 +235,7 @@ footer a{color:inherit}
 <script src="js/passerelle.js"></script>
 <script src="js/programmes.js"></script>
 <script src="js/simulateur.js"></script>
+<script src="js/paiement-direct.js"></script>
 <script src="stats.js"></script>
 
 </body>

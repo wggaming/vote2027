@@ -23,7 +23,12 @@
     <div id="done" hidden>
       <p class="lead">Ton accès illimité est activé sur cet appareil. Tu peux affiner ton résultat et refaire autant de simulations que tu veux.</p>
       <a class="btn" href="simulateur.html" style="display:block;text-align:center;text-decoration:none">Profiter de mon accès</a>
-      <p style="font-size:14px;color:var(--muted);margin:16px 0 0">Ton code personnel t'arrive aussi par mail, pour l'utiliser sur un autre appareil.</p>
+      <form class="code" id="fm" style="margin-top:16px;flex-wrap:wrap" novalidate>
+        <label for="em" style="flex-basis:100%;font-size:14px;color:var(--muted)">Pour garder ton accès sur un autre appareil, indique ton mail : ton code personnel t'y sera envoyé.</label>
+        <input id="em" style="text-transform:none" type="email" inputmode="email" autocomplete="email" placeholder="ton@mail.fr" aria-label="Ton adresse mail">
+        <button class="btn" type="submit">Recevoir mon code</button>
+      </form>
+      <div class="msg" id="fmmsg" role="status"></div>
       <p style="font-size:15px;margin:16px 0 0">Ton accès vaut aussi pour <a id="other" href="retraite.html">le test retraite</a>, et tes réponses communes y sont reprises.</p>
     </div>
     <div id="wait">
@@ -65,6 +70,21 @@ document.getElementById('f').addEventListener('submit', function (e) {
   location.href = BACK + '?code=' + encodeURIComponent(v);
 });
 
+</script>
+<script>
+/* Paiement direct depuis l'encart (js/paiement-direct.js) : le mail est demandé ici, après le paiement. */
+document.getElementById('fm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var mail = document.getElementById('em').value.trim(), m = document.getElementById('fmmsg');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) { m.textContent = 'Cette adresse mail ne semble pas valide.'; return; }
+  var cgv = null; try { cgv = JSON.parse(localStorage.getItem('vo-cgv')); } catch (err) {}
+  m.textContent = 'Envoi…';
+  fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ access_key: FORM_KEY, subject: 'Ce que coûte mon vote : code à envoyer (paiement direct)', from_name: 'Ce que coûte mon vote', email: mail,
+      message: 'Paiement direct depuis le simulateur, accès déjà débloqué sur l\'appareil de l\'acheteur.\nMail : ' + mail + '\nConditions de vente et renonciation à la rétractation acceptées le ' + (cgv ? new Date(cgv).toLocaleString('fr-FR') : 'date inconnue (passé par acheter.html ?)') + '.\nÀ envoyer : un code VO après vérification du paiement Mollie.', botcheck: '' }) })
+  .then(function (r) { return r.json(); }).then(function (d) { if (!d || !d.success) throw 0; m.style.color = 'var(--gain)'; m.textContent = 'C\'est noté : ton code arrive par mail.'; document.getElementById('fm').hidden = true; if (window.track) track('vote-merci-mail'); })
+  .catch(function () { m.textContent = 'L\'envoi a échoué. Écris-moi à ' + CONTACT_EMAIL + '.'; });
+});
 </script>
 <script>
 /* Retour vers le test d'où vient l'achat (retraite.html ou simulateur.html) */

@@ -100,7 +100,7 @@ document.getElementById("prev").onclick=()=>{if(step>0){step--;renderQ();}};
 function fillUpsell(){
   const fq=Q.filter(q=>q.fine&&(!q.when||q.when(A)));
   const ul=document.getElementById("upsell"); ul.innerHTML="";
-  fq.map(q=>q.pitch).filter(Boolean).concat(["Changer tes réponses autant de fois que tu veux : augmentation, naissance, déménagement, départ à la retraite…"]).forEach(t=>{const li=document.createElement("li");li.textContent=t;ul.appendChild(li);});
+  ["Le détail de chaque programme, mesure par mesure, avec son montant pour toi et sa justification","Ta page A4 en PDF, à garder ou à imprimer"].concat(fq.map(q=>q.pitch).filter(Boolean)).concat(["Changer tes réponses autant de fois que tu veux : augmentation, naissance, déménagement, départ à la retraite…"]).forEach(t=>{const li=document.createElement("li");li.textContent=t;ul.appendChild(li);});
   if(last){const n=PARTIES.reduce((s,p)=>s+(last[p.k].hyp||0),0); document.getElementById("hypcount").textContent=n>0?"Dans ta simulation gratuite, "+n+" montant"+(n>1?"s reposent":" repose")+" sur des moyennes nationales ou des estimations, faute de connaître ta situation exacte.":"Ta simulation gratuite utilise des moyennes nationales quand elle ne connaît pas ta situation exacte.";}
 }
 function showLock(src){ fillUpsell(); const l=document.getElementById("lock"); l.hidden=false; if(window.track)track("vote-demande-"+src); l.scrollIntoView({behavior:"smooth",block:"center"}); }
@@ -131,9 +131,10 @@ function tryUnlock(raw,via){ return window.checkCode(raw).then(ok=>{ if(ok){unlo
 function refreshAccess(){
   document.getElementById("restart").textContent=unlocked||!done?"Modifier mes réponses":"Modifier mes réponses ("+PRICE_LABEL+")";
   document.getElementById("refine").textContent=unlocked?"Affiner mon résultat":"Affiner mon résultat ("+PRICE_LABEL+")";
+  document.getElementById("dl").textContent=unlocked?"Télécharger ma page A4 (PDF)":"Détail et page A4 en PDF ("+PRICE_LABEL+")";
   if(unlocked) document.getElementById("lock").hidden=true;
   const pay=document.getElementById("pay");
-  if(PAYMENT_URL){pay.href="acheter.html";pay.textContent="Débloquer pour "+PRICE_LABEL;document.getElementById("mailline").textContent="Tu indiques ton nom et ton mail, tu paies, et ton code t'est envoyé par mail dès réception du paiement.";}
+  if(PAYMENT_URL){pay.href=PAYMENT_URL;pay.textContent="Payer "+PRICE_LABEL;document.getElementById("mailline").textContent="Le même accès débloque aussi le test retraite.";}
   else{pay.href="mailto:"+CONTACT_EMAIL+"?subject="+encodeURIComponent("Ce que coûte mon vote - demande de code");pay.textContent="Demander mon code";document.getElementById("mailline").textContent="Écris à "+CONTACT_EMAIL+" et je t'envoie un code.";}
   document.querySelectorAll(".js-price").forEach(e=>e.textContent=PRICE_LABEL);
   document.querySelectorAll(".js-mail").forEach(a=>{a.href="mailto:"+CONTACT_EMAIL;a.textContent=CONTACT_EMAIL;});
@@ -142,7 +143,12 @@ document.getElementById("codeOk").onclick=()=>{ const m=document.getElementById(
 document.getElementById("code").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("codeOk").click();});
 
 /* ---------- Affichage ---------- */
-const chip=k=>k===1?'<span class="chip t1">Tenable</span>':k===.5?'<span class="chip t05">À moitié</span>':'<span class="chip t0">Non tenable</span>';
+const chip=k=>k===1?'<span class="chip t1">Tenable</span>':k===.5?'<span class="chip t05">À moitié</span>':k===.25?'<span class="chip t05">Objectif</span>':'<span class="chip t0">Non tenable</span>';
+/* Financement annoncé par le parti : affiché à côté du total, jamais compté (on ne sait pas quels ménages paieront). */
+const MENAGES=30e6;
+function finHTML(p){const f=p.fin; if(!f) return "";
+  const ordre=f.md?" Ordre de grandeur : "+f.md.toLocaleString("fr-FR")+" Md€, c'est environ "+fmtPlain(Math.round(f.md*1e9/MENAGES/100)*100)+" par ménage ("+(MENAGES/1e6)+" millions de ménages)."+(f.sens==="rec"?" Les impôts qui te touchent directement sont comptés plus haut ; ceux payés par les entreprises et les très grandes fortunes peuvent se répercuter sur les prix, l'emploi ou les salaires, sans être comptés ici.":" Qui paiera, par moins de services publics ou de prestations, n'est pas précisé : ce n'est donc pas compté dans ton résultat."):" Faute de chiffrage, rien n'est compté ici.";
+  return `<dt>Financement</dt><dd>${esc(f.txt+ordre)}</dd>`;}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let last=null;
 /* Partis classés du plus avantageux au moins avantageux pour la personne (gain annuel décroissant) */
@@ -168,9 +174,11 @@ function showResults(fromLoad){
     return `<div class="tile" style="--pc:var(${p.c})"><span class="pname">${p.name}</span><span class="big ${cls(v)}">${fmt(v)}</span><span class="per">soit ${fmt(v/12)} par mois</span></div>`}).join("");
   document.getElementById("chart").innerHTML=`<h3>Du plus avantageux au moins avantageux pour toi</h3>`+chartHTML(res);
   document.getElementById("parties").innerHTML=ordre(res).map(p=>{const r=res[p.k];
-    const lines=r.lines.map(l=>`<div class="line${l.k===0?" excluded":""}"><span class="m">${esc(l.m)}${chip(l.k)}</span><span class="amt ${l.k?cls(l.v*l.k):"zero"}">${l.k===0?fmt(l.v):fmt(l.v*l.k)}</span><span class="note">${esc(l.n)}${l.k===.5?" Montant plein : "+fmt(l.v)+".":""}</span></div>`).join("");
+    const shown=unlocked?r.lines:r.lines.filter(l=>l.k>0&&Math.abs(l.v*l.k)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,1), hiddenN=r.lines.length-shown.length;
+    const lines=shown.map(l=>`<div class="line${l.k===0?" excluded":""}"><span class="m">${esc(l.m)}${chip(l.k)}</span><span class="amt ${l.k?cls(l.v*l.k):"zero"}">${l.k===0?fmt(l.v):fmt(l.v*l.k)}</span><span class="note">${esc(l.n)}${l.k===.5||l.k===.25?" Montant plein : "+fmt(l.v)+".":""}</span></div>`).join("")+(hiddenN>0?`<div class="line locked"><span class="m">${shown.length?"+ ":""}${hiddenN} mesure${hiddenN>1?"s":""} de ce programme${shown.length?" en plus":""}, avec leur montant et leur justification</span><button class="btn js-detail" type="button">Voir le détail (${PRICE_LABEL})</button></div>`:"");
     const her=r.herit?`<dt>Droits sur ton héritage</dt><dd>${fmtPlain(r.herit.then)} (aujourd'hui ${fmtPlain(r.herit.now)}). ${esc(r.herit.hyp)}</dd>`:"";
-    return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.</p>'}</div><dl class="facts"><dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}${r.perso?" <b>"+esc(r.perso)+"</b>":""}</dd>${r.remu?"<dt>Salaire ou dividendes ?</dt><dd><b>"+esc(r.remu)+"</b> "+esc(res.remuHyp||"")+"</dd>":""}${her}</dl></article>`}).join("");
+    return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.'+(A.sit==="retr"?" Pour les retraités, les programmes publiés à ce jour contiennent peu de mesures chiffrables sur les pensions (indexation, minimum de pension) et les comparatifs ne s'accordent pas encore sur leurs montants : on les ajoutera dès qu'un parti publie un texte précis.":"")+'</p>'}</div><dl class="facts">${finHTML(p)}<dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}${r.perso?" <b>"+esc(r.perso)+"</b>":""}</dd>${r.remu?"<dt>Salaire ou dividendes ?</dt><dd><b>"+esc(r.remu)+"</b> "+esc(res.remuHyp||"")+"</dd>":""}${her}</dl><p class="pmaj">Programme vérifié le ${MAJ_PROGRAMMES} · <a href="#sources">sources</a> · <a href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Erreur dans le chiffrage : "+p.name)}">signaler une erreur</a></p></article>`}).join("");
+  document.querySelectorAll("#parties .js-detail").forEach(b=>b.onclick=()=>showLock("detail"));
   const nh=PARTIES.reduce((t,p)=>t+(res[p.k].hyp||0),0), T=document.getElementById("teaser");
   T.hidden=unlocked; if(!unlocked) document.getElementById("teasertxt").textContent=nh>0?nh+" montant"+(nh>1?"s":"")+" de ton résultat "+(nh>1?"reposent":"repose")+" sur des moyennes nationales ou des estimations.":"Ton résultat repose en partie sur des moyennes nationales.";
   document.getElementById("dlstatus").textContent="";
@@ -186,7 +194,7 @@ function buildA4(res){
   const prof=`${LBL.sit[a.sit]}, ${LBL.age[a.age]}, ${fmtPlain(netOf(a,"rev"))} net/mois avant impôt${a.couple==="oui"?", en couple (conjoint : "+fmtPlain(netOf(a,"revc"))+")":", seul"}, ${enf?enf+(enf>=3?"+":"")+" enfant"+(enf>1?"s":""):"sans enfant"}${enf&&a.ecole?" ("+{pub:"école publique",priv:"école privée",mix:"public et privé",none:"non scolarisés"}[a.ecole]+")":""}, ${LBL.log[a.log]}. Énergie ${fmtPlain(+a.ener)}/mois, carburant ${fmtPlain(+a.carb)}/mois.${+a.pat>=1300000?" Patrimoine net "+fmtPlain(wealth(a).net)+".":""}`;
   const boxes=ordre(res).map(p=>{const r=res[p.k];
     const ls=r.lines.filter(l=>l.k>0&&Math.abs(l.v)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,2)
-      .map(l=>`<li><span>${esc(l.m)}${l.k===.5?" (½)":""}</span><b class="${cls(l.v*l.k)}">${fmt(l.v*l.k)}</b></li>`).join("")||`<li><span>Aucune mesure chiffrable pour ton profil</span><b class="zero">0 €</b></li>`;
+      .map(l=>`<li><span>${esc(l.m)}${l.k===.5?" (½)":l.k===.25?" (¼)":""}</span><b class="${cls(l.v*l.k)}">${fmt(l.v*l.k)}</b></li>`).join("")||`<li><span>Aucune mesure chiffrable pour ton profil</span><b class="zero">0 €</b></li>`;
     const her=r.herit?`<div class="ret">Héritage : ${fmtPlain(r.herit.then)} de droits (auj. ${fmtPlain(r.herit.now)})</div>`:"";
     return `<div class="pbox" style="--pc:var(${p.c})"><div class="h"><span class="n">${p.name}</span><span class="v ${cls(r.total)}">${fmt(r.total)}</span></div><span class="mo">par an, soit ${fmt(r.total/12)} par mois</span><ul>${ls}</ul><div class="ret">Retraite : ${esc(r.perso||r.retraite)}</div>${her}</div>`}).join("");
   const d=new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
@@ -211,6 +219,7 @@ function loadPdfLibs(){
 async function download(){
   const st=document.getElementById("dlstatus"), b=document.getElementById("dl");
   if(!last) return;
+  if(!unlocked){showLock("pdf");return;}
   if(window.track) track("vote-clic-pdf"+(INAPP?"-inapp":""));
   if(!window.html2canvas||!window.jspdf){b.disabled=true;st.textContent="Préparation de ta page A4…";try{await loadPdfLibs();}catch(e){}b.disabled=false;}
   if(!window.html2canvas||!window.jspdf){st.textContent="Le générateur de PDF n'a pas pu se charger. Recharge la page.";if(window.track)track("vote-pdf-erreur-chargement");return;}
@@ -229,6 +238,37 @@ async function download(){
   finally{b.disabled=false;}
 }
 document.getElementById("dl").onclick=download;
+/* Image du classement à partager (1080 × 1350, format des publications Facebook et Instagram). Montants masqués par défaut. */
+async function shareImage(){
+  if(!last) return;
+  const withAmt=document.getElementById("shareamt").checked, st=document.getElementById("dlstatus");
+  if(window.track) track("vote-partage-image"+(withAmt?"-montants":"")+(INAPP?"-inapp":""));
+  try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
+  const W=1080,H=1350,c=document.createElement("canvas"); c.width=W; c.height=H; const g=c.getContext("2d");
+  const css=getComputedStyle(document.documentElement), col=v=>(css.getPropertyValue(v)||"#888").trim();
+  const D="Archivo, Arial, sans-serif", B="Inter, Arial, sans-serif";
+  g.fillStyle="#121826"; g.fillRect(0,0,W,H);
+  ["--lfi","--ps","--ctr","--rn"].forEach((v,i)=>{g.fillStyle=col(v);g.fillRect(80+i*60,90,60,10);});
+  g.fillStyle="#9aa6bd"; g.font="600 30px "+B; g.fillText("PRÉSIDENTIELLE 2027 · MON CLASSEMENT",80,160);
+  g.fillStyle="#ffffff"; g.font="800 66px "+D; g.fillText("Ce que chaque programme",80,245); g.fillText("change pour mon budget",80,320);
+  g.fillStyle="#9aa6bd"; g.font="500 30px "+B; g.fillText("Du plus avantageux au moins avantageux pour moi",80,380);
+  const ps=ordre(last), max=Math.max(200,...ps.map(p=>Math.abs(last[p.k].total))), top=440, rowH=92, x0=370, bw=W-80-x0, mid=x0+bw/2;
+  ps.forEach((p,i)=>{const v=last[p.k].total, y=top+i*rowH;
+    g.fillStyle="#ffffff"; g.font="700 32px "+D; g.fillText((i+1)+". "+p.short,80,y+40);
+    g.fillStyle="#232c3f"; g.fillRect(x0,y+12,bw,40);
+    const w=Math.abs(v)/max*(bw/2-10); g.fillStyle=col(p.c); if(v>=0) g.fillRect(mid,y+16,w,32); else g.fillRect(mid-w,y+16,w,32);
+    g.fillStyle="#9aa6bd"; g.fillRect(mid-1,y+6,3,52);
+    if(withAmt){ g.font="600 28px "+B; g.fillStyle="#ffffff"; const t=fmt(v)+" / an", tw=g.measureText(t).width; g.fillText(t, v>=0?Math.max(x0+8,mid-tw-14):Math.min(W-80-tw-8,mid+14), y+43); }
+  });
+  g.fillStyle="#9aa6bd"; g.font="500 24px "+B; g.fillText("Promesses tenables seulement · financement non compté · indicatif",80,H-150);
+  g.fillStyle="#ffffff"; g.font="800 44px "+D; g.fillText("Et toi ? vote.wagramconseil.fr",80,H-80);
+  const blob=await new Promise(r=>c.toBlob(r,"image/png")); if(!blob){st.textContent="L'image n'a pas pu être créée.";return;}
+  const file=new File([blob],"mon-classement-presidentielle-2027.png",{type:"image/png"});
+  try{ if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],text:"Mon classement des programmes 2027 pour mon budget. Et toi ? https://vote.wagramconseil.fr/"}); return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=file.name; document.body.appendChild(a); a.click(); a.remove();
+  st.textContent="Image enregistrée : tu peux la publier où tu veux.";
+}
+document.getElementById("shareimg").onclick=shareImage;
 if(INAPP){const n=document.getElementById("inapp");n.textContent=INAPP_MSG;n.hidden=false;}
 (function(){const m=location.search.match(/[?&]code=([^&]+)/); if(m){tryUnlock(decodeURIComponent(m[1]),"lien"); history.replaceState(null,"",location.pathname);}})();
 refreshAccess();

@@ -100,7 +100,7 @@ function majPasserelle(){
   const t=document.getElementById("vv-txt"), b=document.getElementById("vv-btn");
   if(ld("vo-done",false)===true){ b.textContent="Revoir mon résultat budget"; t.textContent="Ton résultat « Ce que coûte mon vote » est gardé dans ce navigateur : impôt, CSG, SMIC, prestations, programme par programme."; return; }
   const src=PASSERELLE.versVote(A), lab={sit:"statut",age:"âge",rev:"salaire",start:"âge du premier emploi"}, ks=Object.keys(lab).filter(k=>k in src&&!(k==="start"&&!unlocked));
-  t.textContent="Impôt, CSG, SMIC, prestations, TVA : 12 questions, résultat gratuit en euros par an."+(ks.length?" Tes réponses déjà données ici ("+ks.map(k=>lab[k]).join(", ")+") sont reprises.":"");
+  t.textContent="Impôt, CSG, SMIC, prestations, TVA : une douzaine de questions, résultat gratuit en euros par an."+(ks.length?" Tes réponses déjà données ici ("+ks.map(k=>lab[k]).join(", ")+") sont reprises.":"");
 }
 document.getElementById("vv-btn").addEventListener("click",()=>{if(window.track)track("retraite-vers-vote");});
 document.getElementById("restart").onclick=()=>{ if(unlocked||!done){openQuiz();return;} showLock("modif"); };
@@ -111,7 +111,7 @@ function refreshAccess(){
   document.getElementById("refine").textContent=unlocked?"Affiner mon résultat":"Affiner mon résultat ("+PRICE_LABEL+")";
   if(unlocked) document.getElementById("lock").hidden=true;
   const pay=document.getElementById("pay");
-  if(PAYMENT_URL){pay.href="acheter.html";pay.textContent="Débloquer pour "+PRICE_LABEL;}
+  if(PAYMENT_URL){pay.href=PAYMENT_URL;pay.textContent="Payer "+PRICE_LABEL;}
   else{pay.href="mailto:"+CONTACT_EMAIL+"?subject="+encodeURIComponent("Ma retraite selon les candidats - demande de code");pay.textContent="Demander mon code";}
   document.querySelectorAll(".js-price").forEach(e=>e.textContent=PRICE_LABEL);
 }

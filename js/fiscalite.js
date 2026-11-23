@@ -43,7 +43,15 @@ function primeAct(me,cj,couple,nk,log){ // estimation mensuelle de la prime d'ac
   const v=base+.61*(me+cj)+bon(me)+bon(cj)-(me+cj)-fl; return v>=15?v:0; }
 function allocFam(nk,R){ if(nk<2) return 0; let a=151+(nk>2?194*(nk-2):0); const lim1=76000+5500*(nk-2), lim2=101000+5500*(nk-2); if(R>lim2)a/=4; else if(R>lim1)a/=2; return a; }
 /* âge du taux plein aujourd'hui selon l'âge de début de carrière */
-function departActuel(s){return s<16?58:s<18?60:s<20?62:s<21?63:Math.min(67,Math.max(64,s+43));}
+/* Âge de départ à taux plein aujourd'hui, réforme de 2023 suspendue (LFSS 2026), selon l'âge de début s et l'année de naissance y.
+   Mêmes règles que le test retraite (js/retraite-regles.js : ageLegalActuel, dureeActuelle, clActuel). */
+function departActuel(s,y){ y=y||1986;
+  const legal=y<=1960?62:y===1961?62.25:y===1962?62.5:y<=1964?62.75:y===1965?63:y===1966?63.25:y===1967?63.5:y===1968?63.75:64;
+  const D=y<=1960?167:y<=1962?169:y<=1964?170:y===1965?171:172;
+  const cl=s<16?58:s<18?60:s<20?(y<=1963?60:y===1964?60.5:y<=1966?60.75:y===1967?61:y===1968?61.25:y===1969?61.5:y===1970?61.75:62):s<21?63:null;
+  const tp=Math.min(67,Math.max(legal,s+D/4)); return cl!=null?Math.min(cl,tp):tp; }
+/* Année de naissance supposée d'après la tranche d'âge (milieu de tranche) */
+function anneeNaissance(a){ return {u30:2001,a30:1986,a50:1970,a62:1960}[a.age]||1986; }
 function smicGain(s,target){ // gain mensuel
   if(s<=0)return 0; if(s<SMIC) return s*(target/SMIC-1);
   if(s<target) return target-s;
