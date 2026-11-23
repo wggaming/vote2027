@@ -190,6 +190,8 @@ async function download(){
 }
 document.getElementById("dl").onclick=download;
 (function(){const m=location.search.match(/[?&]code=([^&]+)/); if(m){tryUnlock(decodeURIComponent(m[1]),"lien"); history.replaceState(null,"",location.pathname);}})();
+/* Venu de la question d'accueil (index.html) : l'année de naissance est déjà répondue, on enchaîne sur la question 2. */
+if(/[?&]suite=1/.test(location.search)&&!done&&A.y){ step=1; started=true; if(window.track) track("retraite-debut-test"); history.replaceState(null,"",location.pathname); }
 refreshAccess();
 if(done&&A.sit) showResults(true);
 renderQ();

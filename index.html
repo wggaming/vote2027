@@ -59,6 +59,8 @@ nav a.l{color:var(--muted);text-decoration:none;font-weight:600}
 .qs-h{margin:0;font-size:13.5px;color:var(--muted);line-height:1.45}
 .qstart .btn{width:100%}
 .qs-s{text-align:center;color:var(--muted);font-size:14px}
+.other .qstart.rq{margin-top:0;flex:1 1 300px}
+.other>div:first-child{flex:1 1 300px}
 .ex{margin:14px 0 0;font-size:15px;color:var(--ink);max-width:520px}
 .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:28px}
 .cta small{color:var(--muted);font-size:14px}
@@ -196,7 +198,13 @@ footer a{color:inherit}
 <section class="band"><div class="wrap">
   <div class="other">
     <div><span class="eyebrow">Nouveau · deuxième test</span><h3 style="font-size:22px;margin-top:6px">Ma retraite selon les candidats</h3><p>À quel âge pourrais-tu partir, et avec quelle pension, avec le programme de chaque candidat ? Quatre questions, résultat gratuit.</p></div>
-    <a class="btn primary" href="retraite.html" id="ret">Faire le test retraite</a>
+    <form class="qstart rq" id="rqstart" novalidate>
+      <span class="qs-k">Question 1 sur 4</span>
+      <label class="qs-t" for="rq-y">Ton année de naissance&nbsp;?</label>
+      <div class="qs-row"><input id="rq-y" type="number" inputmode="numeric" min="1962" max="2006" step="1" placeholder="1980" autocomplete="off"><span>année</span></div>
+      <p class="qs-h" id="rq-h" aria-live="polite">Les règles de départ changent selon la génération.</p>
+      <button class="btn primary" id="ret" type="submit">Voir mon âge de départ →</button>
+    </form>
   </div>
 </div></section>
 
@@ -267,6 +275,23 @@ footer a{color:inherit}
     setTimeout(function(){location.href='simulateur.html';},150);});
 })();
 </script>
+<script>
+/* Question d'accueil du test retraite : l'année de naissance est enregistrée comme réponse du test (clé re-answers),
+   puis le test s'ouvre à la question 2. Statistiques : accueil-retraite-annee-saisie (ou accueil-clic-retraite sans réponse). */
+(function(){
+  var f=document.getElementById('rqstart'); if(!f) return;
+  var v=document.getElementById('rq-y'), h=document.getElementById('rq-h'), H0=h.textContent;
+  v.addEventListener('input',function(){ var y=+v.value;
+    if(y>=1962&&y<=2006&&typeof ageLegalActuel==='function') h.textContent=y<1964?"Si tu es déjà parti, les programmes ne changent rien pour toi.":"Aujourd'hui, ta génération part à "+fmtAge(ageLegalActuel(y))+" au plus tôt, avec "+dureeActuelle(y)+" trimestres pour le taux plein. Et avec chaque candidat ?";
+    else h.textContent=H0; });
+  f.addEventListener('submit',function(e){e.preventDefault(); var y=Math.round(+v.value||0), ok=y>=1962&&y<=2006, A={}, done=false;
+    try{done=JSON.parse(localStorage.getItem('re-done')||'false')===true;A=JSON.parse(localStorage.getItem('re-answers')||'{}')||{};}catch(x){}
+    if(ok&&!done){A.y=y;try{localStorage.setItem('re-answers',JSON.stringify(A));}catch(x){}}
+    try{ if(window.track) track(ok?'accueil-retraite-annee-saisie':'accueil-clic-retraite'); }catch(x){}
+    setTimeout(function(){location.href='retraite.html'+(ok&&!done?'?suite=1':'');},150);});
+})();
+</script>
+<script src="js/retraite-regles.js"></script>
 <script src="reglages.js"></script>
 <script src="stats.js"></script>
 </body>
