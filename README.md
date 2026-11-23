@@ -14,6 +14,7 @@ Simulateur de l'impact des programmes économiques de la présidentielle 2027 su
 | Les textes de l'accueil, la liste des partis présentés, les sources | `index.html`, `simulateur.html` |
 | Test retraite : l'âge légal, les trimestres actuels ou la règle d'un parti | `js/retraite-regles.js` (`REGLE_ACTUELLE`, un bloc par parti dans `RE_PARTIS`) |
 | Test retraite : une question ou le fonctionnement de la page | `js/retraite.js` |
+| Test retraite : rendements, taux de cotisation ou paramètres des modèles allemand, britannique, américain (bloc « Et si tes cotisations avaient été placées ? ») | `js/retraite-capi.js` (constantes en haut du fichier et de chaque modèle) |
 | La question posée dès l'accueil (revenu pour le simulateur, année de naissance pour la retraite) | `index.html` (blocs `qstart` et `rqstart`, avec leur petit script en bas de page) |
 | Les codes de déblocage acceptés | `codes.js` (empreintes produites par l'outil privé) |
 | Les mentions légales, CGV, confidentialité | `legal.html` (bloc « Identité du vendeur » en bas) |
@@ -28,7 +29,7 @@ Pour ajouter un parti : copier un bloc dans `js/programmes.js` et lui donner un 
   - `js/simulateur.js` : le fonctionnement de la page (questionnaire, accès payant, résultat, page A4).
   - `vendor/` : les deux librairies du PDF, chargées seulement une fois le résultat affiché.
 - `retraite.html` : le test « Ma retraite selon les candidats » (âge de départ et pension par programme). Même accès payant que le simulateur (un achat débloque les deux).
-  - `js/retraite-regles.js` : règles actuelles et règles de chaque parti, calcul de la pension. `js/retraite.js` : la page.
+  - `js/retraite-regles.js` : règles actuelles et règles de chaque parti, calcul de la pension. `js/retraite.js` : la page. `js/retraite-capi.js` : capitalisation et modèles étrangers.
 - `acheter.html` : formulaire (Web3Forms) puis redirection vers le paiement Mollie. `merci.html` : retour après paiement. Mise en page commune : `paiement.css`.
 - `legal.html` : mentions légales, CGV, confidentialité.
 - `stats.js` : statistiques GoatCounter sans cookie. Réponses à la question d'accueil : événements `accueil-salaire-saisi` (simulateur) et `accueil-retraite-annee-saisie` (retraite).

@@ -139,21 +139,22 @@ function showResults(fromLoad){
   const c=res.actuel;
   document.getElementById("now").innerHTML=`<span class="eyebrow">Avec les règles actuelles</span><div class="nowrow"><div><span class="big">${fmtAge(c.a)}</span><span class="per">âge de départ ${p.tot?"au plus tôt":"au taux plein"}</span></div><div><span class="big">${eur(c.mois)}</span><span class="per">de pension nette par mois${c.dec>0?" (décote de "+Math.round(c.dec*100)+" %)":""}</span></div><div><span class="big">${eur(c.total)}</span><span class="per">touchés jusqu'à ${RE_HORIZON} ans</span></div></div>`;
   document.getElementById("tiles").innerHTML=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
-    return `<div class="tile" style="--pc:var(${p2.c})"><span class="pname">${p2.name}</span><span class="big">${fmtAge(r.a)}</span><span class="per">${fmtMois(r.a-c.a)} · ${eur(r.mois)} / mois</span><span class="per ${cls(dt)}"><b>${fmt(dt)}</b> jusqu'à ${RE_HORIZON} ans</span></div>`}).join("");
+    return `<div class="tile" style="--pc:var(${p2.c})"><span class="pname">${p2.name}</span><span class="big">${fmtAge(r.a)}</span><span class="per"><b>${fmtMois(r.a-c.a)}</b></span><span class="per">${eur(r.mois)} / mois${r.dec>0?", décote "+Math.round(r.dec*100)+" %":""}</span></div>`}).join("");
   document.getElementById("chart").innerHTML=`<h3>Ton âge de départ, comparé à aujourd'hui</h3>`+chartHTML(res);
   document.getElementById("parties").innerHTML=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
     const barre=P.t===0?`<div class="line excluded"><span class="m">Promesse : départ à ${fmtAge(r.annonce.a)}, ${eur(r.annonce.mois)} par mois</span><span class="amt zero">${fmtMois(r.annonce.a-c.a)}</span><span class="note">${esc(P.tnote)}</span></div>`:"";
     const notes=r.notes.map(n=>`<div class="line${n.k===1?"":" info"}"><span class="m">${esc(n.m)}</span><span class="amt ${n.v?cls(n.v):"zero"}">${n.v?fmt(n.v):"non compté"}</span><span class="note">${esc(n.n)}</span></div>`).join("");
     const det=r.effet?" Tu pars avant 2028 : la réforme ne changerait rien ou presque pour toi.":"";
-    return `<article class="card party" style="--pc:var(${p2.c})"><div class="phead"><h3>${p2.name}${chipT(P.t)}</h3><span class="tot ${cls(dt)}">${fmt(dt)}</span></div>
+    return `<article class="card party" style="--pc:var(${p2.c})"><div class="phead"><h3>${p2.name}${chipT(P.t)}</h3><span class="tot">${fmtAge(r.a)}</span></div>
       <p class="qhelp">${esc(P.resume)}</p>
       <dl class="facts"><dt>Ton départ</dt><dd><b>${fmtAge(r.a)}</b> (${fmtMois(r.a-c.a)})${r.dec>0?", décote de "+Math.round(r.dec*100)+" %":""}</dd>
       <dt>Ta pension nette</dt><dd><b>${eur(r.mois)} par mois</b> (${fmt(r.mois-c.mois)} par rapport à aujourd'hui)</dd>
       <dt>Trimestres</dt><dd>${Math.min(r.T,r.D)} sur ${r.D} requis${r.cl!=null&&r.a>=r.cl&&r.a<(r.legal||0)?", départ anticipé carrière longue":""}</dd>
       <dt>Total jusqu'à ${RE_HORIZON} ans</dt><dd>${eur(r.total)} (${fmt(dt)})</dd></dl>
       <div class="lines">${barre}${notes}</div>${P.t!==0?`<p class="qhelp">${esc(P.tnote)}${det}</p>`:det?`<p class="qhelp">${det.trim()}</p>`:""}</article>`}).join("");
-  const best=RE_PARTIS.slice().sort((x,y)=>res[y.k].total-res[x.k].total)[0];
-  document.getElementById("headline").textContent=Math.abs(res[best.k].total-c.total)<50?"Pour ton profil, aucun programme ne change grand-chose.":"Écart entre les programmes pour toi : jusqu'à "+eur(Math.max(...RE_PARTIS.map(P=>res[P.k].total))-Math.min(...RE_PARTIS.map(P=>res[P.k].total)))+" de pension sur ta retraite.";
+  const ages=RE_PARTIS.map(P=>res[P.k].a), amin=Math.min(...ages), amax=Math.max(...ages);
+  document.getElementById("headline").textContent=amax-amin<.01?"Pour ton profil, tous les programmes te font partir au même âge : "+fmtAge(amin)+".":"Selon le programme, tu partirais entre "+fmtAge(amin)+" et "+fmtAge(amax)+" (aujourd'hui : "+fmtAge(c.a)+").";
+  if(window.renderCapi) renderCapi(p,res);
   const T=document.getElementById("teaser"); T.hidden=unlocked;
   document.getElementById("dlstatus").textContent="";
   if(!fromLoad) R.scrollIntoView({behavior:"smooth",block:"start"});
@@ -165,13 +166,14 @@ function buildA4(res,p){
   const c=res.actuel, d=new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
   const prof=`Né(e) en ${p.y}, premier emploi à ${p.s} ans, ${{prive:"salarié du privé",fonct:"fonctionnaire",indep:"indépendant"}[p.sit]}, ${fmtPlain(p.net)} net par mois.${p.gaps?" "+p.gaps+" an"+(p.gaps>1?"s":"")+" sans trimestres.":""}${p.kids?" "+p.kids+(p.kids>=3?"+":"")+" enfant"+(p.kids>1?"s":"")+".":""}${p.tot?" Départ le plus tôt possible.":" Départ au taux plein."}`;
   const boxes=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
-    return `<div class="pbox" style="--pc:var(${p2.c})"><span class="n">${p2.name}</span><span class="v">${fmtAge(r.a)}</span><span class="mo">${fmtMois(r.a-c.a)}</span><ul><li><span>Pension nette</span><b>${eur(r.mois)}/mois</b></li><li><span>Jusqu'à ${RE_HORIZON} ans</span><b class="${cls(dt)}">${fmt(dt)}</b></li></ul><div class="ret">${P.t===0?"Promesse non tenable (départ à "+fmtAge(r.annonce.a)+"), version retenue":P.t===.5?"Financement incertain":"Tenable"}</div></div>`}).join("");
+    return `<div class="pbox" style="--pc:var(${p2.c})"><span class="n">${p2.name}</span><span class="v">${fmtAge(r.a)}</span><span class="mo">${fmtMois(r.a-c.a)}</span><ul><li><span>Pension nette</span><b>${eur(r.mois)}/mois</b></li><li><span>Trimestres</span><b>${Math.min(r.T,r.D)} / ${r.D}</b></li></ul><div class="ret">${P.t===0?"Promesse non tenable (départ à "+fmtAge(r.annonce.a)+"), version retenue":P.t===.5?"Financement incertain":"Tenable"}</div></div>`}).join("");
   document.getElementById("a4").innerHTML=`
    <div class="a4top"><div><div class="eyebrow" style="color:#5b6577">Présidentielle 2027 · simulation personnelle</div><h1>Ma retraite selon les candidats</h1></div><div class="sub">Édité le ${d}</div></div>
    <div class="prof"><b>Mon profil :</b> ${esc(prof)}</div>
    <div class="prof"><b>Aujourd'hui :</b> départ à ${fmtAge(c.a)}, ${eur(c.mois)} net par mois, ${eur(c.total)} jusqu'à ${RE_HORIZON} ans.</div>
    <div><div style="font:700 15px var(--f-display);margin-bottom:8px">Mon âge de départ, comparé à aujourd'hui</div><div class="chart chartA4">${chartHTML(res)}</div></div>
    <div class="grid">${boxes}</div>
+   ${window.capiA4?capiA4():""}
    <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, à quel âge pars-tu ? <span style="color:#2b4bd6">vote.wagramconseil.fr/retraite.html</span> · Et ton budget ? <span style="color:#2b4bd6">vote.wagramconseil.fr</span></b><br>Estimation indicative en euros de 2026, à salaire constant, régime de base et complémentaire, hors minimum contributif et minimum vieillesse. Règles actuelles : suspension de la réforme de 2023 (LFSS 2026). Réformes supposées appliquées aux départs à partir de 2028. Une promesse non tenable est remplacée par sa version réaliste. Programmes consultés en novembre 2026. Simulation non partisane, sans valeur de relevé officiel : ton estimation officielle est sur info-retraite.fr.</div>`;
 }
 const INAPP=/FBAN|FBAV|FB_IAB|Instagram|Messenger|LinkedInApp|Line\/|Snapchat|TikTok|musical_ly|Twitter/i.test(navigator.userAgent||"");
