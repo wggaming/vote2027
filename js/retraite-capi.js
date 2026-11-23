@@ -38,8 +38,18 @@ const ETF_FUTUR = .04;
 const etfR = t => { const i=t-ETF_DEBUT; return i>=0&&i<ETF_REEL.length ? ETF_REEL[i]/100 : ETF_FUTUR; };
 /* Capital d'un ETF monde : c € par an (en euros d'aujourd'hui) versés de l'année t0 à l'année t1 exclue */
 function capitalETF(c,t0,t1){ let K=0; for(let t=t0;t<t1;t++){ const r=etfR(t); K=K*(1+r)+c*Math.sqrt(1+r); } return K; }
-/* Allemagne : retraite par points (répartition), 18,6 % du salaire. Transposée à ton salaire relatif. */
-const DE = {rentenwert:42.52, moyen:51944, plafond:101400, taux:.186, prelev:.11};
+/* Épargne retraite des autres pays, placée dans un portefeuille type : MIX_ACTIONS en actions mondiales (rendements réels
+   MSCI World ci-dessus, année par année) et le reste en obligations et monétaire (MIX_OBLIG par an après inflation, en moyenne).
+   cotisAn(t) donne le montant versé l'année t (0 si le dispositif n'existait pas encore). */
+const MIX_ACTIONS = .7, MIX_OBLIG = .015;
+const mixR = t => MIX_ACTIONS*etfR(t) + (1-MIX_ACTIONS)*MIX_OBLIG;
+function capitalMix(cotisAn,t0,t1){ let K=0; for(let t=t0;t<t1;t++){ const r=mixR(t); K=K*(1+r)+cotisAn(t)*Math.sqrt(1+r); } return K; }
+const debutCarriere = p => Math.round(p.y+p.s+p.gaps);
+const periode = (t0,t1) => t0>=2026 ? "rendements estimés" : "rendements réels de "+Math.max(t0,ETF_DEBUT)+" à "+Math.min(t1-1,2025)+(t1>2026?", puis estimés":"");
+
+/* Allemagne : retraite par points (répartition), 18,6 % du salaire. Transposée à ton salaire relatif.
+   Riester (depuis 2002, facultatif, environ un tiers des salariés) : 4 % du salaire, produits garantis à frais élevés (≈ 1 % par an réel). */
+const DE = {rentenwert:42.52, moyen:51944, plafond:101400, taux:.186, prelev:.11, riester:.04, riesterR:.01};
 function modeleDE(p){
   const age = p.y>=1964 ? 67 : p.y===1963 ? 66+8/12 : 66.5;
   let a=age, n=annees(p,age);
@@ -47,25 +57,31 @@ function modeleDE(p){
   const x=Math.min(brutAn(p)/FR_MOYEN, DE.plafond/DE.moyen);
   const enfants=p.kidsTrim/(p.sit==="fonct"?2:8)*3;              // 3 points par enfant pour le parent qui l'élève
   const mois=(n*x+enfants)*DE.rentenwert*(FR_MOYEN/DE.moyen)*(1-DE.prelev);
-  return {k:"de", nom:"Allemagne", a, mois, cotis:"18,6 % du salaire", detail:"Retraite par points, comme en France : chaque année au salaire moyen donne un point ("+fmtPlain(DE.rentenwert)+" par mois en 2026). Départ à 67 ans, ou 65 ans après 45 ans de cotisation."};
+  const t0=debutCarriere(p), t1=Math.round(p.y+a), ansR=Math.max(0,t1-Math.max(t0,2002));
+  const riester=rente(capital(DE.riester*brutAn(p), ansR, DE.riesterR), a);
+  return {k:"de", nom:"Allemagne", a, mois, cotis:"18,6 % du salaire", detail:"Retraite par points, comme en France : chaque année au salaire moyen donne un point ("+fmtPlain(DE.rentenwert)+" par mois en 2026). Départ à 67 ans, ou 65 ans après 45 ans de cotisation."+(ansR>0?" En plus, pour le tiers des salariés qui ont un contrat Riester (4 % du salaire depuis 2002, produits garantis à frais élevés) : +"+eur0(riester)+" par mois, non compté ici.":"")};
 }
-/* États-Unis : Social Security (répartition, 12,4 %) + 401(k) facultatif (capitalisation, ~10 % en moyenne) */
-const US = {b1:1286/5820.55, b2:7749/5820.55, plafond:184500/69846.57, medicare:.035, k401:.10};
+/* États-Unis : Social Security (répartition, 12,4 %) + 401(k) (capitalisation). 401(k) : environ 12 % du salaire en moyenne
+   (7,7 % salarié + 4,6 % employeur, Vanguard « How America Saves »), à partir de 1981, placé dans le portefeuille type. */
+const US = {b1:1286/5820.55, b2:7749/5820.55, plafond:184500/69846.57, medicare:.035, k401:.12, k401debut:1981};
 function modeleUS(p){
   const a=67, n=annees(p,a), x=Math.min(brutAn(p)/FR_MOYEN, US.plafond)*Math.min(n,35)/35;
   const pia=.9*Math.min(x,US.b1)+.32*Math.max(0,Math.min(x,US.b2)-US.b1)+.15*Math.max(0,x-US.b2);
   const ss=Math.max(0,(pia-US.medicare)*FR_MOYEN/12*(n>=10?1:0));
-  const k=capital(US.k401*brutAn(p), n, CAPI_TAUX[1].r), plus=rente(k,a);
-  return {k:"us", nom:"États-Unis", a, mois:ss+plus, part:{repartition:ss, capi:plus}, cotis:"12,4 % + 10 % placés", detail:"Social Security (répartition, plus généreuse pour les petits salaires) : "+eur0(ss)+" par mois. Un 401(k) placé à 3,5 % (seule la moitié des salariés en a un) : "+eur0(plus)+" par mois. Départ à 67 ans."};
+  const t0=debutCarriere(p), t1=Math.round(p.y+a), c=US.k401*brutAn(p);
+  const plus=rente(capitalMix(t=>t>=US.k401debut?c:0, t0, t1), a);
+  return {k:"us", nom:"États-Unis", a, mois:ss+plus, part:{repartition:ss, capi:plus}, cotis:"12,4 % + 12 % placés", detail:"Social Security (répartition, plus généreuse pour les petits salaires) : "+eur0(ss)+" par mois. 401(k) avec le versement moyen de 12 % du salaire (salarié + employeur), placé à 70 % en actions mondiales ("+periode(Math.max(t0,US.k401debut),t1)+") : "+eur0(plus)+" par mois. Environ 7 salariés sur 10 y ont accès. Départ à 67 ans."};
 }
-/* Royaume-Uni : pension d'État forfaitaire (£241,30 par semaine en 2026, 35 ans requis) + épargne d'entreprise obligatoire de 8 % */
-const UK = {forfaitRel:241.30*52/39039, bas:6240/39039, haut:50270/39039, taux:.08};
+/* Royaume-Uni : pension d'État forfaitaire (£241,30 par semaine en 2026, 35 ans requis) + épargne d'entreprise obligatoire
+   (auto-enrolment) : 2 % de 2013 à 2017, 5 % en 2018, 8 % depuis 2019, sur la tranche de salaire entre £6 240 et £50 270. */
+const UK = {forfaitRel:241.30*52/39039, bas:6240/39039, haut:50270/39039, taux:t=>t>=2019?.08:t===2018?.05:t>=2013?.02:0};
 function modeleUK(p){
   const a=p.y>=1978?68:67, n=annees(p,a);
   const etat=n<10?0:UK.forfaitRel*FR_MEDIAN/12*Math.min(1,n/35);
   const b=brutAn(p), assiette=Math.max(0,Math.min(b,UK.haut*FR_MEDIAN)-UK.bas*FR_MEDIAN);
-  const plus=rente(capital(UK.taux*assiette, n, CAPI_TAUX[1].r), a);
-  return {k:"uk", nom:"Royaume-Uni", a, mois:etat+plus, part:{repartition:etat, capi:plus}, cotis:"8 % placés + cotisations sociales", detail:"Pension d'État forfaitaire, la même pour tous après 35 ans : "+eur0(etat)+" par mois. Épargne d'entreprise obligatoire de 8 %, placée à 3,5 % : "+eur0(plus)+" par mois. Départ à "+a+" ans."};
+  const t0=debutCarriere(p), t1=Math.round(p.y+a);
+  const plus=rente(capitalMix(t=>UK.taux(t)*assiette, t0, t1), a);
+  return {k:"uk", nom:"Royaume-Uni", a, mois:etat+plus, part:{repartition:etat, capi:plus}, cotis:"8 % placés + cotisations sociales", detail:"Pension d'État forfaitaire, la même pour tous après 35 ans : "+eur0(etat)+" par mois. Épargne d'entreprise obligatoire seulement depuis 2013 (2 %, puis 8 % depuis 2019), placée à 70 % en actions mondiales ("+periode(Math.max(t0,2013),t1)+") : "+eur0(plus)+" par mois. Départ à "+a+" ans."};
 }
 const eur0 = n => fmtPlain(Math.round(n/10)*10);
 
