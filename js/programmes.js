@@ -13,6 +13,8 @@
 
    Les variables partagées (revenus, impôt actuel, patrimoine…) sont calculées une fois dans contexte(). */
 const L=(m,v,k,n)=>({m,v,k,n});
+/* 60,5 → « 60 ans et 6 mois » */
+const ans=a=>{const y=Math.floor(a),m=Math.round((a-y)*12);return y+" ans"+(m?" et "+m+" mois":"");};
 
 /* Situation du foyer et impôts actuels, calculés une fois pour tous les partis */
 function contexte(a){
@@ -33,7 +35,8 @@ function contexte(a){
 const PARTIES=[
  /* RN */
  {k:"rn",name:"Rassemblement national",short:"RN",c:"--rn",
-  depart:(s,cur)=>s<20?Math.min(cur,Math.max(60,s+40)):cur,
+  /* plan du 17/11/2026 : départ de 60 à 62 ans par paliers de 6 mois selon l'âge de début, 40 à 42 annuités, carrières longues conservées si plus avantageuses */
+  depart:(s,cur)=>{const lg=s<20?60:s<21?60.5:s<22?61:s<23?61.5:62, d=s<20?40:s<21?40.5:s<22?41:s<23?41.5:42; return Math.min(cur,Math.min(67,Math.max(lg,s+d)));},
   mesures(x){ const {a,me,couple,cj,nk,sit,actif,veuf,R,parts,ir,persons,W,H,ifiNow,wHyp}=x;
     const rn=[];
     if(a.ener>0) rn.push(L("TVA à 5,5 % sur l'électricité et le gaz",a.ener*12*(1-1.055/1.2),1,"Autorisé par la directive TVA européenne de 2022."));
@@ -44,7 +47,7 @@ const PARTIES=[
     if(nk>=2){const g=ir-IR(R,(couple?2:1)+kidParts(nk,true),couple); if(g>1) rn.push(L("Une part fiscale entière dès le 2e enfant",g,1,"Simple modification du quotient familial."));}
     {const iff=isf(W.iffBase); if(iff>0||ifiNow>0) rn.push(L("IFI remplacé par un impôt sur la fortune financière",ifiNow-iff,1,"L'immobilier n'est plus taxé, les placements financiers le sont. Barème non publié : hypothèse du barème de l'IFI au-delà de 1,3 M€ ("+fmtPlain(iff)+" contre "+fmtPlain(ifiNow)+" d'IFI aujourd'hui). "+wHyp));}
     if(sit==="prive"&&me<=3*SMIC) rn.push(L("Hausse de 10 % des salaires exonérée de cotisations",me*.10*12,0,"Facultative pour l'employeur : rien n'est garanti. Non retenue."));
-    return {lines:rn,retraite:"64 ans maintenu, départ à 60 ans si début de carrière avant 20 ans et 40 annuités.",
+    return {lines:rn,retraite:"Abrogation de la réforme de 2023 : départ entre 60 et 62 ans selon l'âge de début de carrière, avec 40 à 42 annuités (plan du 17 novembre 2026). Financement contesté.",
       herit:H>0?{now:droits(H,100000),then:H<=300000?0:droits(H,100000),hyp:"Hypothèse : exonération jusqu'à 300 000 € par enfant (« classes moyennes »)."}:null};
   }},
 
@@ -187,7 +190,7 @@ function compute(a){
   const x=contexte(a), {R,parts,t,remu,div}=x;
   const res={};
   for(const p of PARTIES) res[p.k]=p.mesures(x);
-  const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const cur=departActuel(st); for(const p of PARTIES) res[p.k].perso="Toi : départ à taux plein vers "+p.depart(st,cur)+" ans (aujourd'hui "+cur+" ans).";}
+  const st=F(a,"start"); if(st!=null&&a.sit!=="retr"&&a.age!=="a62"){const cur=departActuel(st); for(const p of PARTIES) res[p.k].perso="Toi : départ à taux plein vers "+ans(p.depart(st,cur))+" (aujourd'hui "+ans(cur)+").";}
   if(remu&&remu!=="ei"){const is=div>42500?.25:.15, t2=tmi(R+div,parts), sal=Math.round(56*(1-.9*t)), salB=Math.round(56*(1-.9*t2)), dNow=Math.round(100*(1-is)*(1-Math.min(.30,.172+.6*t))), dBar=Math.round(100*(1-is)*(1-t2-.172));
     for(const p of PARTIES){const k=p.k, bar=!!p.divBareme, dv=bar?dBar:dNow, sl=bar?salB:sal, best=sl>dv+2?"Mieux vaut te payer en salaire.":dv>sl+2?"Mieux vaut te payer en dividendes.":"Les deux se valent à peu près.";
       res[k].remu="Sur 100 € de bénéfice de ta société, il te reste environ "+sl+" € en salaire et "+dv+" € en dividendes"+(bar?" (dividendes au barème)":" (règles actuelles)")+". "+best;}
