@@ -7,6 +7,7 @@ const CAPI_TAUX = [                 // rendements réels nets de frais, par an
   {k:"prudent", nom:"Prudent", r:.02, aide:"surtout des obligations, comme un fonds en euros"},
   {k:"equilibre", nom:"Équilibré", r:.035, aide:"moitié actions, comme un fonds de pension type 401(k)"}
 ];
+const CAPI_AGE_MIN = 50;           // âge minimal cherché pour « même pension qu'aujourd'hui »
 const CAPI_PRELEV = .91;            // prélèvements sur une rente (ordre de grandeur, comme une pension)
 /* Rente viagère indexée sur les prix : part du capital versée chaque année, selon l'âge de départ */
 const capiConv = a => Math.max(.03, .04 + .0015*(a-65));
@@ -76,6 +77,13 @@ function simulerCapi(p, actuel){
   const t1=Math.round(p.y+a), t0=t1-Math.round(n), Ke=capitalETF(c,t0,t1), hist=Math.max(0,Math.min(t1,ETF_DEBUT+ETF_REEL.length)-Math.max(t0,ETF_DEBUT));
   scen.push({k:"etf", nom:"ETF monde", r:null, K:Ke, mois:rente(Ke,a), retrait:retrait(Ke,a,ETF_FUTUR), verse:c*Math.round(n),
     aide:hist>0?"100 % actions des pays développés (MSCI World). Rendements réels de "+Math.max(t0,ETF_DEBUT)+" à "+Math.min(t1-1,2025)+(t1>2026?", puis 4 % par an estimés":"")+(t0<ETF_DEBUT?" ; avant 1976, 4 % par an":""):"100 % actions des pays développés (MSCI World), 4 % par an estimés, la moyenne des 25 dernières années"});
+  /* Âge le plus jeune où le capital placé donne au moins la pension actuelle, en rente à vie (par année entière).
+     On ne cherche pas avant CAPI_AGE_MIN ans : le résultat s'affiche alors « 50 ans ou avant ». */
+  const t0e=Math.round(p.y+a)-Math.round(n);
+  for(const s of scen){ s.ageEq=null;
+    for(let A=Math.max(CAPI_AGE_MIN,Math.ceil(p.s+p.gaps+1)); A<=Math.ceil(a+6); A++){
+      const nA=annees(p,A), K=s.k==="etf"?capitalETF(c,t0e,t0e+Math.round(nA)):capital(c,nA,s.r);
+      if(rente(K,A)>=actuel.mois){ s.ageEq=A; break; } } }
   return {a, n, cotisAn:c, scen, pays:[modeleDE(p), modeleUK(p), modeleUS(p)]};
 }
 
@@ -91,6 +99,7 @@ function simulerCapi(p, actuel){
 #capi .ct .big{font:600 22px var(--f-num);font-variant-numeric:tabular-nums}
 #capi .ct .per{font-size:13px;color:var(--muted)}
 #capi .ct .per b{color:var(--ink);font-family:var(--f-num)}
+#capi .ct .per.eq{color:var(--ink);font-size:14px;background:color-mix(in srgb,var(--gain) 12%,transparent);border-radius:6px;padding:4px 8px}
 #capi .warn{font-size:13px;color:var(--muted);border-left:3px solid var(--warn);padding:2px 0 2px 10px;margin:12px 0 0}
 @media (max-width:560px){#capi .ctiles{grid-template-columns:1fr}}`; document.head.appendChild(s); })();
 
@@ -98,7 +107,7 @@ function renderCapi(p,res){
   const el=document.getElementById("capi"); if(!el) return;
   const cur=res.actuel, C=simulerCapi(p,cur); window.lastCapi=C;
   const tFR=`<div class="ct fr"><span class="n">Aujourd'hui, en France</span><span class="big">${eur0(cur.mois)} / mois</span><span class="per">à vie, départ à ${fmtAge(cur.a)}</span><span class="per">Pas de capital : en répartition, tes cotisations paient les retraites d'aujourd'hui.</span></div>`;
-  const tCap=C.scen.map(s=>`<div class="ct cap"><span class="n">Tout placé · ${s.r==null?s.nom:s.nom+" ("+(s.r*100).toLocaleString("fr-FR")+" % par an)"}</span><span class="big">${eur0(s.K)}</span><span class="per">de capital à ton départ à ${fmtAge(cur.a)}, pour ${eur0(s.verse)} versés</span><span class="per"><b>${eur0(s.mois)}</b> par mois à vie</span><span class="per">ou <b>${eur0(s.retrait)}</b> par mois en puisant dans le capital jusqu'à ${RE_HORIZON} ans (plus rien ensuite)</span><span class="per">${s.aide.charAt(0).toUpperCase()+s.aide.slice(1)}.</span></div>`).join("");
+  const tCap=C.scen.map(s=>`<div class="ct cap"><span class="n">Tout placé · ${s.r==null?s.nom:s.nom+" ("+(s.r*100).toLocaleString("fr-FR")+" % par an)"}</span><span class="big">${eur0(s.K)}</span><span class="per">de capital à ton départ à ${fmtAge(cur.a)}, pour ${eur0(s.verse)} versés</span><span class="per eq">${s.ageEq==null?"Même pension qu'aujourd'hui : pas avant "+Math.ceil(cur.a+6)+" ans":s.ageEq<cur.a?"Même pension qu'aujourd'hui ("+eur0(cur.mois)+") dès <b>"+s.ageEq+" ans"+(s.ageEq<=CAPI_AGE_MIN?" ou avant":"")+"</b>, soit "+fmtMois(s.ageEq-cur.a).replace(" plus tôt","")+" plus tôt":"Même pension qu'aujourd'hui à <b>"+s.ageEq+" ans</b>"}</span><span class="per"><b>${eur0(s.mois)}</b> par mois à vie en partant à ${fmtAge(cur.a)}</span><span class="per">ou <b>${eur0(s.retrait)}</b> par mois en puisant dans le capital jusqu'à ${RE_HORIZON} ans (plus rien ensuite)</span><span class="per">${s.aide.charAt(0).toUpperCase()+s.aide.slice(1)}.</span></div>`).join("");
   const tPays=C.pays.map(m=>`<div class="ct pays"><span class="n">Modèle ${m.nom==="États-Unis"?"américain":m.nom==="Royaume-Uni"?"britannique":"allemand"}</span><span class="big">${fmtAge(m.a)}</span><span class="per"><b>${eur0(m.mois)}</b> par mois · cotisation ${m.cotis}</span><span class="per">${m.detail}</span></div>`).join("");
   el.innerHTML=`<span class="eyebrow">Et ailleurs ?</span><h3>Et si tes cotisations avaient été placées ?</h3>
     <p class="qhelp">Toi et ton employeur versez environ <b>${eur0(C.cotisAn/12)} par mois</b> pour ta retraite. Placés pendant tes ${Math.round(C.n)} années de travail jusqu'à ${fmtAge(cur.a)}, voilà le capital que tu aurais au départ, et ce qu'il verserait chaque mois, comparé aux modèles de trois pays transposés à ton salaire.</p>
@@ -109,5 +118,5 @@ function renderCapi(p,res){
 }
 function capiA4(){
   const C=window.lastCapi; if(!C) return "";
-  return `<div class="prof"><b>Si mes cotisations avaient été placées</b> (départ au même âge, rente à vie) : ${C.scen.map(s=>(s.r==null?"en ETF monde":"à "+(s.r*100).toLocaleString("fr-FR")+" % par an")+", capital de "+eur0(s.K)+", soit "+eur0(s.mois)+" par mois à vie").join(" ; ")}. <b>Ailleurs :</b> ${C.pays.map(m=>m.nom+" "+fmtAge(m.a)+", "+eur0(m.mois)+" par mois").join(" ; ")}.</div>`;
+  return `<div class="prof"><b>Si mes cotisations avaient été placées</b> (départ au même âge, rente à vie) : ${C.scen.map(s=>(s.r==null?"en ETF monde":"à "+(s.r*100).toLocaleString("fr-FR")+" % par an")+", capital de "+eur0(s.K)+", soit "+eur0(s.mois)+" par mois à vie"+(s.ageEq!=null&&s.ageEq<C.a?" (même pension qu'aujourd'hui dès "+s.ageEq+" ans"+(s.ageEq<=CAPI_AGE_MIN?" ou avant":"")+")":"")).join(" ; ")}. <b>Ailleurs :</b> ${C.pays.map(m=>m.nom+" "+fmtAge(m.a)+", "+eur0(m.mois)+" par mois").join(" ; ")}.</div>`;
 }
