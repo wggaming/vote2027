@@ -95,6 +95,7 @@ nav.toc { display:flex; flex-wrap:wrap; gap:8px 16px; margin-bottom:16px; font-s
   <p class="small">Dernière mise à jour : <span data-f="maj"></span></p>
 </div>
 
+<script src="reglages.js"></script>
 <script>
 /* ===== Identité du vendeur : à compléter une fois ===== */
 var SELLER = {
@@ -109,9 +110,6 @@ var SELLER = {
   mediateur:'',   // nom et site du médiateur auquel ton activité est rattachée
   maj:      '18 novembre 2026'
 };
-var CONTACT_EMAIL = 'matthieu@wagramconseil.fr';
-var PRICE_LABEL = '1 €';
-
 (function () {
   var missing = 0;
   Array.prototype.forEach.call(document.querySelectorAll('[data-f]'), function (el) {
@@ -129,8 +127,6 @@ var PRICE_LABEL = '1 €';
   });
   if (!SELLER.tva && !SELLER.tvaNote) { /* ligne TVA absente : rien à afficher */ }
   document.getElementById('todo-note').hidden = missing === 0;
-  Array.prototype.forEach.call(document.querySelectorAll('.js-price'), function (e) { e.textContent = PRICE_LABEL; });
-  Array.prototype.forEach.call(document.querySelectorAll('.js-mail'), function (a) { a.href = 'mailto:' + CONTACT_EMAIL; a.textContent = CONTACT_EMAIL; });
 })();
 </script>
 <script src="stats.js"></script>

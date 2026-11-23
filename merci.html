@@ -6,40 +6,8 @@
 <title>Merci pour ton achat</title>
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="paiement.css">
 <style>
-:root { --bg:#f3f5f8; --card:#ffffff; --ink:#18202e; --muted:#5b6577; --violet:#2b4bd6; --coral:#2b4bd6; --mint:#13804a; --line:#d9dee7; --key:#e8ecf3; --warn:#fff3c4; --warnink:#5a4300; --display:"Archivo","Helvetica Neue",Arial,sans-serif; --body:"Inter",system-ui,sans-serif; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg:#10141c; --card:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --violet:#7d95ff; --coral:#7d95ff; --mint:#45c483; --line:#2a3242; --key:#222a38; --warn:#4a3d0a; --warnink:#ffe9a0; color-scheme:dark; }
-}
-:root[data-theme="dark"] { --bg:#10141c; --card:#181e29; --ink:#e8ecf3; --muted:#9aa4b6; --violet:#7d95ff; --coral:#7d95ff; --mint:#45c483; --line:#2a3242; --key:#222a38; --warn:#4a3d0a; --warnink:#ffe9a0; color-scheme:dark; }
-* { box-sizing: border-box; touch-action: manipulation; }
-[hidden] { display: none !important; }
-body {
-  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-weight: 500; font-size: 17px; line-height: 1.5;
-  padding-block: 20px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-.wrap { max-width: 480px; margin: 0 auto; }
-.back { display: inline-block; color: var(--muted); font-weight: 800; font-size: 15px; text-decoration: none; padding: 6px 0 12px; }
-.card { background: var(--card); border-radius: 14px; padding: 24px; border: 1px solid var(--line); }
-h1 { font-family: var(--display); font-weight: 800; font-size: 34px; line-height: 1.1; margin: 0 0 6px; text-wrap: balance; }
-.lead { color: var(--muted); margin: 0 0 20px; }
-.price { display: flex; justify-content: space-between; align-items: baseline; background: var(--key); border-radius: 14px; padding: 12px 16px; margin-bottom: 20px; }
-.price b { font-family: var(--display); font-size: 28px; white-space: nowrap; }
-label { display: block; font-weight: 800; margin-bottom: 4px; }
-input[type="text"], input[type="email"] { width: 100%; font: inherit; font-weight: 700; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); margin-bottom: 14px; }
-input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
-.check { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 600; color: var(--muted); margin: 4px 0 18px; }
-.check input { width: 22px; height: 22px; flex: none; margin-top: 2px; accent-color: var(--violet); }
-.btn { width: 100%; border: 0; cursor: pointer; background: var(--coral); color: var(--card); font-family: var(--body); font-weight: 700; font-size: 18px; padding: 14px; border-radius: 10px; }
-.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,.2); }
-.btn:disabled { opacity: .6; }
-.msg { min-height: 24px; margin-top: 12px; font-size: 15px; color: var(--coral); }
-.steps { margin: 18px 0 0; padding: 0 0 0 20px; color: var(--muted); font-size: 15px; display: grid; gap: 4px; }
-.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-.gets{margin:0 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
-
 .code{display:flex;gap:8px}.code input{margin:0;text-transform:uppercase;font-family:"IBM Plex Mono",monospace}.code .btn{width:auto;padding:12px 18px;white-space:nowrap}
 .ok{font-size:44px;line-height:1;margin-bottom:8px}
 .sec{display:block;text-align:center;margin-top:14px;color:var(--muted);font-weight:700;font-size:15px}
@@ -69,9 +37,8 @@ input:focus-visible { outline: 3px solid var(--violet); outline-offset: 1px; }
     <p style="font-size:14px;color:var(--muted);margin:18px 0 0">Pas de mail d'ici quelques heures ? Écris-moi à <a class="js-mail" href="#">l'adresse de contact</a>.</p>
   </main>
 </div>
+<script src="reglages.js"></script>
 <script>
-var CONTACT_EMAIL = 'matthieu@wagramconseil.fr';
-Array.prototype.forEach.call(document.querySelectorAll('.js-mail'), function (a) { a.href = 'mailto:' + CONTACT_EMAIL; a.textContent = CONTACT_EMAIL; });
 (function () {
   var m = location.search.match(/[?&]t=([^&]+)/);
   if (!m || !window.crypto || !crypto.subtle) return;
