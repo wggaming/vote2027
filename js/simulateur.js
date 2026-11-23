@@ -6,6 +6,10 @@ function ld(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 var unlocked = ld('vo-unlock', false) === true;
 var done = ld('vo-done', false) === true;
+/* Réponses déjà données dans le test retraite (statut, âge, salaire, premier emploi) : voir js/passerelle.js */
+if(!done){ const ks=PASSERELLE.remplir(A, PASSERELLE.lire("vo-answers"), PASSERELLE.versVote(PASSERELLE.lire("re-answers"))), n=ks.filter(k=>k!=="start"||unlocked).length;
+  if(ks.length) save();
+  if(n){ const r=document.getElementById("repris"); r.textContent="Tes réponses du test retraite sont déjà remplies ("+n+" réponse"+(n>1?"s":"")+") : vérifie-les en passant."; r.hidden=false; if(window.track) setTimeout(()=>track("vote-reponses-reprises"),1500); } }
 
 let step=0;
 const visible=()=>Q.filter(q=>(!q.fine||unlocked)&&(!q.when||q.when(A)));
@@ -105,6 +109,17 @@ function openQuiz(fine){document.getElementById("lock").hidden=true;document.get
   if(fine===true){const vs=visible(); const i=vs.findIndex(q=>q.fine); step=i>=0?i:0;}
   renderQ();document.getElementById("quiz").scrollIntoView({behavior:"smooth"});}
 document.getElementById("teaserbtn").onclick=()=>showLock("encart");
+/* Passerelle vers le test retraite (js/passerelle.js) : texte selon ce que la personne a déjà fait, caché pour un retraité */
+function majPasserelle(){
+  const card=document.getElementById("versretraite"), t=document.getElementById("vr-txt"), b=document.getElementById("vr-btn");
+  card.hidden=A.sit==="retr"||A.age==="a62";
+  if(ld("re-done",false)===true){ b.textContent="Revoir ma retraite"; t.textContent="Ton résultat retraite est gardé dans ce navigateur. Si tu as changé ta situation ici, modifie-la aussi là-bas."; return; }
+  const n=Object.keys(PASSERELLE.versRetraite(A)).length;
+  t.textContent="Quatre questions, résultat gratuit."+(n?" Tes réponses déjà données ici ("+["sit","net","s"].filter(k=>k in PASSERELLE.versRetraite(A)).map(k=>({sit:"statut",net:"salaire",s:"âge du premier emploi"})[k]).join(", ")+") sont reprises : il te reste peu à remplir.":"");
+}
+document.getElementById("vr-btn").addEventListener("click",()=>{if(window.track)track("vote-vers-retraite");});
+document.getElementById("navretraite").addEventListener("click",()=>{if(window.track)track("vote-nav-retraite");});
+document.getElementById("versfrais").addEventListener("click",()=>{if(window.track)track("vote-vers-frais");});
 document.getElementById("pay").addEventListener("click",()=>{sv("vo-from","vote");if(window.track)track("vote-clic-achat");});
 document.getElementById("share").onclick=async()=>{
   const url="https://vote.wagramconseil.fr/", text="J'ai fait le test : voilà ce que les programmes de la présidentielle changeraient pour mon budget. Et toi, combien ça te coûte ?";
@@ -145,7 +160,7 @@ function chartHTML(res){
 function showResults(fromLoad){
   const res=compute(A); last=res;
   if(!fromLoad&&window.track) track(done?"vote-simulation-payante":"vote-simulation-gratuite");
-  done=true; sv("vo-done",true); refreshAccess();
+  done=true; sv("vo-done",true); refreshAccess(); majPasserelle();
   document.getElementById("quiz").hidden=true; const R=document.getElementById("results"); R.hidden=false;
   document.getElementById("tiles").innerHTML=PARTIES.map(p=>{const v=res[p.k].total;
     return `<div class="tile" style="--pc:var(${p.c})"><span class="pname">${p.name}</span><span class="big ${cls(v)}">${fmt(v)}</span><span class="per">soit ${fmt(v/12)} par mois</span></div>`}).join("");
@@ -178,7 +193,7 @@ function buildA4(res){
    <div class="prof"><b>Mon profil :</b> ${esc(prof)}</div>
    <div><div style="font:700 15px var(--f-display);margin-bottom:8px">Impact net sur mon budget, par an</div><div class="chart chartA4">${chartHTML(res)}</div></div>
    <div class="grid">${boxes}</div>
-   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, combien ça te coûte ? Test gratuit sur <span style="color:#2b4bd6">vote.wagramconseil.fr</span></b><br>Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance, LR, Écologistes, Nouvelle Énergie, Horizons). Simulation indicative et non partisane.</div>`;
+   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, combien ça te coûte ? <span style="color:#2b4bd6">vote.wagramconseil.fr</span> · Et ta retraite ? <span style="color:#2b4bd6">vote.wagramconseil.fr/retraite.html</span></b><br>Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance, LR, Écologistes, Nouvelle Énergie, Horizons). Simulation indicative et non partisane.</div>`;
 }
 /* Navigateurs intégrés (Facebook, Instagram, Messenger…) : le téléchargement de fichiers y est souvent bloqué. */
 const INAPP=/FBAN|FBAV|FB_IAB|Instagram|Messenger|LinkedInApp|Line\/|Snapchat|TikTok|musical_ly|Twitter/i.test(navigator.userAgent||"");
