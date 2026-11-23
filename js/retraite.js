@@ -8,6 +8,9 @@ var unlocked = ld('vo-unlock', false) === true;
 var done = ld('re-done', false) === true;
 const A = ld('re-answers', {}) || {};
 function save(){ sv('re-answers', A); }
+/* Réponses déjà données dans « Ce que coûte mon vote » (statut, salaire, premier emploi) : voir js/passerelle.js */
+if(!done){ const n=PASSERELLE.remplir(A, ld('re-answers',{}), PASSERELLE.versRetraite(PASSERELLE.lire("vo-answers"))).length;
+  if(n){ save(); const r=document.getElementById("repris"); r.textContent="Tes réponses du test « Ce que coûte mon vote » sont déjà remplies ("+n+" réponse"+(n>1?"s":"")+") : vérifie-les en passant."; r.hidden=false; if(window.track) setTimeout(()=>track("retraite-reponses-reprises"),1500); } }
 const NOM = Object.fromEntries(PARTIES.map(p=>[p.k,p]));
 const ANNEE = new Date().getFullYear();
 
@@ -84,6 +87,14 @@ function openQuiz(fine){document.getElementById("lock").hidden=true;document.get
   renderQ();document.getElementById("quiz").scrollIntoView({behavior:"smooth"});}
 document.getElementById("refine").onclick=()=>{ if(!unlocked){showLock("affinage");return;} openQuiz(true); };
 document.getElementById("teaserbtn").onclick=()=>showLock("encart");
+/* Passerelle vers « Ce que coûte mon vote » (js/passerelle.js) : texte selon ce que la personne a déjà fait */
+function majPasserelle(){
+  const t=document.getElementById("vv-txt"), b=document.getElementById("vv-btn");
+  if(ld("vo-done",false)===true){ b.textContent="Revoir mon résultat budget"; t.textContent="Ton résultat « Ce que coûte mon vote » est gardé dans ce navigateur : impôt, CSG, SMIC, prestations, programme par programme."; return; }
+  const src=PASSERELLE.versVote(A), lab={sit:"statut",age:"âge",rev:"salaire",start:"âge du premier emploi"}, ks=Object.keys(lab).filter(k=>k in src&&!(k==="start"&&!unlocked));
+  t.textContent="Impôt, CSG, SMIC, prestations, TVA : 12 questions, résultat gratuit en euros par an."+(ks.length?" Tes réponses déjà données ici ("+ks.map(k=>lab[k]).join(", ")+") sont reprises.":"");
+}
+document.getElementById("vv-btn").addEventListener("click",()=>{if(window.track)track("retraite-vers-vote");});
 document.getElementById("restart").onclick=()=>{ if(unlocked||!done){openQuiz();return;} showLock("modif"); };
 document.getElementById("pay").addEventListener("click",()=>{sv("vo-from","retraite");if(window.track)track("retraite-clic-achat");});
 function tryUnlock(raw,via){ return window.checkCode(raw).then(ok=>{ if(ok){unlocked=true;sv("vo-unlock",true);refreshAccess();if(window.track)track("retraite-code-"+(window.lastCodeId||"inconnu")+"-"+(via||"champ"));} return ok; }); }
@@ -123,7 +134,7 @@ function chartHTML(res){
 function showResults(fromLoad){
   const p=profil(), res=simulerRetraite(p); last={res,p};
   if(!fromLoad&&window.track) track(done?"retraite-simulation-payante":"retraite-simulation-gratuite");
-  done=true; sv("re-done",true); refreshAccess();
+  done=true; sv("re-done",true); refreshAccess(); majPasserelle();
   document.getElementById("quiz").hidden=true; const R=document.getElementById("results"); R.hidden=false;
   const c=res.actuel;
   document.getElementById("now").innerHTML=`<span class="eyebrow">Avec les règles actuelles</span><div class="nowrow"><div><span class="big">${fmtAge(c.a)}</span><span class="per">âge de départ ${p.tot?"au plus tôt":"au taux plein"}</span></div><div><span class="big">${eur(c.mois)}</span><span class="per">de pension nette par mois${c.dec>0?" (décote de "+Math.round(c.dec*100)+" %)":""}</span></div><div><span class="big">${eur(c.total)}</span><span class="per">touchés jusqu'à ${RE_HORIZON} ans</span></div></div>`;
@@ -163,7 +174,7 @@ function buildA4(res,p){
    <div><div style="font:700 15px var(--f-display);margin-bottom:8px">Mon âge de départ, comparé à aujourd'hui</div><div class="chart chartA4">${chartHTML(res)}</div></div>
    <div class="grid">${boxes}</div>
    ${window.capiA4?capiA4():""}
-   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, à quel âge pars-tu ? Test gratuit sur <span style="color:#2b4bd6">vote.wagramconseil.fr/retraite.html</span></b><br>Estimation indicative en euros de 2026, à salaire constant, régime de base et complémentaire, hors minimum contributif et minimum vieillesse. Règles actuelles : suspension de la réforme de 2023 (LFSS 2026). Réformes supposées appliquées aux départs à partir de 2028. Une promesse non tenable est remplacée par sa version réaliste. Programmes consultés en novembre 2026. Simulation non partisane, sans valeur de relevé officiel : ton estimation officielle est sur info-retraite.fr.</div>`;
+   <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, à quel âge pars-tu ? <span style="color:#2b4bd6">vote.wagramconseil.fr/retraite.html</span> · Et ton budget ? <span style="color:#2b4bd6">vote.wagramconseil.fr</span></b><br>Estimation indicative en euros de 2026, à salaire constant, régime de base et complémentaire, hors minimum contributif et minimum vieillesse. Règles actuelles : suspension de la réforme de 2023 (LFSS 2026). Réformes supposées appliquées aux départs à partir de 2028. Une promesse non tenable est remplacée par sa version réaliste. Programmes consultés en novembre 2026. Simulation non partisane, sans valeur de relevé officiel : ton estimation officielle est sur info-retraite.fr.</div>`;
 }
 const INAPP=/FBAN|FBAV|FB_IAB|Instagram|Messenger|LinkedInApp|Line\/|Snapchat|TikTok|musical_ly|Twitter/i.test(navigator.userAgent||"");
 let pdfLibs=null;

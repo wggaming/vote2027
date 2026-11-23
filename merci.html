@@ -24,6 +24,7 @@
       <p class="lead">Ton accès illimité est activé sur cet appareil. Tu peux affiner ton résultat et refaire autant de simulations que tu veux.</p>
       <a class="btn" href="simulateur.html" style="display:block;text-align:center;text-decoration:none">Profiter de mon accès</a>
       <p style="font-size:14px;color:var(--muted);margin:16px 0 0">Ton code personnel t'arrive aussi par mail, pour l'utiliser sur un autre appareil.</p>
+      <p style="font-size:15px;margin:16px 0 0">Ton accès vaut aussi pour <a id="other" href="retraite.html">le test retraite</a>, et tes réponses communes y sont reprises.</p>
     </div>
     <div id="wait">
     <p class="lead">Dès que ton paiement est confirmé, ton code personnel part par mail à l'adresse que tu as indiquée, en général dans l'heure. Pense à regarder dans tes indésirables.</p>
@@ -69,6 +70,8 @@ document.getElementById('f').addEventListener('submit', function (e) {
 /* Retour vers le test d'où vient l'achat (retraite.html ou simulateur.html) */
 var BACK = (function () { try { return JSON.parse(localStorage.getItem('vo-from')) === 'retraite' ? 'retraite.html' : 'simulateur.html'; } catch (e) { return 'simulateur.html'; } })();
 Array.prototype.forEach.call(document.querySelectorAll('a[href="simulateur.html"]'), function (a) { a.href = BACK; });
+/* L'autre test, débloqué par le même code */
+(function () { var o = document.getElementById('other'); if (o && BACK === 'retraite.html') { o.href = 'simulateur.html'; o.textContent = 'le test « Ce que coûte mon vote »'; } })();
 </script>
 <script src="stats.js"></script>
 <script>try{ if(window.track) track('vote-merci-vue'); }catch(e){}</script>
