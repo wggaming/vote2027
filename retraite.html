@@ -167,6 +167,7 @@ footer a{color:inherit}
 
   <section class="card" id="quiz" aria-live="polite">
     <div class="progress"><div class="bar"><span id="pbar"></span></div><span class="qnum" id="qnum">1 / 4</span></div>
+    <p class="qhelp" id="repris" hidden style="margin:0 0 10px"></p>
     <div class="question" id="qbox"></div>
     <div class="nav">
       <button class="btn" id="prev" type="button">Précédent</button>
@@ -209,6 +210,7 @@ footer a{color:inherit}
     <div class="card" id="capi"></div>
     <div class="card teaser" id="teaser" hidden><div><b>Ta simulation gratuite suppose une carrière complète sans interruption.</b><span class="qhelp">Précise tes années sans trimestres, tes enfants, l'évolution de ton salaire et l'âge auquel tu veux partir, et refais autant de simulations que tu veux.</span></div><button class="btn primary" id="teaserbtn" type="button">Affiner pour 1 €</button></div>
     <div id="parties" style="display:flex;flex-direction:column;gap:16px"></div>
+    <div class="card teaser" id="versvote"><div><b>Et ton budget ? Ce que chaque programme change pour toi</b><span class="qhelp" id="vv-txt">Impôt, CSG, SMIC, prestations, TVA : 12 questions, résultat gratuit en euros par an. Tes réponses déjà données ici (statut, salaire, âge) sont reprises.</span></div><a class="btn primary" id="vv-btn" href="simulateur.html">Faire le test « Ce que coûte mon vote »</a></div>
     <div class="card method">
       <h3 style="color:var(--ink)">Comment on calcule</h3>
       <ul>
@@ -224,7 +226,7 @@ footer a{color:inherit}
       <p>Sources (consultées en novembre 2026) : <a href="https://www.lafinancepourtous.com/2026/08/31/retraite-decalage-de-lage-legal-et-lage-de-depart-pour-carriere-longue-au-1er-septembre-2026/" target="_blank" rel="noopener">règles actuelles après la suspension</a>, <a href="https://www.publicsenat.fr/actualites/politique/presidentielle-2027-que-contient-la-reforme-des-retraites-presentee-par-marine-le-pen" target="_blank" rel="noopener">plan du RN du 17 novembre</a>, <a href="https://www.publicsenat.fr/actualites/politique/reculer-ou-avancer-lage-legal-avec-ou-sans-capitalisation-ce-que-proposent-les-principaux-candidats-a-lelection-presidentielle-sur-les-retraites" target="_blank" rel="noopener">propositions des candidats</a>, <a href="https://votons-2027.fr/themes/retraite" target="_blank" rel="noopener">votons-2027.fr</a>, <a href="https://www.edouardphilippe.fr/programme/retraites" target="_blank" rel="noopener">programme retraites d'Édouard Philippe</a>, <a href="https://www.deutsche-rentenversicherung.de/DRV/DE/Ueber-uns-und-Presse/Presse/Meldungen/2026/260305-rentenanpassung-2026.html" target="_blank" rel="noopener">retraite allemande 2026</a>, <a href="https://www.gov.uk/government/news/over-12-million-pensioners-to-receive-575-state-pension-boost" target="_blank" rel="noopener">pension d'État britannique 2026</a>, <a href="https://www.ssa.gov/oact/cola/piaformula.html" target="_blank" rel="noopener">formule Social Security</a>.</p>
     </div>
   </section>
-  <footer><p>Ma retraite selon les candidats · un test de <a href="index.html">Ce que coûte mon vote</a> · <a class="js-mail" href="#">Nous contacter</a> · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p></footer>
+  <footer><p>Ma retraite selon les candidats · un test de <a href="index.html">Ce que coûte mon vote</a> · <a class="js-mail" href="#">Nous contacter</a> · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p><p style="margin-top:6px">Nos autres simulateurs : <a href="https://frais.wagramconseil.fr/">Ce que me coûtent mes frais</a> (banque, assurance-vie, PEA) · <a href="https://jeux.wagramconseil.fr/">Jeux Express</a> (calcul mental pour les enfants)</p></footer>
 </div>
 
 <div id="a4" aria-hidden="true"></div>
@@ -235,6 +237,7 @@ footer a{color:inherit}
 <script src="js/programmes.js"></script>
 <script src="js/retraite-regles.js"></script>
 <script src="js/retraite-capi.js"></script>
+<script src="js/passerelle.js"></script>
 <script src="js/retraite.js"></script>
 <script src="stats.js"></script>
 
