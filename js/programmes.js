@@ -161,10 +161,10 @@ const PARTIES=[
     if(ir>0){const g=Math.min(ir,t*.03*(me+cj)*12); if(g>1) ne.push(L("CSG et CRDS entièrement déductibles de l'impôt",g,1,"Hypothèse : environ 3 % de ton revenu net devient déductible, gain au taux marginal de "+Math.round(t*100)+" %."));}
     if(nk>0){const g=ir-IR(R,parts,couple,true); if(g>1) ne.push(L("Quotient familial déplafonné",g,1,"Simple modification du quotient familial."));}
     if(ifiNow>0) ne.push(L("IFI supprimé, remplacé par une fiscalité foncière",ifiNow,.5,"Taux de la nouvelle fiscalité foncière non publié : gain compté pour moitié. "+wHyp));
-    {const nr=(sit==="retr"&&me>2000?me:0)+(couple&&a.sitc==="retr"&&cj>2000?cj:0); if(nr>0) ne.push(L("Pensions au-dessus de 2 000 € non revalorisées",-nr*.015*12,1,"Pour financer un étage de capitalisation. Hypothèse : inflation de 1,5 % par an, perte de la première année."));}
+    {const nr=(sit==="retr"&&me>2200?me:0)+(couple&&a.sitc==="retr"&&cj>2200?cj:0); if(nr>0) ne.push(L("Pensions au-dessus de 2 200 € non revalorisées",-nr*.015*12,1,"Piste donnée par David Lisnard le 27 octobre 2026 (CNews, Europe 1). Hypothèse : inflation de 1,5 % par an, perte de la première année."));}
     if(sit==="fonct"&&unlocked&&a.teach&&a.teach!=="non") ne.push(L("Enseignants : +20 % de salaire en 5 ans",me*.20*.8*12,.5,"Montant au bout de 5 ans, sur le traitement indiciaire, en contrepartie d'une réorganisation."));
     ne.push(L("200 Md€ d'économies publiques d'ici 2032",0,1,"Effet sur les services publics et les prestations non chiffré."));
-    return {lines:ne,retraite:"64 ans maintenu selon sa fiche fiscale (d'autres sources évoquent 65 ans), avec un étage de capitalisation obligatoire.",
+    return {lines:ne,retraite:"Âge légal porté à 65 ans (programme de Nouvelle Énergie), socle minimal par répartition, environ 40 % des retraites en capitalisation.",
       herit:H>0?{now:droits(H,100000),then:0,hyp:"Suppression des droits de succession en ligne directe (tribune d'avril 2026)."}:null};
   }},
 

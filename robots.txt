@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vote.wagramconseil.fr/sitemap.xml

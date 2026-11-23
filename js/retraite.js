@@ -115,7 +115,7 @@ function chartHTML(res){
   const cur=res.actuel.a, max=Math.max(12,...RE_PARTIS.map(P=>Math.abs(res[P.k].a-cur)*12)), nice=Math.ceil(max/12)*12;
   let h="";
   for(const P of RE_PARTIS){ const p=NOM[P.k], d=(res[P.k].a-cur)*12, w=Math.abs(d)/nice*50, left=d<=0?50-w:50;
-    const inside=w>22, valPos=inside?(d<0?`left:calc(${50-w}% + 6px);color:#fff`:`right:calc(${50-w}% + 6px);color:#fff`):d<=0?`right:calc(${50+w}% + 6px)`:`left:calc(${50+w}% + 6px)`;
+    const inside=w>22, far=w>14, valPos=inside?(d<0?`left:calc(${50-w}% + 6px);color:#fff`:`right:calc(${50-w}% + 6px);color:#fff`):far?(d<=0?`left:calc(50% + 6px)`:`right:calc(50% + 6px)`):d<=0?`right:calc(${50+w}% + 6px)`:`left:calc(${50+w}% + 6px)`;
     h+=`<div class="crow" style="--pc:var(${p.c})"><span class="lbl">${p.short}</span><div class="track"><span class="mid"></span><span class="fill" style="left:${left}%;width:${w}%"></span><span class="val" style="${valPos}">${court(d)}</span></div></div>`; }
   h+=`<div class="axis"><span>← plus tôt</span><span>${fmtAge(cur)} aujourd'hui</span><span>plus tard →</span></div>`;
   return h;
