@@ -136,7 +136,8 @@ function chartHTML(res){
   let h="";
   for(const p of PARTIES){const v=res[p.k].total, w=Math.abs(v)/nice*50;
     const left=v>=0?50:50-w;
-    const valPos=v>=0?`left:calc(${50+w}% + 6px)`:`right:calc(${50+w}% + 6px)`;
+    /* Barre longue : le montant passe de l'autre côté du zéro pour ne pas sortir du cadre sur mobile. */
+    const far=w>25, valPos=v>=0?(far?`right:calc(50% + 6px)`:`left:calc(${50+w}% + 6px)`):(far?`left:calc(50% + 6px)`:`right:calc(${50+w}% + 6px)`);
     h+=`<div class="crow" style="--pc:var(${p.c})"><span class="lbl">${p.short}</span><div class="track"><span class="mid"></span><span class="fill" style="left:${left}%;width:${w}%"></span><span class="val" style="${valPos}">${fmt(v)}</span></div></div>`;}
   h+=`<div class="axis"><span>−${nice.toLocaleString("fr-FR")} €</span><span>0</span><span>+${nice.toLocaleString("fr-FR")} €</span></div>`;
   return h;
