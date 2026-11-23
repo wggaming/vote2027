@@ -1,11 +1,29 @@
 # Ce que coûte mon vote
 
-Simulateur de l'impact des programmes économiques (RN, LFI, PS, Renaissance) sur le budget personnel. Site statique pour GitHub Pages.
+Simulateur de l'impact des programmes économiques de la présidentielle 2027 sur le budget personnel. Site statique pour GitHub Pages, sans étape de construction : chaque fichier est servi tel quel.
+
+## Où modifier quoi
+
+| Je veux changer… | Fichier |
+| --- | --- |
+| Le prix affiché, le lien de paiement Mollie, l'adresse de contact, la clé du formulaire | `reglages.js` (vaut pour toutes les pages) |
+| Une mesure d'un parti, ou ajouter un parti | `js/programmes.js` (un bloc par parti) |
+| Une question, son texte d'aide ou sa phrase dans l'encart de paiement | `js/questions.js` |
+| Le SMIC, le barème de l'impôt, l'IFI, les droits de succession (règles actuelles) | `js/fiscalite.js` |
+| Une couleur (dont celle d'un parti) | `site.css` |
+| Les textes de l'accueil, la liste des partis présentés, les sources | `index.html`, `simulateur.html` |
+| Les codes de déblocage acceptés | `codes.js` (empreintes produites par l'outil privé) |
+| Les mentions légales, CGV, confidentialité | `legal.html` (bloc « Identité du vendeur » en bas) |
+
+Pour ajouter un parti : copier un bloc dans `js/programmes.js` et lui donner un code (`k`), ajouter sa couleur `--code` dans `site.css` (mode clair et deux fois en mode sombre), puis le présenter sur `index.html` (liste des partis, exemple de résultat, description) et dans les sources de `simulateur.html`.
+
+## Les fichiers
 
 - `index.html` : page d'accueil à partager (aperçu `og.png`).
 - `simulateur.html` : le test et le résultat (PDF A4). Première simulation gratuite, puis code payant pour modifier ses réponses.
-- `acheter.html` : formulaire (Web3Forms) puis redirection vers le paiement Mollie.
+  - `js/fiscalite.js`, `js/questions.js`, `js/programmes.js` : les données et les calculs.
+  - `js/simulateur.js` : le fonctionnement de la page (questionnaire, accès payant, résultat, page A4).
+  - `vendor/` : les deux librairies du PDF, chargées seulement une fois le résultat affiché.
+- `acheter.html` : formulaire (Web3Forms) puis redirection vers le paiement Mollie. `merci.html` : retour après paiement. Mise en page commune : `paiement.css`.
 - `legal.html` : mentions légales, CGV, confidentialité.
 - `stats.js` : statistiques GoatCounter sans cookie.
-
-Réglages : `PAYMENT_URL` (lien Mollie à 1 €) dans `simulateur.html` et `acheter.html`.
