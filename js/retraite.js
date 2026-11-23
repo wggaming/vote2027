@@ -109,12 +109,14 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const chipT=t=>t===1?'<span class="chip t1">Tenable</span>':t===.5?'<span class="chip t05">Incertain</span>':'<span class="chip t0">Non tenable</span>';
 const eur=n=>fmtPlain(Math.round(n/10)*10);
 let last=null;
+/* Programmes classés du plus avantageux au moins avantageux : départ le plus tôt, puis pension la plus haute */
+const ordre=res=>RE_PARTIS.slice().sort((x,y)=>res[x.k].a-res[y.k].a||res[y.k].mois-res[x.k].mois);
 /* écart en mois → « −2,5 ans », « +3 mois », « = » */
 const court=d=>{const m=Math.round(d); if(!m) return "="; const n=Math.abs(m), sg=m<0?"−":"+"; return sg+(n<12?n+" mois":(n/12).toLocaleString("fr-FR",{maximumFractionDigits:2})+" an"+(n>=24?"s":""));};
 function chartHTML(res){
   const cur=res.actuel.a, max=Math.max(12,...RE_PARTIS.map(P=>Math.abs(res[P.k].a-cur)*12)), nice=Math.ceil(max/12)*12;
   let h="";
-  for(const P of RE_PARTIS){ const p=NOM[P.k], d=(res[P.k].a-cur)*12, w=Math.abs(d)/nice*50, left=d<=0?50-w:50;
+  for(const P of ordre(res)){ const p=NOM[P.k], d=(res[P.k].a-cur)*12, w=Math.abs(d)/nice*50, left=d<=0?50-w:50;
     const inside=w>22, far=w>14, valPos=inside?(d<0?`left:calc(${50-w}% + 6px);color:#fff`:`right:calc(${50-w}% + 6px);color:#fff`):far?(d<=0?`left:calc(50% + 6px)`:`right:calc(50% + 6px)`):d<=0?`right:calc(${50+w}% + 6px)`:`left:calc(${50+w}% + 6px)`;
     h+=`<div class="crow" style="--pc:var(${p.c})"><span class="lbl">${p.short}</span><div class="track"><span class="mid"></span><span class="fill" style="left:${left}%;width:${w}%"></span><span class="val" style="${valPos}">${court(d)}</span></div></div>`; }
   h+=`<div class="axis"><span>← plus tôt</span><span>${fmtAge(cur)} aujourd'hui</span><span>plus tard →</span></div>`;
@@ -127,10 +129,10 @@ function showResults(fromLoad){
   document.getElementById("quiz").hidden=true; const R=document.getElementById("results"); R.hidden=false;
   const c=res.actuel;
   document.getElementById("now").innerHTML=`<span class="eyebrow">Avec les règles actuelles</span><div class="nowrow"><div><span class="big">${fmtAge(c.a)}</span><span class="per">âge de départ ${p.tot?"au plus tôt":"au taux plein"}</span></div><div><span class="big">${eur(c.mois)}</span><span class="per">de pension nette par mois${c.dec>0?" (décote de "+Math.round(c.dec*100)+" %)":""}</span></div><div><span class="big">${eur(c.total)}</span><span class="per">touchés jusqu'à ${RE_HORIZON} ans</span></div></div>`;
-  document.getElementById("tiles").innerHTML=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
+  document.getElementById("tiles").innerHTML=ordre(res).map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
     return `<div class="tile" style="--pc:var(${p2.c})"><span class="pname">${p2.name}</span><span class="big">${fmtAge(r.a)}</span><span class="per"><b>${fmtMois(r.a-c.a)}</b></span><span class="per">${eur(r.mois)} / mois${r.dec>0?", décote "+Math.round(r.dec*100)+" %":""}</span></div>`}).join("");
-  document.getElementById("chart").innerHTML=`<h3>Ton âge de départ, comparé à aujourd'hui</h3>`+chartHTML(res);
-  document.getElementById("parties").innerHTML=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
+  document.getElementById("chart").innerHTML=`<h3>Du plus avantageux au moins avantageux pour toi : âge de départ</h3>`+chartHTML(res);
+  document.getElementById("parties").innerHTML=ordre(res).map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
     const barre=P.t===0?`<div class="line excluded"><span class="m">Promesse : départ à ${fmtAge(r.annonce.a)}, ${eur(r.annonce.mois)} par mois</span><span class="amt zero">${fmtMois(r.annonce.a-c.a)}</span><span class="note">${esc(P.tnote)}</span></div>`:"";
     const notes=r.notes.map(n=>`<div class="line${n.k===1?"":" info"}"><span class="m">${esc(n.m)}</span><span class="amt ${n.v?cls(n.v):"zero"}">${n.v?fmt(n.v):"non compté"}</span><span class="note">${esc(n.n)}</span></div>`).join("");
     const det=r.effet?" Tu pars avant 2028 : la réforme ne changerait rien ou presque pour toi.":"";
@@ -154,7 +156,7 @@ function showResults(fromLoad){
 function buildA4(res,p){
   const c=res.actuel, d=new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"});
   const prof=`Né(e) en ${p.y}, premier emploi à ${p.s} ans, ${{prive:"salarié du privé",fonct:"fonctionnaire",indep:"indépendant"}[p.sit]}, ${fmtPlain(p.net)} net par mois.${p.gaps?" "+p.gaps+" an"+(p.gaps>1?"s":"")+" sans trimestres.":""}${p.kids?" "+p.kids+(p.kids>=3?"+":"")+" enfant"+(p.kids>1?"s":"")+".":""}${p.tot?" Départ le plus tôt possible.":" Départ au taux plein."}`;
-  const boxes=RE_PARTIS.map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
+  const boxes=ordre(res).map(P=>{const p2=NOM[P.k], r=res[P.k], dt=r.total-c.total;
     return `<div class="pbox" style="--pc:var(${p2.c})"><span class="n">${p2.name}</span><span class="v">${fmtAge(r.a)}</span><span class="mo">${fmtMois(r.a-c.a)}</span><ul><li><span>Pension nette</span><b>${eur(r.mois)}/mois</b></li><li><span>Trimestres</span><b>${Math.min(r.T,r.D)} / ${r.D}</b></li></ul><div class="ret">${P.t===0?"Promesse non tenable (départ à "+fmtAge(r.annonce.a)+"), version retenue":P.t===.5?"Financement incertain":"Tenable"}</div></div>`}).join("");
   document.getElementById("a4").innerHTML=`
    <div class="a4top"><div><div class="eyebrow" style="color:#5b6577">Présidentielle 2027 · simulation personnelle</div><h1>Ma retraite selon les candidats</h1></div><div class="sub">Édité le ${d}</div></div>

@@ -130,11 +130,13 @@ document.getElementById("code").addEventListener("keydown",e=>{if(e.key==="Enter
 const chip=k=>k===1?'<span class="chip t1">Tenable</span>':k===.5?'<span class="chip t05">À moitié</span>':'<span class="chip t0">Non tenable</span>';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let last=null;
+/* Partis classés du plus avantageux au moins avantageux pour la personne (gain annuel décroissant) */
+const ordre=res=>PARTIES.slice().sort((a,b)=>res[b.k].total-res[a.k].total);
 function chartHTML(res){
   const max=Math.max(200,...PARTIES.map(p=>Math.abs(res[p.k].total)));
   const nice=Math.ceil(max*1.3/500)*500;
   let h="";
-  for(const p of PARTIES){const v=res[p.k].total, w=Math.abs(v)/nice*50;
+  for(const p of ordre(res)){const v=res[p.k].total, w=Math.abs(v)/nice*50;
     const left=v>=0?50:50-w;
     /* Barre longue : le montant passe de l'autre côté du zéro pour ne pas sortir du cadre sur mobile. */
     const far=w>25, valPos=v>=0?(far?`right:calc(50% + 6px)`:`left:calc(${50+w}% + 6px)`):(far?`left:calc(50% + 6px)`:`right:calc(${50+w}% + 6px)`);
@@ -147,10 +149,10 @@ function showResults(fromLoad){
   if(!fromLoad&&window.track) track(done?"vote-simulation-payante":"vote-simulation-gratuite");
   done=true; sv("vo-done",true); refreshAccess();
   document.getElementById("quiz").hidden=true; const R=document.getElementById("results"); R.hidden=false;
-  document.getElementById("tiles").innerHTML=PARTIES.map(p=>{const v=res[p.k].total;
+  document.getElementById("tiles").innerHTML=ordre(res).map(p=>{const v=res[p.k].total;
     return `<div class="tile" style="--pc:var(${p.c})"><span class="pname">${p.name}</span><span class="big ${cls(v)}">${fmt(v)}</span><span class="per">soit ${fmt(v/12)} par mois</span></div>`}).join("");
-  document.getElementById("chart").innerHTML=`<h3>Comparaison</h3>`+chartHTML(res);
-  document.getElementById("parties").innerHTML=PARTIES.map(p=>{const r=res[p.k];
+  document.getElementById("chart").innerHTML=`<h3>Du plus avantageux au moins avantageux pour toi</h3>`+chartHTML(res);
+  document.getElementById("parties").innerHTML=ordre(res).map(p=>{const r=res[p.k];
     const lines=r.lines.map(l=>`<div class="line${l.k===0?" excluded":""}"><span class="m">${esc(l.m)}${chip(l.k)}</span><span class="amt ${l.k?cls(l.v*l.k):"zero"}">${l.k===0?fmt(l.v):fmt(l.v*l.k)}</span><span class="note">${esc(l.n)}${l.k===.5?" Montant plein : "+fmt(l.v)+".":""}</span></div>`).join("");
     const her=r.herit?`<dt>Droits sur ton héritage</dt><dd>${fmtPlain(r.herit.then)} (aujourd'hui ${fmtPlain(r.herit.now)}). ${esc(r.herit.hyp)}</dd>`:"";
     return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.</p>'}</div><dl class="facts"><dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}${r.perso?" <b>"+esc(r.perso)+"</b>":""}</dd>${r.remu?"<dt>Salaire ou dividendes ?</dt><dd><b>"+esc(r.remu)+"</b> "+esc(res.remuHyp||"")+"</dd>":""}${her}</dl></article>`}).join("");
@@ -167,7 +169,7 @@ const LBL={sit:{prive:"salarié du privé",fonct:"fonctionnaire",indep:"indépen
 function buildA4(res){
   const a=A, enf=+a.enf;
   const prof=`${LBL.sit[a.sit]}, ${LBL.age[a.age]}, ${fmtPlain(netOf(a,"rev"))} net/mois avant impôt${a.couple==="oui"?", en couple (conjoint : "+fmtPlain(netOf(a,"revc"))+")":", seul"}, ${enf?enf+(enf>=3?"+":"")+" enfant"+(enf>1?"s":""):"sans enfant"}${enf&&a.ecole?" ("+{pub:"école publique",priv:"école privée",mix:"public et privé",none:"non scolarisés"}[a.ecole]+")":""}, ${LBL.log[a.log]}. Énergie ${fmtPlain(+a.ener)}/mois, carburant ${fmtPlain(+a.carb)}/mois.${+a.pat>=1300000?" Patrimoine net "+fmtPlain(wealth(a).net)+".":""}`;
-  const boxes=PARTIES.map(p=>{const r=res[p.k];
+  const boxes=ordre(res).map(p=>{const r=res[p.k];
     const ls=r.lines.filter(l=>l.k>0&&Math.abs(l.v)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,2)
       .map(l=>`<li><span>${esc(l.m)}${l.k===.5?" (½)":""}</span><b class="${cls(l.v*l.k)}">${fmt(l.v*l.k)}</b></li>`).join("")||`<li><span>Aucune mesure chiffrable pour ton profil</span><b class="zero">0 €</b></li>`;
     const her=r.herit?`<div class="ret">Héritage : ${fmtPlain(r.herit.then)} de droits (auj. ${fmtPlain(r.herit.now)})</div>`:"";
