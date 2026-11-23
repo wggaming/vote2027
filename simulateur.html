@@ -184,6 +184,7 @@ footer a{color:inherit}
       <button class="btn" id="share" type="button">Partager le test</button>
       <span class="status" id="dlstatus"></span>
     </div>
+    <p class="qhelp" id="inapp" hidden style="margin:10px 0 0"></p>
     <p class="fav" style="margin:12px 0 0;font-size:14px;color:var(--muted)">🔖 <b style="color:var(--ink)">Garde ce site en favori.</b> Les programmes sont mis à jour à chaque nouvelle promesse de campagne : reviens vérifier ton résultat d'ici l'élection. Tes réponses restent enregistrées dans ton navigateur.</p>
     <div class="card lockcard" id="lock" hidden>
       <span class="eyebrow">Accès illimité</span>
@@ -667,10 +668,14 @@ function buildA4(res){
    <div class="grid">${boxes}</div>
    <div class="foot"><b style="color:#18202e;font-size:12px">Et toi, combien ça te coûte ? Test gratuit sur <span style="color:#2b4bd6">vote.wagramconseil.fr</span></b><br>Comparaison avec les règles en vigueur fin 2026. Seules les promesses jugées tenables sont comptées : en entier (légales et finançables) ou pour moitié « ½ » (coûteuses ou juridiquement fragiles). Les promesses non tenables (contraires au droit européen, facultatives ou sans financement) sont exclues. Les effets indirects (inflation, emploi, dette, services publics) ne sont pas comptés. Programmes consultés en novembre 2026 (RN, LFI, PS, Renaissance, LR, Écologistes, Nouvelle Énergie). Simulation indicative et non partisane.</div>`;
 }
+/* Navigateurs intégrés (Facebook, Instagram, Messenger…) : le téléchargement de fichiers y est souvent bloqué. */
+const INAPP=/FBAN|FBAV|FB_IAB|Instagram|Messenger|LinkedInApp|Line\/|Snapchat|TikTok|musical_ly|Twitter/i.test(navigator.userAgent||"");
+const INAPP_MSG="Tu es dans le navigateur d'une appli (Facebook, Instagram…), qui bloque souvent les téléchargements. Si le PDF n'apparaît pas, ouvre cette page dans Safari ou Chrome (menu ⋯ puis « Ouvrir dans le navigateur »). Tes réponses seront à refaire : elles restent enregistrées dans ce navigateur-ci.";
 async function download(){
   const st=document.getElementById("dlstatus"), b=document.getElementById("dl");
   if(!last) return;
-  if(!window.html2canvas||!window.jspdf){st.textContent="Le générateur de PDF n'a pas pu se charger. Recharge la page.";return;}
+  if(window.track) track("vote-clic-pdf"+(INAPP?"-inapp":""));
+  if(!window.html2canvas||!window.jspdf){st.textContent="Le générateur de PDF n'a pas pu se charger. Recharge la page.";if(window.track)track("vote-pdf-erreur-chargement");return;}
   b.disabled=true; st.textContent="Préparation de ta page A4…";
   try{
     buildA4(last); if(document.fonts&&document.fonts.ready) await document.fonts.ready;
@@ -681,11 +686,12 @@ async function download(){
     pdf.addImage(canvas.toDataURL("image/jpeg",.92),"JPEG",0,0,210,297);
     pdf.save("ce-que-coute-mon-vote.pdf");
     if(window.track) track("vote-pdf");
-    st.textContent="PDF téléchargé.";
-  }catch(e){ st.textContent="Le PDF n'a pas pu être créé. Réessaie."; }
+    st.textContent=INAPP?"PDF créé. S'il n'apparaît pas, lis la note ci-dessous.":"PDF téléchargé.";
+  }catch(e){ st.textContent=INAPP?"Le PDF n'a pas pu être créé ici : lis la note ci-dessous.":"Le PDF n'a pas pu être créé. Réessaie."; if(window.track)track("vote-pdf-erreur"+(INAPP?"-inapp":"")); }
   finally{b.disabled=false;}
 }
 document.getElementById("dl").onclick=download;
+if(INAPP){const n=document.getElementById("inapp");n.textContent=INAPP_MSG;n.hidden=false;}
 (function(){const m=location.search.match(/[?&]code=([^&]+)/); if(m){tryUnlock(decodeURIComponent(m[1]),"lien"); history.replaceState(null,"",location.pathname);}})();
 refreshAccess();
 if(done){ showResults(true); }
