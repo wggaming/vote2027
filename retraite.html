@@ -150,9 +150,97 @@ footer a{color:inherit}
 .line.info .m{font-weight:500}
 .headline{font:700 20px var(--f-display)}
 #a4 .pbox .v{font:600 16px var(--f-num)}
+/* Tableau des âges et questions fréquentes (texte lisible par les moteurs de recherche, sous le test) */
+.tbl{overflow-x:auto}
+#ages table{width:100%;border-collapse:collapse;font-size:15px}
+#ages th,#ages td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+#ages thead th{font:600 12px var(--f-num);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.faq{display:flex;flex-direction:column;gap:10px}
+.faq details{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.faq summary{font-weight:700;cursor:pointer}
+.faq details p{color:var(--muted);margin-top:8px;font-size:15px}
 </style>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script type="application/ld+json">
+[
+ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Ma retraite selon les candidats 2027",
+  "url": "https://vote.wagramconseil.fr/retraite.html",
+  "description": "Âge de départ à la retraite et pension estimée selon les programmes 2027 du RN, de LFI, du PS, de Renaissance, de LR, des Écologistes, de David Lisnard et d'Édouard Philippe. Test gratuit en 4 questions.",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Tous (navigateur web)",
+  "inLanguage": "fr-FR",
+  "isAccessibleForFree": true,
+  "offers": {
+   "@type": "Offer",
+   "price": "0",
+   "priceCurrency": "EUR"
+  },
+  "publisher": {
+   "@type": "Organization",
+   "name": "WG Conseil",
+   "url": "https://wagramconseil.fr/"
+  }
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+   {
+    "@type": "Question",
+    "name": "À quel âge pourrai-je partir à la retraite avec le programme du RN ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Le plan du RN présenté le 17 novembre 2026 abroge la réforme de 2023 au 1er janvier 2028 : départ entre 60 et 62 ans selon l'âge de début de carrière, par paliers de 6 mois, avec 40 à 42 annuités. La décote passe à 5 % par trimestre manquant. Coût annoncé : 18,6 Md€ par an en 2032."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "LFI propose-t-elle vraiment la retraite à 60 ans ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Oui : L'Avenir en commun prévoit un retour à 60 ans à taux plein avec 40 annuités. Son coût, de plusieurs dizaines de milliards par an, n'a pas de financement détaillé : le test retient le retour à 62 ans annoncé « dans un premier temps »."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Quel âge de départ proposent le PS et les Écologistes ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Les deux proposent d'abroger la réforme de 2023 et de revenir à 62 ans, avec 43 annuités. Le PS élargit la pénibilité ; les Écologistes visent 60 ans pour les carrières longues et pénibles."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Qui propose la retraite à 65 ans en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "David Lisnard (Nouvelle Énergie) et Édouard Philippe (Horizons) portent l'âge légal à 65 ans ; Édouard Philippe y ajoute 45 annuités en moins de dix ans. LR (Bruno Retailleau) permet un départ dès 63 ans avec une décote de 7 % par an et fixe le taux plein à 65 ans au lieu de 67. Renaissance n'annonce pas de changement d'âge."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Quel est l'âge légal de départ aujourd'hui ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Depuis la suspension de la réforme de 2023 (loi de financement de la Sécurité sociale pour 2026, en vigueur le 1er septembre 2026), l'âge légal va de 62 ans et 9 mois pour les personnes nées en 1963 et 1964 à 64 ans pour celles nées à partir de 1969, avec 170 à 172 trimestres pour le taux plein."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Le test retraite est-il gratuit ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Oui : année de naissance, âge du premier emploi, statut et salaire suffisent pour voir ton âge de départ et ta pension estimée avec chaque programme. Pour 1 €, tu peux affiner (années sans trimestres, enfants, évolution du salaire, départ anticipé avec décote). Tes réponses restent dans ton navigateur."
+    }
+   }
+  ]
+ }
+]
+</script>
 </head>
 <body>
 
@@ -226,6 +314,34 @@ footer a{color:inherit}
         <li>C'est une estimation indicative et non partisane, pas un relevé officiel. Ton estimation officielle, à partir de ta vraie carrière, est sur <a href="https://www.info-retraite.fr" target="_blank" rel="noopener">info-retraite.fr</a>.</li>
       </ul>
       <p>Sources (consultées en novembre 2026) : <a href="https://www.lafinancepourtous.com/2026/08/31/retraite-decalage-de-lage-legal-et-lage-de-depart-pour-carriere-longue-au-1er-septembre-2026/" target="_blank" rel="noopener">règles actuelles après la suspension</a>, <a href="https://www.publicsenat.fr/actualites/politique/presidentielle-2027-que-contient-la-reforme-des-retraites-presentee-par-marine-le-pen" target="_blank" rel="noopener">plan du RN du 17 novembre</a>, <a href="https://www.publicsenat.fr/actualites/politique/reculer-ou-avancer-lage-legal-avec-ou-sans-capitalisation-ce-que-proposent-les-principaux-candidats-a-lelection-presidentielle-sur-les-retraites" target="_blank" rel="noopener">propositions des candidats</a>, <a href="https://votons-2027.fr/themes/retraite" target="_blank" rel="noopener">votons-2027.fr</a>, <a href="https://www.edouardphilippe.fr/programme/retraites" target="_blank" rel="noopener">programme retraites d'Édouard Philippe</a>, <a href="https://www.deutsche-rentenversicherung.de/DRV/DE/Ueber-uns-und-Presse/Presse/Meldungen/2026/260305-rentenanpassung-2026.html" target="_blank" rel="noopener">retraite allemande 2026</a>, <a href="https://www.gov.uk/government/news/over-12-million-pensioners-to-receive-575-state-pension-boost" target="_blank" rel="noopener">pension d'État britannique 2026</a>, <a href="https://www.ssa.gov/oact/cola/piaformula.html" target="_blank" rel="noopener">formule Social Security</a>, <a href="https://institutional.vanguard.com/how-america-saves" target="_blank" rel="noopener">Vanguard How America Saves</a>, <a href="https://www.gov.uk/workplace-pensions/what-you-your-employer-and-the-government-pay" target="_blank" rel="noopener">auto-enrolment britannique</a>, <a href="https://www.msci.com/indexes/index/990100" target="_blank" rel="noopener">MSCI World</a>, <a href="https://www.insee.fr/fr/statistiques/serie/001763852" target="_blank" rel="noopener">inflation INSEE</a>, <a href="https://webstat.banque-france.fr/" target="_blank" rel="noopener">taux de change Banque de France</a>.</p>
+    </div>
+  </section>
+  <section class="card" id="ages" style="display:flex;flex-direction:column;gap:14px">
+    <h2>L'âge de départ selon les candidats, en bref</h2>
+    <p class="lede">Âge minimal et durée pour le taux plein annoncés par chaque programme (vérifiés le 23 novembre 2026). Réformes supposées appliquées aux départs à partir de 2028.</p>
+    <div class="tbl"><table>
+      <thead><tr><th scope="col">Programme</th><th scope="col">Âge de départ</th><th scope="col">Taux plein</th></tr></thead>
+      <tbody>
+      <tr><th scope="row">Règles actuelles</th><td>62 ans et 9 mois à 64 ans selon la génération</td><td>170 à 172 trimestres</td></tr>
+      <tr><th scope="row">RN</th><td>60 à 62 ans selon l&#x27;âge de début</td><td>40 à 42 annuités</td></tr>
+      <tr><th scope="row">LFI</th><td>60 ans annoncé, 62 ans retenu</td><td>40 annuités annoncées</td></tr>
+      <tr><th scope="row">PS</th><td>62 ans</td><td>43 annuités</td></tr>
+      <tr><th scope="row">Renaissance</th><td>Pas de changement annoncé</td><td>Règles actuelles</td></tr>
+      <tr><th scope="row">LR</th><td>63 ans avec décote, taux plein à 65 ans</td><td>Règles actuelles</td></tr>
+      <tr><th scope="row">Écologistes</th><td>62 ans (60 ans visé pour les carrières longues)</td><td>43 annuités</td></tr>
+      <tr><th scope="row">David Lisnard</th><td>65 ans</td><td>Règles actuelles</td></tr>
+      <tr><th scope="row">Édouard Philippe</th><td>65 ans</td><td>45 annuités</td></tr>
+      </tbody>
+    </table></div>
+    <p>Impôts, SMIC, allocations : <a href="programmes.html">les autres mesures de chaque programme</a>.</p>
+    <h2 style="margin-top:8px">Questions fréquentes</h2>
+    <div class="faq">
+      <details><summary>À quel âge pourrai-je partir à la retraite avec le programme du RN ?</summary><p>Le plan du RN présenté le 17 novembre 2026 abroge la réforme de 2023 au 1er janvier 2028 : départ entre 60 et 62 ans selon l&#x27;âge de début de carrière, par paliers de 6 mois, avec 40 à 42 annuités. La décote passe à 5 % par trimestre manquant. Coût annoncé : 18,6 Md€ par an en 2032.</p></details>
+      <details><summary>LFI propose-t-elle vraiment la retraite à 60 ans ?</summary><p>Oui : L&#x27;Avenir en commun prévoit un retour à 60 ans à taux plein avec 40 annuités. Son coût, de plusieurs dizaines de milliards par an, n&#x27;a pas de financement détaillé : le test retient le retour à 62 ans annoncé « dans un premier temps ».</p></details>
+      <details><summary>Quel âge de départ proposent le PS et les Écologistes ?</summary><p>Les deux proposent d&#x27;abroger la réforme de 2023 et de revenir à 62 ans, avec 43 annuités. Le PS élargit la pénibilité ; les Écologistes visent 60 ans pour les carrières longues et pénibles.</p></details>
+      <details><summary>Qui propose la retraite à 65 ans en 2027 ?</summary><p>David Lisnard (Nouvelle Énergie) et Édouard Philippe (Horizons) portent l&#x27;âge légal à 65 ans ; Édouard Philippe y ajoute 45 annuités en moins de dix ans. LR (Bruno Retailleau) permet un départ dès 63 ans avec une décote de 7 % par an et fixe le taux plein à 65 ans au lieu de 67. Renaissance n&#x27;annonce pas de changement d&#x27;âge.</p></details>
+      <details><summary>Quel est l&#x27;âge légal de départ aujourd&#x27;hui ?</summary><p>Depuis la suspension de la réforme de 2023 (loi de financement de la Sécurité sociale pour 2026, en vigueur le 1er septembre 2026), l&#x27;âge légal va de 62 ans et 9 mois pour les personnes nées en 1963 et 1964 à 64 ans pour celles nées à partir de 1969, avec 170 à 172 trimestres pour le taux plein.</p></details>
+      <details><summary>Le test retraite est-il gratuit ?</summary><p>Oui : année de naissance, âge du premier emploi, statut et salaire suffisent pour voir ton âge de départ et ta pension estimée avec chaque programme. Pour 1 €, tu peux affiner (années sans trimestres, enfants, évolution du salaire, départ anticipé avec décote). Tes réponses restent dans ton navigateur.</p></details>
     </div>
   </section>
   <footer><p>Ma retraite selon les candidats · un test de <a href="index.html">Ce que coûte mon vote</a> · <a class="js-mail" href="#">Nous contacter</a> · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p><p style="margin-top:6px">Nos autres simulateurs : <a href="https://frais.wagramconseil.fr/">Ce que me coûtent mes frais</a> (banque, assurance-vie, PEA) · <a href="https://jeux.wagramconseil.fr/">Jeux Express</a> (calcul mental pour les enfants)</p></footer>

@@ -20,6 +20,9 @@ Simulateur de l'impact des programmes économiques de la présidentielle 2027 su
 | Test retraite : une question ou le fonctionnement de la page | `js/retraite.js` |
 | Test retraite : rendements, taux de cotisation ou paramètres des modèles allemand, britannique, américain (bloc « Et si tes cotisations avaient été placées ? ») | `js/retraite-capi.js` (constantes en haut du fichier et de chaque modèle) |
 | La question posée dès l'accueil (revenu pour le simulateur, année de naissance pour la retraite) | `index.html` (blocs `qstart` et `rqstart`, avec leur petit script en bas de page) |
+| Le résumé des programmes lisible par Google (page « Les programmes 2027 ») : à mettre à jour quand un programme change | `programmes.html` (texte, tableau retraite et questions ; les questions sont recopiées dans le bloc `application/ld+json` en haut) |
+| Le tableau des âges et les questions fréquentes sous le test retraite | `retraite.html` (section `#ages` et bloc `application/ld+json`) |
+| Ce que les moteurs de recherche et les assistants IA peuvent lire | `robots.txt`, `sitemap.xml` (date `lastmod` à changer quand une page change) |
 | Les codes de déblocage acceptés | `codes.js` (empreintes produites par l'outil privé) |
 | Les mentions légales, CGV, confidentialité | `legal.html` (bloc « Identité du vendeur » en bas) |
 

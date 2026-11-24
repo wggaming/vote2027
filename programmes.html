@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Page de lecture (indexable par Google) : résumé des programmes en texte. À mettre à jour en même temps que
+     js/programmes.js et js/retraite-regles.js quand un programme change (date MAJ en haut de page). -->
+<title>Programmes présidentielle 2027 : impôts, SMIC, retraite, parti par parti</title>
+<link rel="canonical" href="https://vote.wagramconseil.fr/programmes.html">
+<meta name="description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : impôts, SMIC, TVA, allocations, retraite et héritage, les mesures de chaque programme 2027 qui touchent ton budget, avec leur crédibilité.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ce que coûte mon vote">
+<meta property="og:title" content="Programmes 2027 : ce que chaque parti change pour ton budget">
+<meta property="og:description" content="RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : impôts, SMIC, TVA, allocations, retraite et héritage, les mesures de chaque programme 2027 qui touchent ton budget, avec leur crédibilité.">
+<meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://vote.wagramconseil.fr/programmes.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+/* Layout : une colonne de lecture — sommaire, une fiche par parti, tableau retraite, questions. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,6vw,46px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:800}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--f-num);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:64ch;margin-top:12px}
+.topnav{display:flex;justify-content:space-between;gap:12px;font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--muted);font-weight:600;text-decoration:none}
+.toc{font-size:15px;line-height:1.9}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.party{border-top:5px solid var(--pc);display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px}
+.ms{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ms li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.ms .n{flex-basis:100%;color:var(--muted);font-size:14.5px}
+.tag{font:600 11.5px var(--f-num);text-transform:uppercase;letter-spacing:.05em;border:1px solid currentColor;border-radius:6px;padding:1px 6px;white-space:nowrap}
+.t1{color:var(--gain)} .t0{color:var(--loss)} .t05{color:var(--warn)}
+.kv{font-size:15px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:700 16px var(--f-body);padding:13px 22px;border-radius:12px;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none}
+.btn.alt{background:var(--surface);color:var(--ink);border-color:var(--line)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font:600 12px var(--f-num);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl{overflow-x:auto}
+.faq{display:flex;flex-direction:column;gap:10px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+summary{font-weight:700;cursor:pointer}
+details p{color:var(--muted);margin-top:8px;font-size:15px}
+footer{font-size:13px;color:var(--muted);text-align:center}
+footer a{color:inherit}
+@media (max-width:560px){.card{padding:18px}}
+</style>
+<script type="application/ld+json">
+[
+ {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Programmes de la présidentielle 2027 : ce que chaque parti change pour ton budget",
+  "description": "RN, LFI, PS, Renaissance, LR, Écologistes, Lisnard, Philippe : impôts, SMIC, TVA, allocations, retraite et héritage, les mesures de chaque programme 2027 qui touchent ton budget, avec leur crédibilité.",
+  "inLanguage": "fr-FR",
+  "datePublished": "2026-11-24",
+  "dateModified": "2026-11-24",
+  "url": "https://vote.wagramconseil.fr/programmes.html",
+  "image": "https://vote.wagramconseil.fr/og.png",
+  "author": {
+   "@type": "Organization",
+   "name": "WG Conseil",
+   "url": "https://wagramconseil.fr/"
+  },
+  "publisher": {
+   "@type": "Organization",
+   "name": "WG Conseil",
+   "url": "https://wagramconseil.fr/"
+  },
+  "isPartOf": {
+   "@type": "WebSite",
+   "name": "Ce que coûte mon vote",
+   "url": "https://vote.wagramconseil.fr/"
+  }
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+   {
+    "@type": "Question",
+    "name": "Que propose RN pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Le RN mise sur la baisse de la TVA et sur le quotient familial. Son chiffrage global n'est pas publié : seul le plan retraite est chiffré (18,6 Md€ par an en 2032 selon le RN, financés en partie par les excédents de l'assurance chômage). Mesures principales : TVA à 5,5 % sur l'électricité et le gaz ; TVA à 0 % sur les produits de première nécessité ; Pas d'impôt sur le revenu avant 30 ans ; Une part fiscale entière dès le 2e enfant ; Demi-part fiscale pour les veufs et veuves ; IFI remplacé par un impôt sur la fortune financière."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Que propose LFI pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "LFI augmente les bas salaires et les prestations, et finance par l'impôt sur les hauts revenus et le patrimoine : 106,4 Md€ de recettes nouvelles pour 81,7 Md€ de dépenses nouvelles (document de travail du 14 octobre 2026). Mesures principales : SMIC à 1 700 € net ; Point d'indice des fonctionnaires +10 % ; Impôt sur le revenu à 14 tranches ; Fin du quotient conjugal (imposition individuelle) ; Fin de la flat tax : placements et dividendes imposés au barème ; Retour de l'ISF à la place de l'IFI ; Taxe Zucman de 2 % au-delà de 100 M€ ; Retour d'une taxe d'habitation pour les 20 % les plus aisés ; APL +10 %, fin des franchises médicales, cantine gratuite à l'école publique."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Que propose PS pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Le PS cible les salaires jusqu'à 2 700 € net avec une CSG progressive et taxe davantage les revenus du capital et les grandes successions. Chiffrage global non publié. Mesures principales : CSG progressive jusqu'à 2 700 € net ; SMIC à 1 690 € net ; Point d'indice revalorisé pour les catégories B et C ; Fin de la flat tax : revenus financiers à l'impôt sur le revenu ; Taxe Zucman au-delà de 100 M€ ; Mutuelle publique « Grande Sécu » ; Pension alimentaire sortie du revenu imposable."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Que propose Renaissance pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Renaissance promet plus de salaire net sans hausse d'impôt, financé par 150 Md€ d'économies non détaillées. Mesures principales : +250 € net par mois au salaire médian (baisse de cotisations) ; Nouvelle réforme de l'assurance chômage ; Pension alimentaire sortie du revenu imposable ; Aucune hausse d'impôt pendant le quinquennat."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Que propose LR pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "LR fusionne les aides sociales, crée un revenu familial par enfant et vise près de 200 Md€ d'économies, surtout sur les prestations et la fonction publique. Mesures principales : Revenu familial de 240 € par mois et par enfant, doublé dès le 3e ; Prime d'activité et RSA fusionnés dans un revenu d'insertion (RIA) ; Intérêts d'emprunt de la résidence principale déductibles ; Jour de carence non remboursable par l'employeur ; Revalorisation des enseignants ; Assurance chômage alignée sur « les standards européens » ; Stabilité fiscale pendant le quinquennat."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Que propose Écologistes pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Les Écologistes augmentent le SMIC et les prestations familiales et créent un ISF climatique. Chiffrage global non publié. Mesures principales : SMIC à 2 000 € brut (environ 1 584 € net) ; Allocations familiales dès le 1er enfant ; APL +10 %, avec un mécanisme anti-hausse des loyers ; Point d'indice indexé sur l'inflation, enseignants +15 % en 5 ans ; ISF climatique à la place de l'IFI ; TVA verte modulée selon l'impact écologique."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Que propose Lisnard pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "David Lisnard baisse les cotisations, l'impôt sur le revenu et la fiscalité du patrimoine, financés par 200 Md€ d'économies publiques d'ici 2032, non détaillées. Mesures principales : Jusqu'à +400 € net par mois par la baisse des cotisations ; CSG et CRDS entièrement déductibles de l'impôt ; Quotient familial déplafonné ; IFI supprimé, remplacé par une fiscalité foncière ; Pensions au-dessus de 2 200 € non revalorisées ; Enseignants : +20 % de salaire en 5 ans."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Que propose Philippe pour le pouvoir d'achat et les impôts en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Édouard Philippe (programme du 18 novembre 2026) mise sur la famille et le travail, sans nouvel impôt, avec 150 Md€ d'économies dont la moitié sur les dépenses sociales et 250 000 postes de fonctionnaires en moins. Mesures principales : Allocation familiale unique de 350 € par mois dès le 1er enfant ; Pas d'impôt sur le revenu les 3 premières années d'un enfant ; Trois jours de carence dans la fonction publique (un aujourd'hui) ; Chômage indemnisé 12 mois maximum avant 50 ans (18 aujourd'hui) ; Frais de notaire supprimés pour un 1er achat avant 35 ans ; Enseignants : +20 % de salaire en moyenne sur le quinquennat."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "À quel âge pourra-t-on partir à la retraite selon les candidats de 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "RN : 60 à 62 ans selon l'âge de début de carrière. LFI : 60 ans annoncé (62 ans jugé plus réaliste). PS et Écologistes : 62 ans. Renaissance : pas de changement d'âge annoncé. LR : 63 ans avec décote, taux plein à 65 ans. David Lisnard et Édouard Philippe : 65 ans. Aujourd'hui, avec la suspension de la réforme de 2023, l'âge légal va de 62 ans et 9 mois à 64 ans selon la génération."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Quel programme me fait gagner le plus d'argent ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Cela dépend de ta situation : revenu, couple, enfants, logement, épargne, patrimoine. Pour un même programme, l'effet peut aller d'une perte de plusieurs milliers d'euros à un gain du même ordre. Le test gratuit « Ce que coûte mon vote » calcule l'effet de chaque programme sur ton budget, en euros par an, en 2 minutes."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Comment ces programmes sont-ils financés ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "RN et PS n'ont pas publié de chiffrage global. LFI annonce 106,4 Md€ de recettes nouvelles. Renaissance et Horizons annoncent 150 Md€ d'économies, LR près de 200 Md€, David Lisnard 200 Md€ d'ici 2032. Les Écologistes n'ont pas publié de chiffrage global."
+    }
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Ce que coûte mon vote",
+    "item": "https://vote.wagramconseil.fr/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "Les programmes 2027",
+    "item": "https://vote.wagramconseil.fr/programmes.html"
+   }
+  ]
+ }
+]
+</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="topnav"><a href="index.html">← Ce que coûte mon vote</a><a href="retraite.html">Test retraite</a></nav>
+  <header>
+    <span class="eyebrow">Présidentielle 2027 · programmes vérifiés le 23 novembre 2026</span>
+    <h1 style="margin-top:10px">Les programmes 2027 : ce que chaque parti change pour ton budget</h1>
+    <p class="lede">Impôt sur le revenu, SMIC, TVA, allocations, patrimoine, retraite, héritage : les mesures des huit principaux programmes qui touchent directement les ménages, avec notre avis sur leur crédibilité. Une mesure <b class="t1">tenable</b> est légale et finançable ; <b class="t05">à moitié</b>, elle est coûteuse ou fragile en droit ; <b class="t0">non retenue</b>, elle est interdite, facultative ou sans financement. Le site ne donne aucune consigne de vote.</p>
+  </header>
+  <div class="card cta"><p><b>Combien ça change pour toi ?</b> Le test gratuit applique chaque programme à ta situation, en euros par an.</p><a class="btn" href="simulateur.html" id="cta-haut">Faire le test (2 min)</a></div>
+  <p class="toc">Aller à : <a href="#rn">RN</a> · <a href="#lfi">LFI</a> · <a href="#ps">PS</a> · <a href="#ctr">Renaissance</a> · <a href="#lr">LR</a> · <a href="#eco">Écologistes</a> · <a href="#ne">Lisnard</a> · <a href="#hor">Philippe</a> · <a href="#retraite">Retraite</a> · <a href="#questions">Questions</a></p>
+  <section class="card party" id="rn" style="--pc:var(--rn)">
+    <h2>Rassemblement national (RN)</h2>
+    <p>Le RN mise sur la baisse de la TVA et sur le quotient familial. Son chiffrage global n&#x27;est pas publié : seul le plan retraite est chiffré (18,6 Md€ par an en 2032 selon le RN, financés en partie par les excédents de l&#x27;assurance chômage).</p>
+    <ul class="ms">
+      <li><span class="tag t1">Tenable</span><b>TVA à 5,5 % sur l&#x27;électricité et le gaz</b> <span class="n">Autorisée par la directive TVA européenne de 2022.</span></li>
+      <li><span class="tag t0">Non retenue</span><b>TVA à 5,5 % sur les carburants</b> <span class="n">Le droit européen interdit un taux réduit sur l&#x27;essence et le gazole.</span></li>
+      <li><span class="tag t05">À moitié</span><b>TVA à 0 % sur les produits de première nécessité</b> <span class="n">Liste non publiée, coûteuse pour l&#x27;État.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Pas d&#x27;impôt sur le revenu avant 30 ans</b> <span class="n">Risque de censure pour rupture d&#x27;égalité devant l&#x27;impôt.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Une part fiscale entière dès le 2e enfant</b> <span class="n">Simple modification du quotient familial.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Demi-part fiscale pour les veufs et veuves</b> <span class="n">Simple modification du quotient familial.</span></li>
+      <li><span class="tag t1">Tenable</span><b>IFI remplacé par un impôt sur la fortune financière</b> <span class="n">L&#x27;immobilier n&#x27;est plus taxé, les placements financiers le sont. Barème non publié.</span></li>
+      <li><span class="tag t0">Non retenue</span><b>Hausse de 10 % des salaires exonérée de cotisations</b> <span class="n">Facultative pour l&#x27;employeur : rien n&#x27;est garanti.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Abrogation de la réforme de 2023 : départ entre 60 et 62 ans selon l&#x27;âge de début de carrière, avec 40 à 42 annuités (plan du 17 novembre 2026). Décote portée à 5 % par trimestre manquant. Financement contesté.</p>
+    <p class="kv"><b>Héritage :</b> Exonération annoncée pour les « classes moyennes » (le site retient 300 000 € par enfant).</p>
+  </section>
+  <section class="card party" id="lfi" style="--pc:var(--lfi)">
+    <h2>La France insoumise (LFI)</h2>
+    <p>LFI augmente les bas salaires et les prestations, et finance par l&#x27;impôt sur les hauts revenus et le patrimoine : 106,4 Md€ de recettes nouvelles pour 81,7 Md€ de dépenses nouvelles (document de travail du 14 octobre 2026).</p>
+    <ul class="ms">
+      <li><span class="tag t05">À moitié</span><b>SMIC à 1 700 € net</b> <span class="n">Faisable par décret, mais +15 % d&#x27;un coup pèse sur l&#x27;emploi dans les petites entreprises.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Point d&#x27;indice des fonctionnaires +10 %</b> <span class="n">Coût de l&#x27;ordre de 20 Md€ par an.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Impôt sur le revenu à 14 tranches</b> <span class="n">Barème non publié : baisse pour les revenus modestes, hausse au-delà d&#x27;environ 4 000 € net par mois et par part (hypothèse du site).</span></li>
+      <li><span class="tag t1">Tenable</span><b>Fin du quotient conjugal (imposition individuelle)</b> <span class="n">Pénalise les couples aux revenus inégaux.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Fin de la flat tax : placements et dividendes imposés au barème</b> <span class="n">Hausse d&#x27;impôt pour les épargnants des tranches à 30 % et plus.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Retour de l&#x27;ISF à la place de l&#x27;IFI</b> <span class="n">Sur tout le patrimoine net, résidence principale abattue de 30 %.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Taxe Zucman de 2 % au-delà de 100 M€</b> <span class="n">Risque constitutionnel et d&#x27;exil fiscal.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Retour d&#x27;une taxe d&#x27;habitation pour les 20 % les plus aisés</b> <span class="n">80 % des ménages restent exonérés.</span></li>
+      <li><span class="tag t1">Tenable</span><b>APL +10 %, fin des franchises médicales, cantine gratuite à l&#x27;école publique</b> <span class="n">La cantine gratuite est comptée pour moitié (coût élevé pour les communes).</span></li>
+      <li><span class="tag t0">Non retenue</span><b>Garantie d&#x27;autonomie à 1 337 € pour les étudiants, pension minimale au SMIC, « 100 % Sécu »</b> <span class="n">Coût très élevé, financement non détaillé.</span></li>
+      <li><span class="tag t0">Non retenue</span><b>Héritage limité à 5 logements, au-delà réquisition</b> <span class="n">Aucune indemnisation prévue : contraire au droit de propriété.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Retour à 60 ans avec 40 annuités, jugé peu tenable. Le site retient le retour à 62 ans annoncé « dans un premier temps ».</p>
+    <p class="kv"><b>Héritage :</b> Exonération sous 150 000 € ; barème non publié au-delà.</p>
+  </section>
+  <section class="card party" id="ps" style="--pc:var(--ps)">
+    <h2>Parti socialiste (PS)</h2>
+    <p>Le PS cible les salaires jusqu&#x27;à 2 700 € net avec une CSG progressive et taxe davantage les revenus du capital et les grandes successions. Chiffrage global non publié.</p>
+    <ul class="ms">
+      <li><span class="tag t1">Tenable</span><b>CSG progressive jusqu&#x27;à 2 700 € net</b> <span class="n">Chiffrage du PS : environ 130 € par mois au SMIC, 0 € au-delà de 2 700 €.</span></li>
+      <li><span class="tag t05">À moitié</span><b>SMIC à 1 690 € net</b> <span class="n">Faisable par décret, mais hausse rapide du coût du travail.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Point d&#x27;indice revalorisé pour les catégories B et C</b> <span class="n">Montant non publié.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Fin de la flat tax : revenus financiers à l&#x27;impôt sur le revenu</b> <span class="n">Hausse d&#x27;impôt pour les épargnants des tranches à 30 % et plus.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Taxe Zucman au-delà de 100 M€</b> <span class="n">Risque constitutionnel et d&#x27;exil fiscal.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Mutuelle publique « Grande Sécu »</b> <span class="n">Chiffrage du PS : 50 € rendus par an à chaque assuré.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Pension alimentaire sortie du revenu imposable</b> <span class="n">Mesure simple à voter.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Retour à 62 ans avec 43 annuités, pénibilité élargie. Coût de l&#x27;ordre de 10 Md€ par an à terme (Cour des comptes, 2025).</p>
+    <p class="kv"><b>Héritage :</b> Abattement unique de 200 000 € sur la vie.</p>
+  </section>
+  <section class="card party" id="ctr" style="--pc:var(--ctr)">
+    <h2>Renaissance (Gabriel Attal)</h2>
+    <p>Renaissance promet plus de salaire net sans hausse d&#x27;impôt, financé par 150 Md€ d&#x27;économies non détaillées.</p>
+    <ul class="ms">
+      <li><span class="tag t05">À moitié</span><b>+250 € net par mois au salaire médian (baisse de cotisations)</b> <span class="n">Coûteux, à financer par 150 Md€ d&#x27;économies non détaillées. Gain dégressif au-delà de 2 200 € net.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Nouvelle réforme de l&#x27;assurance chômage</b> <span class="n">5 Md€ d&#x27;économies visées, soit environ 12 % des allocations.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Pension alimentaire sortie du revenu imposable</b> <span class="n">Mesure simple à voter.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Aucune hausse d&#x27;impôt pendant le quinquennat</b> <span class="n">Les économies peuvent toucher les services publics.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Pas de changement d&#x27;âge annoncé : règles actuelles conservées, vers un système universel avec une part de capitalisation. Plan d&#x27;épargne retraite de 1 000 € à la naissance de chaque enfant.</p>
+    <p class="kv"><b>Héritage :</b> Pas de hausse des droits de succession.</p>
+  </section>
+  <section class="card party" id="lr" style="--pc:var(--lr)">
+    <h2>Les Républicains (LR, Bruno Retailleau)</h2>
+    <p>LR fusionne les aides sociales, crée un revenu familial par enfant et vise près de 200 Md€ d&#x27;économies, surtout sur les prestations et la fonction publique.</p>
+    <ul class="ms">
+      <li><span class="tag t05">À moitié</span><b>Revenu familial de 240 € par mois et par enfant, doublé dès le 3e</b> <span class="n">Remplace 12 aides (allocations familiales, PAJE, allocation de rentrée…).</span></li>
+      <li><span class="tag t1">Tenable</span><b>Prime d&#x27;activité et RSA fusionnés dans un revenu d&#x27;insertion (RIA)</b> <span class="n">La prime d&#x27;activité disparaît pour les actifs ; RIA de 300 € + 250 € avec 15 h d&#x27;insertion. Aides plafonnées à 70 % du SMIC.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Intérêts d&#x27;emprunt de la résidence principale déductibles</b> <span class="n">De 50 % à 100 % selon le nombre d&#x27;enfants.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Jour de carence non remboursable par l&#x27;employeur</b> <span class="n">Pour les salariés du privé.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Revalorisation des enseignants</b> <span class="n">Sur le traitement, pas sur les primes.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Assurance chômage alignée sur « les standards européens »</b> <span class="n">Règles non détaillées.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Stabilité fiscale pendant le quinquennat</b> <span class="n">Pas de hausse d&#x27;impôt pour les ménages.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Départ possible dès 63 ans avec une décote de 7 % par an, taux plein à 65 ans au lieu de 67. Part de capitalisation pour les nouveaux entrants.</p>
+    <p class="kv"><b>Héritage :</b> Pas de changement pour les particuliers.</p>
+  </section>
+  <section class="card party" id="eco" style="--pc:var(--eco)">
+    <h2>Les Écologistes (Marine Tondelier)</h2>
+    <p>Les Écologistes augmentent le SMIC et les prestations familiales et créent un ISF climatique. Chiffrage global non publié.</p>
+    <ul class="ms">
+      <li><span class="tag t05">À moitié</span><b>SMIC à 2 000 € brut (environ 1 584 € net)</b> <span class="n">Faisable par décret, mais hausse rapide du coût du travail.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Allocations familiales dès le 1er enfant</b> <span class="n">Environ 75 € par mois (hypothèse du site).</span></li>
+      <li><span class="tag t1">Tenable</span><b>APL +10 %, avec un mécanisme anti-hausse des loyers</b></li>
+      <li><span class="tag t1">Tenable</span><b>Point d&#x27;indice indexé sur l&#x27;inflation, enseignants +15 % en 5 ans</b> <span class="n">La hausse des enseignants est comptée pour moitié (coût élevé).</span></li>
+      <li><span class="tag t1">Tenable</span><b>ISF climatique à la place de l&#x27;IFI</b> <span class="n">Seuil et taux non publiés, plus lourd pour l&#x27;immobilier énergivore et les actions polluantes.</span></li>
+      <li><span class="tag t1">Tenable</span><b>TVA verte modulée selon l&#x27;impact écologique</b> <span class="n">Taux non publiés : effet impossible à chiffrer.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Retour immédiat à 62 ans, objectif de 60 ans pour les carrières longues et pénibles.</p>
+    <p class="kv"><b>Héritage :</b> +10 % au-delà de 4 M€, et encore +10 % au-delà de 13 M€ ; barème actuel en dessous.</p>
+  </section>
+  <section class="card party" id="ne" style="--pc:var(--ne)">
+    <h2>Nouvelle Énergie (David Lisnard)</h2>
+    <p>David Lisnard baisse les cotisations, l&#x27;impôt sur le revenu et la fiscalité du patrimoine, financés par 200 Md€ d&#x27;économies publiques d&#x27;ici 2032, non détaillées.</p>
+    <ul class="ms">
+      <li><span class="tag t05">Objectif « jusqu'à »</span><b>Jusqu&#x27;à +400 € net par mois par la baisse des cotisations</b> <span class="n">Objectif « jusqu&#x27;à » affiché pour 2032, compté pour un quart.</span></li>
+      <li><span class="tag t1">Tenable</span><b>CSG et CRDS entièrement déductibles de l&#x27;impôt</b></li>
+      <li><span class="tag t1">Tenable</span><b>Quotient familial déplafonné</b> <span class="n">Simple modification du quotient familial.</span></li>
+      <li><span class="tag t05">À moitié</span><b>IFI supprimé, remplacé par une fiscalité foncière</b> <span class="n">Taux de la nouvelle fiscalité foncière non publié.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Pensions au-dessus de 2 200 € non revalorisées</b> <span class="n">Piste donnée par David Lisnard le 27 octobre 2026.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Enseignants : +20 % de salaire en 5 ans</b> <span class="n">En contrepartie d&#x27;une réorganisation.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Âge légal porté à 65 ans, socle de pension minimale, environ 40 % des retraites en capitalisation. Rythme non publié.</p>
+    <p class="kv"><b>Héritage :</b> Suppression des droits de succession en ligne directe (tribune d&#x27;avril 2026).</p>
+  </section>
+  <section class="card party" id="hor" style="--pc:var(--hor)">
+    <h2>Horizons (Édouard Philippe)</h2>
+    <p>Édouard Philippe (programme du 18 novembre 2026) mise sur la famille et le travail, sans nouvel impôt, avec 150 Md€ d&#x27;économies dont la moitié sur les dépenses sociales et 250 000 postes de fonctionnaires en moins.</p>
+    <ul class="ms">
+      <li><span class="tag t05">À moitié</span><b>Allocation familiale unique de 350 € par mois dès le 1er enfant</b> <span class="n">Par famille, dégressive avec le revenu (seuils non publiés).</span></li>
+      <li><span class="tag t1">Tenable</span><b>Pas d&#x27;impôt sur le revenu les 3 premières années d&#x27;un enfant</b> <span class="n">Pour les classes moyennes ; 3 000 € de réduction par an pour les familles plus aisées.</span></li>
+      <li><span class="tag t0">Non retenue</span><b>Heures au-delà de 35 h sans impôt ni cotisations salariales</b> <span class="n">Il faut un accord d&#x27;entreprise pour allonger le temps de travail : rien n&#x27;est garanti.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Trois jours de carence dans la fonction publique (un aujourd&#x27;hui)</b></li>
+      <li><span class="tag t1">Tenable</span><b>Chômage indemnisé 12 mois maximum avant 50 ans (18 aujourd&#x27;hui)</b></li>
+      <li><span class="tag t1">Tenable</span><b>Frais de notaire supprimés pour un 1er achat avant 35 ans</b> <span class="n">Gain ponctuel, environ 7 000 € pour un logement de 100 000 €.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Enseignants : +20 % de salaire en moyenne sur le quinquennat</b> <span class="n">Coût non chiffré.</span></li>
+    </ul>
+    <p class="kv"><b>Retraite :</b> Âge légal porté à 65 ans et 45 annuités en moins de dix ans. Carrières longues, pénibilité et départs pour raison de santé maintenus. Fonds de capitalisation collectif et 500 € de l&#x27;État sur un plan d&#x27;épargne retraite au premier emploi.</p>
+    <p class="kv"><b>Héritage :</b> Plafonds de donation doublés pendant les 3 premières années du quinquennat ; pas de changement pour les successions.</p>
+  </section>
+  <section class="card" id="retraite" style="display:flex;flex-direction:column;gap:12px">
+    <h2>Âge de départ à la retraite selon les candidats</h2>
+    <p>Âge minimal de départ et durée de cotisation pour le taux plein, tels qu'annoncés. Les réformes sont supposées s'appliquer aux départs à partir de 2028.</p>
+    <div class="tbl"><table>
+      <thead><tr><th scope="col">Programme</th><th scope="col">Âge de départ</th><th scope="col">Durée pour le taux plein</th></tr></thead>
+      <tbody>
+      <tr><th scope="row">Règles actuelles (réforme de 2023 suspendue)</th><td>62 ans et 9 mois à 64 ans selon la génération</td><td>170 à 172 trimestres</td></tr>
+      <tr><th scope="row">RN</th><td>60 à 62 ans selon l&#x27;âge de début</td><td>40 à 42 annuités</td></tr>
+      <tr><th scope="row">LFI</th><td>60 ans annoncé, 62 ans retenu par le site</td><td>40 annuités annoncées</td></tr>
+      <tr><th scope="row">PS</th><td>62 ans</td><td>43 annuités</td></tr>
+      <tr><th scope="row">Renaissance</th><td>Pas de changement annoncé</td><td>Règles actuelles</td></tr>
+      <tr><th scope="row">LR</th><td>63 ans avec décote, taux plein à 65 ans</td><td>Règles actuelles</td></tr>
+      <tr><th scope="row">Écologistes</th><td>62 ans (60 ans visé pour les carrières longues)</td><td>43 annuités</td></tr>
+      <tr><th scope="row">Lisnard</th><td>65 ans</td><td>Règles actuelles</td></tr>
+      <tr><th scope="row">Philippe</th><td>65 ans</td><td>45 annuités</td></tr>
+      </tbody>
+    </table></div>
+    <p><a href="retraite.html">Calcule ton âge de départ et ta pension avec chaque programme →</a></p>
+  </section>
+  <section id="questions" style="display:flex;flex-direction:column;gap:12px">
+    <h2>Questions fréquentes</h2>
+    <div class="faq">
+    <details><summary>Que propose RN pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>Le RN mise sur la baisse de la TVA et sur le quotient familial. Son chiffrage global n&#x27;est pas publié : seul le plan retraite est chiffré (18,6 Md€ par an en 2032 selon le RN, financés en partie par les excédents de l&#x27;assurance chômage). Mesures principales : TVA à 5,5 % sur l&#x27;électricité et le gaz ; TVA à 0 % sur les produits de première nécessité ; Pas d&#x27;impôt sur le revenu avant 30 ans ; Une part fiscale entière dès le 2e enfant ; Demi-part fiscale pour les veufs et veuves ; IFI remplacé par un impôt sur la fortune financière.</p></details>
+    <details><summary>Que propose LFI pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>LFI augmente les bas salaires et les prestations, et finance par l&#x27;impôt sur les hauts revenus et le patrimoine : 106,4 Md€ de recettes nouvelles pour 81,7 Md€ de dépenses nouvelles (document de travail du 14 octobre 2026). Mesures principales : SMIC à 1 700 € net ; Point d&#x27;indice des fonctionnaires +10 % ; Impôt sur le revenu à 14 tranches ; Fin du quotient conjugal (imposition individuelle) ; Fin de la flat tax : placements et dividendes imposés au barème ; Retour de l&#x27;ISF à la place de l&#x27;IFI ; Taxe Zucman de 2 % au-delà de 100 M€ ; Retour d&#x27;une taxe d&#x27;habitation pour les 20 % les plus aisés ; APL +10 %, fin des franchises médicales, cantine gratuite à l&#x27;école publique.</p></details>
+    <details><summary>Que propose PS pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>Le PS cible les salaires jusqu&#x27;à 2 700 € net avec une CSG progressive et taxe davantage les revenus du capital et les grandes successions. Chiffrage global non publié. Mesures principales : CSG progressive jusqu&#x27;à 2 700 € net ; SMIC à 1 690 € net ; Point d&#x27;indice revalorisé pour les catégories B et C ; Fin de la flat tax : revenus financiers à l&#x27;impôt sur le revenu ; Taxe Zucman au-delà de 100 M€ ; Mutuelle publique « Grande Sécu » ; Pension alimentaire sortie du revenu imposable.</p></details>
+    <details><summary>Que propose Renaissance pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>Renaissance promet plus de salaire net sans hausse d&#x27;impôt, financé par 150 Md€ d&#x27;économies non détaillées. Mesures principales : +250 € net par mois au salaire médian (baisse de cotisations) ; Nouvelle réforme de l&#x27;assurance chômage ; Pension alimentaire sortie du revenu imposable ; Aucune hausse d&#x27;impôt pendant le quinquennat.</p></details>
+    <details><summary>Que propose LR pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>LR fusionne les aides sociales, crée un revenu familial par enfant et vise près de 200 Md€ d&#x27;économies, surtout sur les prestations et la fonction publique. Mesures principales : Revenu familial de 240 € par mois et par enfant, doublé dès le 3e ; Prime d&#x27;activité et RSA fusionnés dans un revenu d&#x27;insertion (RIA) ; Intérêts d&#x27;emprunt de la résidence principale déductibles ; Jour de carence non remboursable par l&#x27;employeur ; Revalorisation des enseignants ; Assurance chômage alignée sur « les standards européens » ; Stabilité fiscale pendant le quinquennat.</p></details>
+    <details><summary>Que propose Écologistes pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>Les Écologistes augmentent le SMIC et les prestations familiales et créent un ISF climatique. Chiffrage global non publié. Mesures principales : SMIC à 2 000 € brut (environ 1 584 € net) ; Allocations familiales dès le 1er enfant ; APL +10 %, avec un mécanisme anti-hausse des loyers ; Point d&#x27;indice indexé sur l&#x27;inflation, enseignants +15 % en 5 ans ; ISF climatique à la place de l&#x27;IFI ; TVA verte modulée selon l&#x27;impact écologique.</p></details>
+    <details><summary>Que propose Lisnard pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>David Lisnard baisse les cotisations, l&#x27;impôt sur le revenu et la fiscalité du patrimoine, financés par 200 Md€ d&#x27;économies publiques d&#x27;ici 2032, non détaillées. Mesures principales : Jusqu&#x27;à +400 € net par mois par la baisse des cotisations ; CSG et CRDS entièrement déductibles de l&#x27;impôt ; Quotient familial déplafonné ; IFI supprimé, remplacé par une fiscalité foncière ; Pensions au-dessus de 2 200 € non revalorisées ; Enseignants : +20 % de salaire en 5 ans.</p></details>
+    <details><summary>Que propose Philippe pour le pouvoir d&#x27;achat et les impôts en 2027 ?</summary><p>Édouard Philippe (programme du 18 novembre 2026) mise sur la famille et le travail, sans nouvel impôt, avec 150 Md€ d&#x27;économies dont la moitié sur les dépenses sociales et 250 000 postes de fonctionnaires en moins. Mesures principales : Allocation familiale unique de 350 € par mois dès le 1er enfant ; Pas d&#x27;impôt sur le revenu les 3 premières années d&#x27;un enfant ; Trois jours de carence dans la fonction publique (un aujourd&#x27;hui) ; Chômage indemnisé 12 mois maximum avant 50 ans (18 aujourd&#x27;hui) ; Frais de notaire supprimés pour un 1er achat avant 35 ans ; Enseignants : +20 % de salaire en moyenne sur le quinquennat.</p></details>
+    <details><summary>À quel âge pourra-t-on partir à la retraite selon les candidats de 2027 ?</summary><p>RN : 60 à 62 ans selon l&#x27;âge de début de carrière. LFI : 60 ans annoncé (62 ans jugé plus réaliste). PS et Écologistes : 62 ans. Renaissance : pas de changement d&#x27;âge annoncé. LR : 63 ans avec décote, taux plein à 65 ans. David Lisnard et Édouard Philippe : 65 ans. Aujourd&#x27;hui, avec la suspension de la réforme de 2023, l&#x27;âge légal va de 62 ans et 9 mois à 64 ans selon la génération.</p></details>
+    <details><summary>Quel programme me fait gagner le plus d&#x27;argent ?</summary><p>Cela dépend de ta situation : revenu, couple, enfants, logement, épargne, patrimoine. Pour un même programme, l&#x27;effet peut aller d&#x27;une perte de plusieurs milliers d&#x27;euros à un gain du même ordre. Le test gratuit « Ce que coûte mon vote » calcule l&#x27;effet de chaque programme sur ton budget, en euros par an, en 2 minutes.</p></details>
+    <details><summary>Comment ces programmes sont-ils financés ?</summary><p>RN et PS n&#x27;ont pas publié de chiffrage global. LFI annonce 106,4 Md€ de recettes nouvelles. Renaissance et Horizons annoncent 150 Md€ d&#x27;économies, LR près de 200 Md€, David Lisnard 200 Md€ d&#x27;ici 2032. Les Écologistes n&#x27;ont pas publié de chiffrage global.</p></details>
+    </div>
+  </section>
+  <div class="card cta"><p><b>Ton classement personnel, en 2 minutes.</b> Gratuit, anonyme, sans inscription. Tes réponses restent dans ton navigateur.</p><a class="btn" href="simulateur.html" id="cta-bas">Faire le test</a></div>
+  <p style="font-size:14px;color:var(--muted)">Sources : programmes et documents publiés par les partis, déclarations publiques des candidats (dates indiquées), barème de l'impôt 2026. Les montants détaillés et les hypothèses de calcul sont affichés dans le test, mesure par mesure. Une erreur ou un programme mis à jour ? Écris-nous : <a class="js-mail" href="mailto:matthieu@wagramconseil.fr">matthieu@wagramconseil.fr</a>.</p>
+  <footer><p>© 2026 WG Conseil · <a href="index.html">Ce que coûte mon vote</a> · simulation indicative et non partisane · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p></footer>
+</div>
+<script src="reglages.js"></script>
+<script src="stats.js"></script>
+<script>
+['cta-haut','cta-bas'].forEach(function(id){var b=document.getElementById(id); if(b) b.addEventListener('click',function(){if(window.track) track('programmes-clic-test');});});
+</script>
+</body>
+</html>
