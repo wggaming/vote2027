@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Fiche d'un programme (lue par Google). Même contenu que la section du parti sur programmes.html :
+     à mettre à jour en même temps que js/programmes.js et js/retraite-regles.js. -->
+<title>Programme de LR 2027 : impôts, retraite, pouvoir d'achat</title>
+<link rel="canonical" href="https://vote.wagramconseil.fr/programme-lr.html">
+<meta name="description" content="LR 2027 : impôts, SMIC, TVA, allocations, retraite (63 ans avec décote, taux plein à 65 ans) et héritage. Les mesures qui touchent ton budget, leur crédibilité et leur financement, puis le test pour chiffrer l&#x27;effet sur toi.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Ce que coûte mon vote">
+<meta property="og:title" content="Programme de LR 2027 : ce qui change pour ton budget">
+<meta property="og:description" content="LR 2027 : impôts, SMIC, TVA, allocations, retraite (63 ans avec décote, taux plein à 65 ans) et héritage. Les mesures qui touchent ton budget, leur crédibilité et leur financement, puis le test pour chiffrer l&#x27;effet sur toi.">
+<meta property="og:image" content="https://vote.wagramconseil.fr/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://vote.wagramconseil.fr/programme-lr.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="site.css">
+<style>
+/* Layout : une colonne de lecture — sommaire, une fiche par parti, tableau retraite, questions. */
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 64px;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,6vw,46px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:800}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-family:var(--f-num);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:64ch;margin-top:12px}
+.topnav{display:flex;justify-content:space-between;gap:12px;font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--muted);font-weight:600;text-decoration:none}
+.toc{font-size:15px;line-height:1.9}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.party{border-top:5px solid var(--pc);display:flex;flex-direction:column;gap:12px;scroll-margin-top:12px}
+.ms{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ms li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.ms .n{flex-basis:100%;color:var(--muted);font-size:14.5px}
+.tag{font:600 11.5px var(--f-num);text-transform:uppercase;letter-spacing:.05em;border:1px solid currentColor;border-radius:6px;padding:1px 6px;white-space:nowrap}
+.t1{color:var(--gain)} .t0{color:var(--loss)} .t05{color:var(--warn)}
+.kv{font-size:15px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;font:700 16px var(--f-body);padding:13px 22px;border-radius:12px;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none}
+.btn.alt{background:var(--surface);color:var(--ink);border-color:var(--line)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font:600 12px var(--f-num);text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.tbl{overflow-x:auto}
+.faq{display:flex;flex-direction:column;gap:10px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+summary{font-weight:700;cursor:pointer}
+details p{color:var(--muted);margin-top:8px;font-size:15px}
+footer{font-size:13px;color:var(--muted);text-align:center}
+footer a{color:inherit}
+@media (max-width:560px){.card{padding:18px}}
+</style>
+<script type="application/ld+json">
+[
+ {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Programme Les Républicains (LR, Bruno Retailleau) pour 2027 : ce qui change pour ton budget",
+  "description": "LR 2027 : impôts, SMIC, TVA, allocations, retraite (63 ans avec décote, taux plein à 65 ans) et héritage. Les mesures qui touchent ton budget, leur crédibilité et leur financement, puis le test pour chiffrer l'effet sur toi.",
+  "inLanguage": "fr-FR",
+  "datePublished": "2026-11-24",
+  "dateModified": "2026-11-24",
+  "url": "https://vote.wagramconseil.fr/programme-lr.html",
+  "image": "https://vote.wagramconseil.fr/og.png",
+  "about": {
+   "@type": "PoliticalParty",
+   "name": "Les Républicains (LR, Bruno Retailleau)"
+  },
+  "author": {
+   "@type": "Organization",
+   "name": "WG Conseil",
+   "url": "https://wagramconseil.fr/"
+  },
+  "publisher": {
+   "@type": "Organization",
+   "name": "WG Conseil",
+   "url": "https://wagramconseil.fr/"
+  },
+  "isPartOf": {
+   "@type": "WebSite",
+   "name": "Ce que coûte mon vote",
+   "url": "https://vote.wagramconseil.fr/"
+  }
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+   {
+    "@type": "Question",
+    "name": "Que propose LR pour les impôts et le pouvoir d'achat en 2027 ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "LR fusionne les aides sociales, crée un revenu familial par enfant et vise près de 200 Md€ d'économies, surtout sur les prestations et la fonction publique. Mesures principales : Revenu familial de 240 € par mois et par enfant, doublé dès le 3e ; Prime d'activité et RSA fusionnés dans un revenu d'insertion (RIA) ; Intérêts d'emprunt de la résidence principale déductibles ; Jour de carence non remboursable par l'employeur ; Revalorisation des enseignants ; Assurance chômage alignée sur « les standards européens » ; Stabilité fiscale pendant le quinquennat."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "À quel âge partir à la retraite avec le programme de LR ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Départ possible dès 63 ans avec une décote de 7 % par an, taux plein à 65 ans au lieu de 67. Part de capitalisation pour les nouveaux entrants."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Comment LR finance-t-il son programme ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Près de 200 Md€ d'économies annoncées, surtout sur les prestations sociales et la fonction publique."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Qu'est-ce qui change pour l'héritage avec le programme de LR ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Pas de changement pour les particuliers."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Combien le programme de LR me ferait-il gagner ou perdre ?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Cela dépend de ta situation : revenu, couple, enfants, logement, épargne, patrimoine. Le test gratuit « Ce que coûte mon vote » applique chaque mesure à ta situation et affiche le résultat en euros par an, comparé aux sept autres programmes."
+    }
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Ce que coûte mon vote",
+    "item": "https://vote.wagramconseil.fr/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "Les programmes 2027",
+    "item": "https://vote.wagramconseil.fr/programmes.html"
+   },
+   {
+    "@type": "ListItem",
+    "position": 3,
+    "name": "Programme LR",
+    "item": "https://vote.wagramconseil.fr/programme-lr.html"
+   }
+  ]
+ }
+]
+</script>
+</head>
+<body>
+<div class="wrap">
+  <nav class="topnav"><a href="programmes.html">← Tous les programmes</a><a href="simulateur.html">Faire le test</a></nav>
+  <header>
+    <span class="eyebrow">Présidentielle 2027 · programme vérifié le 23 novembre 2026</span>
+    <h1 style="margin-top:10px">Les Républicains (LR, Bruno Retailleau) : ce que son programme change pour ton budget</h1>
+    <p class="lede">LR fusionne les aides sociales, crée un revenu familial par enfant et vise près de 200 Md€ d'économies, surtout sur les prestations et la fonction publique.</p>
+  </header>
+  <section class="card party" style="--pc:var(--lr)">
+    <h2>Les mesures qui touchent les ménages</h2>
+    <ul class="ms">
+      <li><span class="tag t05">À moitié</span><b>Revenu familial de 240 € par mois et par enfant, doublé dès le 3e</b> <span class="n">Remplace 12 aides (allocations familiales, PAJE, allocation de rentrée…).</span></li>
+      <li><span class="tag t1">Tenable</span><b>Prime d'activité et RSA fusionnés dans un revenu d'insertion (RIA)</b> <span class="n">La prime d'activité disparaît pour les actifs ; RIA de 300 € + 250 € avec 15 h d'insertion. Aides plafonnées à 70 % du SMIC.</span></li>
+      <li><span class="tag t05">À moitié</span><b>Intérêts d'emprunt de la résidence principale déductibles</b> <span class="n">De 50 % à 100 % selon le nombre d'enfants.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Jour de carence non remboursable par l'employeur</b> <span class="n">Pour les salariés du privé.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Revalorisation des enseignants</b> <span class="n">Sur le traitement, pas sur les primes.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Assurance chômage alignée sur « les standards européens »</b> <span class="n">Règles non détaillées.</span></li>
+      <li><span class="tag t1">Tenable</span><b>Stabilité fiscale pendant le quinquennat</b> <span class="n">Pas de hausse d'impôt pour les ménages.</span></li>
+    </ul>
+    <p style="font-size:14px;color:var(--muted)">Tenable : légale et finançable, comptée en entier. À moitié : coûteuse ou fragile en droit, comptée pour moitié. Non retenue : interdite, facultative ou sans financement, affichée mais pas comptée.</p>
+  </section>
+  <section class="card" style="display:flex;flex-direction:column;gap:10px">
+    <h2>Retraite</h2>
+    <p>Départ possible dès 63 ans avec une décote de 7 % par an, taux plein à 65 ans au lieu de 67. Part de capitalisation pour les nouveaux entrants.</p>
+    <p><b>Âge de départ :</b> 63 ans avec décote, taux plein à 65 ans. <b>Taux plein :</b> Règles actuelles. Aujourd'hui : 62 ans et 9 mois à 64 ans selon la génération.</p>
+    <p><a href="retraite.html">Calcule ton âge de départ et ta pension avec ce programme →</a></p>
+  </section>
+  <section class="card" style="display:flex;flex-direction:column;gap:10px">
+    <h2>Héritage et financement</h2>
+    <p><b>Héritage :</b> Pas de changement pour les particuliers.</p>
+    <p><b>Financement annoncé :</b> Près de 200 Md€ d'économies annoncées, surtout sur les prestations sociales et la fonction publique.</p>
+  </section>
+  <div class="card cta"><p><b>Combien le programme de LR change pour toi ?</b> Le test gratuit l'applique à ta situation, en euros par an, et le compare aux sept autres.</p><a class="btn" href="simulateur.html" id="cta">Faire le test (2 min)</a></div>
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2>Questions fréquentes</h2>
+    <div class="faq">
+      <details><summary>Que propose LR pour les impôts et le pouvoir d'achat en 2027 ?</summary><p>LR fusionne les aides sociales, crée un revenu familial par enfant et vise près de 200 Md€ d'économies, surtout sur les prestations et la fonction publique. Mesures principales : Revenu familial de 240 € par mois et par enfant, doublé dès le 3e ; Prime d'activité et RSA fusionnés dans un revenu d'insertion (RIA) ; Intérêts d'emprunt de la résidence principale déductibles ; Jour de carence non remboursable par l'employeur ; Revalorisation des enseignants ; Assurance chômage alignée sur « les standards européens » ; Stabilité fiscale pendant le quinquennat.</p></details>
+      <details><summary>À quel âge partir à la retraite avec le programme de LR ?</summary><p>Départ possible dès 63 ans avec une décote de 7 % par an, taux plein à 65 ans au lieu de 67. Part de capitalisation pour les nouveaux entrants.</p></details>
+      <details><summary>Comment LR finance-t-il son programme ?</summary><p>Près de 200 Md€ d'économies annoncées, surtout sur les prestations sociales et la fonction publique.</p></details>
+      <details><summary>Qu'est-ce qui change pour l'héritage avec le programme de LR ?</summary><p>Pas de changement pour les particuliers.</p></details>
+      <details><summary>Combien le programme de LR me ferait-il gagner ou perdre ?</summary><p>Cela dépend de ta situation : revenu, couple, enfants, logement, épargne, patrimoine. Le test gratuit « Ce que coûte mon vote » applique chaque mesure à ta situation et affiche le résultat en euros par an, comparé aux sept autres programmes.</p></details>
+    </div>
+  </section>
+  <p class="toc">Les autres programmes : <a href="programme-rn.html">RN</a> · <a href="programme-lfi.html">LFI</a> · <a href="programme-ps.html">PS</a> · <a href="programme-renaissance.html">Renaissance</a> · <a href="programme-ecologistes.html">Écologistes</a> · <a href="programme-lisnard.html">Lisnard</a> · <a href="programme-philippe.html">Philippe</a> · <a href="programmes.html#retraite">tableau des âges de retraite</a></p>
+  <p style="font-size:14px;color:var(--muted)">Sources : programmes et documents publiés par le parti, déclarations publiques (dates indiquées), barème de l'impôt 2026. Le site ne donne aucune consigne de vote. Une erreur ? <a class="js-mail" href="mailto:matthieu@wagramconseil.fr">matthieu@wagramconseil.fr</a>.</p>
+  <footer><p>© 2026 WG Conseil · <a href="index.html">Ce que coûte mon vote</a> · simulation indicative et non partisane · <a href="legal.html">Mentions légales, CGV, confidentialité</a></p></footer>
+</div>
+<script src="reglages.js"></script>
+<script src="stats.js"></script>
+<script>document.getElementById('cta').addEventListener('click',function(){if(window.track) track('programme-lr-clic-test');});</script>
+</body>
+</html>
