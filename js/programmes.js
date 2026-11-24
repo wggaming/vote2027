@@ -14,7 +14,8 @@
    divBareme : le parti impose les dividendes au barème (arbitrage salaire ou dividendes des dirigeants).
 
    Les variables partagées (revenus, impôt actuel, patrimoine…) sont calculées une fois dans contexte(). */
-/* Date de la dernière vérification des programmes, affichée sur chaque fiche : à changer à chaque mise à jour d'un programme. */
+/* Date de la dernière vérification des programmes, affichée sur chaque fiche : à changer à chaque mise à jour d'un programme.
+   Penser aussi au résumé texte de programmes.html (lu par Google) et au tableau des âges de retraite.html. */
 const MAJ_PROGRAMMES="23 novembre 2026";
 const L=(m,v,k,n)=>({m,v,k,n});
 /* 60,5 → « 60 ans et 6 mois » */
