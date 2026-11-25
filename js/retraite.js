@@ -4,6 +4,7 @@
    Les règles et le calcul sont dans js/retraite-regles.js, les noms et couleurs des partis dans js/programmes.js. */
 function ld(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}}
 function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var offreVue = false;
 var unlocked = ld('vo-unlock', false) === true;
 var done = ld('re-done', false) === true;
 const A = ld('re-answers', {}) || {};
@@ -165,7 +166,9 @@ function showResults(fromLoad){
   const ages=RE_PARTIS.map(P=>res[P.k].a), amin=Math.min(...ages), amax=Math.max(...ages);
   document.getElementById("headline").textContent=amax-amin<.01?"Pour ton profil, tous les programmes te font partir au même âge : "+fmtAge(amin)+".":"Selon le programme, tu partirais entre "+fmtAge(amin)+" et "+fmtAge(amax)+" (aujourd'hui : "+fmtAge(c.a)+").";
   if(window.renderCapi) renderCapi(p,res);
-  const T=document.getElementById("teaser"); T.hidden=unlocked;
+  /* L'offre à 1 € est affichée ouverte sous le résultat, au lieu d'attendre un clic. */
+  const T=document.getElementById("teaser"), L=document.getElementById("lock"); T.hidden=true;
+  if(!unlocked){ fillUpsell(); T.after(L); L.hidden=false; if(!offreVue){offreVue=true; if(window.track)track("retraite-offre-vue");} }
   document.getElementById("dlstatus").textContent="";
   if(!fromLoad) R.scrollIntoView({behavior:"smooth",block:"start"});
   loadPdfLibs().catch(()=>{});

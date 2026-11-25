@@ -150,7 +150,7 @@ function finHTML(p){const f=p.fin; if(!f) return "";
   const ordre=f.md?" Ordre de grandeur : "+f.md.toLocaleString("fr-FR")+" Md€, c'est environ "+fmtPlain(Math.round(f.md*1e9/MENAGES/100)*100)+" par ménage ("+(MENAGES/1e6)+" millions de ménages)."+(f.sens==="rec"?" Les impôts qui te touchent directement sont comptés plus haut ; ceux payés par les entreprises et les très grandes fortunes peuvent se répercuter sur les prix, l'emploi ou les salaires, sans être comptés ici.":" Qui paiera, par moins de services publics ou de prestations, n'est pas précisé : ce n'est donc pas compté dans ton résultat."):" Faute de chiffrage, rien n'est compté ici.";
   return `<dt>Financement</dt><dd>${esc(f.txt+ordre)}</dd>`;}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let last=null;
+let last=null, offreVue=false;
 /* Partis classés du plus avantageux au moins avantageux pour la personne (gain annuel décroissant) */
 const ordre=res=>PARTIES.slice().sort((a,b)=>res[b.k].total-res[a.k].total);
 function chartHTML(res){
@@ -173,14 +173,18 @@ function showResults(fromLoad){
   document.getElementById("tiles").innerHTML=ordre(res).map(p=>{const v=res[p.k].total;
     return `<div class="tile" style="--pc:var(${p.c})"><span class="pname">${p.name}</span><span class="big ${cls(v)}">${fmt(v)}</span><span class="per">soit ${fmt(v/12)} par mois</span></div>`}).join("");
   document.getElementById("chart").innerHTML=`<h3>Du plus avantageux au moins avantageux pour toi</h3>`+chartHTML(res);
-  document.getElementById("parties").innerHTML=ordre(res).map(p=>{const r=res[p.k];
-    const shown=unlocked?r.lines:r.lines.filter(l=>l.k>0&&Math.abs(l.v*l.k)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,1), hiddenN=r.lines.length-shown.length;
+  /* Sans accès payant, le programme arrivé en tête est détaillé en entier, en exemple de ce que donne le 1 €. */
+  document.getElementById("parties").innerHTML=ordre(res).map((p,i)=>{const r=res[p.k];
+    const shown=unlocked||i===0?r.lines:r.lines.filter(l=>l.k>0&&Math.abs(l.v*l.k)>1).sort((x,y)=>Math.abs(y.v*y.k)-Math.abs(x.v*x.k)).slice(0,1), hiddenN=r.lines.length-shown.length;
     const lines=shown.map(l=>`<div class="line${l.k===0?" excluded":""}"><span class="m">${esc(l.m)}${chip(l.k)}</span><span class="amt ${l.k?cls(l.v*l.k):"zero"}">${l.k===0?fmt(l.v):fmt(l.v*l.k)}</span><span class="note">${esc(l.n)}${l.k===.5||l.k===.25?" Montant plein : "+fmt(l.v)+".":""}</span></div>`).join("")+(hiddenN>0?`<div class="line locked"><span class="m">${shown.length?"+ ":""}${hiddenN} mesure${hiddenN>1?"s":""} de ce programme${shown.length?" en plus":""}, avec leur montant et leur justification</span><button class="btn js-detail" type="button">Voir le détail (${PRICE_LABEL})</button></div>`:"");
     const her=r.herit?`<dt>Droits sur ton héritage</dt><dd>${fmtPlain(r.herit.then)} (aujourd'hui ${fmtPlain(r.herit.now)}). ${esc(r.herit.hyp)}</dd>`:"";
     return `<article class="card party" style="--pc:var(${p.c})"><div class="phead"><h3>${p.name}</h3><span class="tot ${cls(r.total)}">${fmt(r.total)} / an</span></div><div class="lines">${lines||'<p class="qhelp">Aucune mesure chiffrable ne te concerne directement.'+(A.sit==="retr"?" Pour les retraités, les programmes publiés à ce jour contiennent peu de mesures chiffrables sur les pensions (indexation, minimum de pension) et les comparatifs ne s'accordent pas encore sur leurs montants : on les ajoutera dès qu'un parti publie un texte précis.":"")+'</p>'}</div><dl class="facts">${finHTML(p)}<dt>Âge de départ à la retraite</dt><dd>${esc(r.retraite)}${r.perso?" <b>"+esc(r.perso)+"</b>":""}</dd>${r.remu?"<dt>Salaire ou dividendes ?</dt><dd><b>"+esc(r.remu)+"</b> "+esc(res.remuHyp||"")+"</dd>":""}${her}</dl><p class="pmaj">Programme vérifié le ${MAJ_PROGRAMMES} · <a href="#sources">sources</a> · <a href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent("Erreur dans le chiffrage : "+p.name)}">signaler une erreur</a></p></article>`}).join("");
   document.querySelectorAll("#parties .js-detail").forEach(b=>b.onclick=()=>showLock("detail"));
   const nh=PARTIES.reduce((t,p)=>t+(res[p.k].hyp||0),0), T=document.getElementById("teaser");
-  T.hidden=unlocked; if(!unlocked) document.getElementById("teasertxt").textContent=nh>0?nh+" montant"+(nh>1?"s":"")+" de ton résultat "+(nh>1?"reposent":"repose")+" sur des moyennes nationales ou des estimations.":"Ton résultat repose en partie sur des moyennes nationales.";
+  /* L'offre à 1 € est affichée ouverte sous le classement : avant, 4 personnes sur 5 ne la voyaient jamais. */
+  const L=document.getElementById("lock");
+  if(!unlocked){ fillUpsell(); T.after(L); L.hidden=false; if(!offreVue){offreVue=true; if(window.track)track("vote-offre-vue");} }
+  T.hidden=true; if(!unlocked) document.getElementById("teasertxt").textContent=nh>0?nh+" montant"+(nh>1?"s":"")+" de ton résultat "+(nh>1?"reposent":"repose")+" sur des moyennes nationales ou des estimations.":"Ton résultat repose en partie sur des moyennes nationales.";
   document.getElementById("dlstatus").textContent="";
   if(!fromLoad) R.scrollIntoView({behavior:"smooth",block:"start"});
   loadPdfLibs().catch(()=>{});
